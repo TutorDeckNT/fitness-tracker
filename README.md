@@ -2,7 +2,7 @@
 
 A modern, offline-first Progressive Web App (PWA) to track your workouts, manage your training schedule, and analyze your progress. Built with vanilla HTML, CSS, and JavaScript, and powered by Firebase for seamless data syncing.
 
-**Live App: [https://manav0-0.github.io/fitness-tracker/](https://manav0-0.github.io/fitness-tracker/)**
+**Live App: [https://TutorDeckNT.github.io/fitness-tracker/](https://TutorDeckNT.github.io/fitness-tracker/)**
 
  
 *(Suggestion: You can replace this with a screenshot of your app)*
@@ -24,7 +24,7 @@ A modern, offline-first Progressive Web App (PWA) to track your workouts, manage
 
 ## 🚀 How to Use
 
-1.  **Visit the Website:** Open [https://manav0-0.github.io/fitness-tracker/](https://manav0-0.github.io/fitness-tracker/).
+1.  **Visit the Website:** Open [https://TutorDeckNT.github.io/fitness-tracker/](https://TutorDeckNT.github.io/fitness-tracker/).
 2.  **Sign In:** Use the "Sign In with Google" button to create an account and start tracking.
 3.  **(Optional) Install the App:** Your browser may prompt you to "Install" the app or "Add to Home Screen." This will add a shortcut to your device for easy access.
 4.  **Create a Plan:**
@@ -50,7 +50,7 @@ Interested in contributing or running your own instance?
 
 1.  **Clone the repository:**
     ```sh
-    git clone https://github.com/manav0-0/fitness-tracker.git
+    git clone https://github.com/TutorDeckNT/fitness-tracker.git
     ```
 2.  **Set up Firebase:**
     *   Create a new project in the [Firebase Console](https://console.firebase.google.com/).
