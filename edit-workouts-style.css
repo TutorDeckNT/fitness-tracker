@@ -206,19 +206,22 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     fill: none;
 }
 
+/* MODIFICATION: Updated styles for the circular button and its SVG icon */
 .add-plan-circle-btn {
     width: 44px;
     height: 44px;
     padding: 0;
     border-radius: 50%;
     background-color: rgba(45, 45, 45, 0.9);
-    font-size: 1.8rem;
     margin-top: 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease-out;
+}
+
+.add-plan-circle-btn svg {
+    width: 28px;
+    height: 28px;
     color: var(--text-primary);
-    /* MODIFICATION: Remove line-height and add padding to visually center the '+'. */
-    padding-top: 2px; 
 }
 
 .add-plan-circle-btn:hover {
