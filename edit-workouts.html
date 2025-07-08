@@ -31,11 +31,6 @@
             <path fill-rule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875Zm5.845 17.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V12a.75.75 0 0 0-1.5 0v4.19l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3Z" clip-rule="evenodd" />
             <path d="M14.25 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25Z" />
         </symbol>
-        <symbol id="icon-plus-circle" viewBox="0 0 24 24" fill="none">
-            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 8V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 12H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </symbol>
         <symbol id="icon-edit-03" viewBox="0 0 24 24" fill="currentColor">
             <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
             <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
@@ -57,32 +52,6 @@
 
         <div id="app-content" style="display: none;">
             <div id="main-content-wrapper" style="display: none;">
-                <div id="ai-section" class="glass-card">
-                    <div id="ai-section-header">
-                        <h2>Transcribe Workout With AI</h2>
-                        <img src="images/Rosecurve.png" id="ai-section-icon" alt="AI Icon">
-                    </div>
-                    <div id="ai-section-content">
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.</p>
-                        <div class="editor-form-group">
-                            <label for="gemini-api-key">Google Gemini API Key (<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--system-blue);">Get one here</a>)</label>
-                            <input type="password" id="gemini-api-key" placeholder="Enter your API key">
-                        </div>
-                        <div class="editor-form-group">
-                            <label for="ai-plan-name">New Plan Name</label>
-                            <input type="text" id="ai-plan-name" placeholder="e.g., My Hypertrophy Push Day">
-                        </div>
-                        <div class="editor-form-group">
-                            <label for="ai-file-input">Workout File</label>
-                            <input type="file" id="ai-file-input" accept=".pdf,.txt,.csv,.md">
-                        </div>
-                        <button id="transcribe-btn" class="action-btn" style="width: 100%; background-color: var(--system-blue); color: var(--text-on-action);">
-                            <span class="btn-text">Transcribe</span>
-                            <div class="loader"></div>
-                        </button>
-                    </div>
-                </div>
-
                 <div id="schedule-section">
                     <h2>Weekly Schedule</h2>
                     <div id="schedule-list" class="glass-card" style="padding: 10px;"></div>
@@ -91,22 +60,16 @@
                 <div id="workouts-section" style="margin-top: 30px;">
                     <div class="page-header">
                         <h2>Workout Plans</h2>
-                        <div>
-                            <button id="import-workouts-btn" class="icon-btn" title="Import Plan">
-                                <svg><use xlink:href="#icon-file-import"></use></svg>
-                            </button>
-                            <button id="add-workout-btn" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action); margin-top: 0;">
-                                <svg><use xlink:href="#icon-plus-circle"></use></svg>
-                                <span>Workout</span>
-                            </button>
-                            <input type="file" id="import-file-input" accept=".json" style="display: none;">
-                        </div>
+                        <!-- MODIFICATION: Replaced old buttons with a single new one -->
+                        <button id="show-add-options-btn" class="action-btn btn-style-90 matt-black-bkg" title="Add Plan">
+                            <span class="btn-text">+</span>
+                        </button>
+                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
                     </div>
                     <div id="workouts-list"></div>
                 </div>
             </div>
             <div id="skeleton-loader">
-                <div class="skeleton sk-ai-card"></div>
                 <div class="skeleton-title skeleton"></div>
                 <div class="skeleton sk-schedule-card">
                     <div class="sk-schedule-item"><div class="skeleton sk-schedule-label"></div><div class="skeleton sk-schedule-select"></div></div>
@@ -117,8 +80,7 @@
                 <div class="sk-workouts-header">
                     <div class="skeleton-title skeleton"></div>
                     <div class="sk-workouts-buttons">
-                        <div class="skeleton sk-button-icon"></div>
-                        <div class="skeleton sk-button-main"></div>
+                        <div class="skeleton sk-button-main" style="width: 60px; border-radius: 25px;"></div>
                     </div>
                 </div>
                 <div class="skeleton sk-workout-item"></div>
@@ -129,6 +91,59 @@
             <h2>Please Sign In</h2>
             <p>You need to be signed in to manage your workout plan.</p>
             <a href="index.html" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">Go to Sign In Page</a>
+        </div>
+    </div>
+
+    <!-- MODIFICATION: New modal for Add/Import/AI options -->
+    <div class="modal-overlay" id="add-options-overlay">
+        <div class="overlay-content glass-card" id="add-options-panel">
+            <div class="overlay-header">
+                <h2>Add a New Plan</h2>
+                <button class="icon-btn" id="close-add-options-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+            </div>
+            <div class="overlay-body" id="add-options-list">
+                <button id="add-manual-btn" class="menu-style-btn">
+                    <svg><use xlink:href="#icon-edit-03"></use></svg>
+                    <span>Add Manually</span>
+                </button>
+                <button id="import-from-file-btn" class="menu-style-btn">
+                    <svg><use xlink:href="#icon-file-import"></use></svg>
+                    <span>Import from File</span>
+                </button>
+                <button id="open-ai-transcribe-btn" class="menu-style-btn">
+                    <img src="images/Rosecurve.png" alt="AI Icon">
+                    <span>Transcribe with AI</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODIFICATION: New modal for AI Transcription UI -->
+    <div class="modal-overlay" id="ai-transcribe-overlay">
+        <div class="overlay-content glass-card" id="ai-transcribe-panel">
+            <div class="overlay-header">
+                <h2>Transcribe with AI</h2>
+                <button class="icon-btn" id="close-ai-transcribe-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+            </div>
+            <div class="overlay-body">
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0;">Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.</p>
+                <div class="editor-form-group">
+                    <label for="gemini-api-key">Google Gemini API Key (<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--system-blue);">Get one here</a>)</label>
+                    <input type="password" id="gemini-api-key" placeholder="Enter your API key">
+                </div>
+                <div class="editor-form-group">
+                    <label for="ai-plan-name">New Plan Name</label>
+                    <input type="text" id="ai-plan-name" placeholder="e.g., My Hypertrophy Push Day">
+                </div>
+                <div class="editor-form-group">
+                    <label for="ai-file-input">Workout File</label>
+                    <input type="file" id="ai-file-input" accept=".pdf,.txt,.csv,.md">
+                </div>
+                <button id="transcribe-btn" class="action-btn" style="width: 100%; background-color: var(--system-blue); color: var(--text-on-action);">
+                    <span class="btn-text">Transcribe</span>
+                    <div class="loader"></div>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -178,6 +193,10 @@
 
     const mainContentWrapper = document.getElementById('main-content-wrapper');
     const skeletonLoader = document.getElementById('skeleton-loader');
+
+    // MODIFICATION: Get new modal elements
+    const addOptionsOverlay = document.getElementById('add-options-overlay');
+    const aiTranscribeOverlay = document.getElementById('ai-transcribe-overlay');
 
     function showToast(message, type = 'info', duration = 3000) {
         const container = document.getElementById('toast-container');
@@ -246,7 +265,7 @@
         workoutsList.innerHTML = '';
 
         if (Object.keys(workouts).length === 0) {
-            workoutsList.innerHTML = `<div class="glass-card" style="padding: 30px; text-align: center; margin-top: 10px;"><p style="margin: 0; color: var(--text-secondary); line-height: 1.5;">You don't have any plans yet. <br> Click 'Add Workout' or use the AI Transcriber to create your first one!</p></div>`;
+            workoutsList.innerHTML = `<div class="glass-card" style="padding: 30px; text-align: center; margin-top: 10px;"><p style="margin: 0; color: var(--text-secondary); line-height: 1.5;">You don't have any plans yet. <br> Click the '+' button to create your first one!</p></div>`;
             return;
         }
 
@@ -265,7 +284,6 @@
         workoutsList.addEventListener('click', (e) => {
             const optionsBtn = e.target.closest('.options-menu-btn');
             if (optionsBtn) {
-                // Close other menus before opening a new one
                 const otherMenu = document.querySelector('.options-menu-popup');
                 if(otherMenu && otherMenu.parentElement !== optionsBtn.parentElement) {
                     closeOptionsMenu();
@@ -286,13 +304,12 @@
         const workoutName = button.dataset.name;
         const actionContainer = button.parentElement;
 
-        // If a menu is already open in this container, close it and stop.
         if (actionContainer.querySelector('.options-menu-popup')) {
             closeOptionsMenu();
             return;
         }
         
-        closeOptionsMenu(); // Close any other menus on the page
+        closeOptionsMenu();
 
         const menu = document.createElement('div');
         menu.className = 'options-menu-popup glass-card';
@@ -311,7 +328,6 @@
             </button>
         `;
 
-        // MODIFICATION: Append to the button's parent and let CSS handle positioning
         actionContainer.appendChild(menu);
 
         menu.addEventListener('click', (e) => {
@@ -336,7 +352,8 @@
         }
     });
 
-    document.getElementById('add-workout-btn').addEventListener('click', async () => {
+    // MODIFICATION: Logic from old "Add Workout" button
+    async function addWorkoutManually() {
         const name = prompt("Enter a name for the new workout plan:");
         if (name && !workouts[name]) {
             workouts[name] = [{ name: "", warmupSets: "", workingSets: "", reps: "", rest: "", earlySetRPE: "", lastSetRPE: "" }];
@@ -346,7 +363,7 @@
         } else if (name) {
             showToast("A workout with this name already exists.", 'error');
         }
-    });
+    }
 
     async function deleteWorkout(name) {
         if (confirm(`Are you sure you want to delete the workout plan "${name}"?`)) {
@@ -419,7 +436,6 @@
     });
 
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
-    document.getElementById('ai-section-header').addEventListener('click', () => document.getElementById('ai-section').classList.toggle('expanded'));
     
     document.getElementById('transcribe-btn').addEventListener('click', async () => {
         const apiKey = document.getElementById('gemini-api-key').value;
@@ -488,6 +504,7 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                 renderAll();
                 showToast(`Successfully added "${planName}"!`, 'success');
                 document.getElementById('ai-plan-name').value = "";
+                aiTranscribeOverlay.classList.remove('active'); // Close modal on success
 
             } catch (error) {
                 showToast(`Error: ${error.message}`, 'error');
@@ -544,16 +561,40 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
         reader.readAsText(file);
     }
 
-    document.getElementById('import-workouts-btn').addEventListener('click', () => {
+    // MODIFICATION: Event listeners for the new modal flow
+    document.getElementById('show-add-options-btn').addEventListener('click', () => {
+        addOptionsOverlay.classList.add('active');
+    });
+
+    document.getElementById('close-add-options-btn').addEventListener('click', () => {
+        addOptionsOverlay.classList.remove('active');
+    });
+
+    document.getElementById('add-manual-btn').addEventListener('click', () => {
+        addOptionsOverlay.classList.remove('active');
+        addWorkoutManually();
+    });
+
+    document.getElementById('import-from-file-btn').addEventListener('click', () => {
+        addOptionsOverlay.classList.remove('active');
         document.getElementById('import-file-input').click();
     });
+
+    document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => {
+        addOptionsOverlay.classList.remove('active');
+        aiTranscribeOverlay.classList.add('active');
+    });
+
+    document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => {
+        aiTranscribeOverlay.classList.remove('active');
+    });
+
     document.getElementById('import-file-input').addEventListener('change', handleWorkoutImport);
 
     async function initPageForUser() {
         await fetchData();
         renderAll();
 
-        // All data is loaded and rendered, now switch visibility
         if (skeletonLoader && mainContentWrapper) {
             skeletonLoader.style.display = 'none';
             mainContentWrapper.style.display = 'block';
@@ -572,7 +613,6 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
             signInPrompt.style.display = 'none';
             userInfoDiv.style.display = 'flex';
 
-            // Ensure skeleton is visible and content is hidden before starting
             if (skeletonLoader && mainContentWrapper) {
                 skeletonLoader.style.display = 'block';
                 mainContentWrapper.style.display = 'none';
@@ -585,7 +625,6 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
             signInPrompt.style.display = 'block';
             userInfoDiv.style.display = 'none';
 
-            // Reset for next sign-in
             if (skeletonLoader && mainContentWrapper) {
                 skeletonLoader.style.display = 'block';
                 mainContentWrapper.style.display = 'none';
