@@ -1,0 +1,21 @@
+{
+  "name": "Fitness Tracker PWA",
+  "short_name": "FitTrack",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#0a2a4e",
+  "description": "A simple, offline-first fitness tracker to log your workouts and track your progress.",
+  "icons": [
+    {
+      "src": "images/eagle.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/eagle.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

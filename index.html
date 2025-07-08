@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fitness Tracker">
+    <title>Fitness Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a2a4e">
+    <link rel="icon" href="images/eagle.png" type="image/png">
+    <link rel="apple-touch-icon" href="images/eagle.png">
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <svg style="display: none;">
+        <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></symbol>
+        <symbol id="icon-close" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></symbol>
+        <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" />
+        </symbol>
+        <symbol id="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
+        <symbol id="icon-skip" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></symbol>
+        <symbol id="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
+        <symbol id="icon-minimize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></symbol>
+        <symbol id="icon-minus" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13H5v-2h14v2z"/></symbol>
+    </svg>
+
+    <div class="container">
+        <header>
+            <div class="title-container">
+                <h1>Fitness Tracker</h1>
+            </div>
+            <div id="auth-container" style="margin-top: 20px;">
+                <button id="sign-in-btn" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">Sign In with Google</button>
+                <div id="user-info" style="display: none; align-items: center; justify-content: center; gap: 15px;">
+                    <img id="user-photo" style="width: 40px; height: 40px; border-radius: 50%;">
+                    <span id="user-name"></span>
+                    <button id="sign-out-btn" class="action-btn destructive-btn" style="width: auto; padding: 10px 15px;">Sign Out</button>
+                </div>
+            </div>
+        </header>
+        
+        <div id="app-content" style="display: none;">
+            <div id="main-content-wrapper" style="display: none;">
+                <div class="ongoing-workout-banner glass-card" id="ongoing-workout-banner">
+                    <span>Ongoing Workout: <strong id="ongoing-workout-name"></strong></span>
+                    <button id="resume-workout-btn" class="action-btn" style="width: auto; padding: 8px 16px; margin-top: 0; background-color: var(--system-blue); color: var(--text-on-action);">Resume</button>
+                </div>
+
+                <div id="todays-workout-area"></div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h2>All Workouts</h2>
+                    <!-- MODIFICATION: Updated button style -->
+                    <a href="edit-workouts.html" id="edit-workouts-link" class="action-btn btn-style-90 matt-black-bkg" style="width: auto; padding: 8px 16px;"><span class="btn-text">Manage Plan</span></a>
+                </div>
+                <button id="workout-select-btn" class="glass-card">
+                    <span id="workout-select-text">Select a Specific Workout</span>
+                    <svg class="chevron"><use xlink:href="#icon-chevron-down"></use></svg>
+                </button>
+                
+                <div id="history-area" style="margin-top: 30px;">
+                    <div class="section-header">
+                        <h2>Progress Analytics</h2>
+                    </div>
+                    <a href="progress-analytics.html" class="analytics-link-card glass-card">
+                        <div class="analytics-link-content">
+                            <div class="analytics-link-header">
+                                <svg class="analytics-icon"><use xlink:href="#icon-calendar"></use></svg>
+                                <h3>View Your Progress</h3>
+                            </div>
+                            <p>Track your PRs, workout volume, and history.</p>
+                            <div class="analytics-stats-preview loading-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value" id="stats-total-workouts">--</span>
+                                    <span class="stat-label">Workouts</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value" id="stats-last-workout">--</span>
+                                    <span class="stat-label">Last Session</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="analytics-link-arrow">
+                            <span>→</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div id="skeleton-loader">
+                <div class="skeleton skeleton-card sk-today-workout"></div>
+                <div class="skeleton-header">
+                    <div class="skeleton sk-header-title"></div>
+                    <div class="skeleton sk-header-button"></div>
+                </div>
+                <div class="skeleton skeleton-card sk-select-button"></div>
+                <div class="skeleton sk-analytics-title"></div>
+                <div class="skeleton skeleton-card sk-analytics-card"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dropdown-overlay" id="workout-picker-overlay">
+        <div class="glass-card picker-list" id="workout-picker-list"></div>
+    </div>
+
+    <!-- Fullscreen Timer -->
+    <div class="modal-overlay" id="timer-overlay">
+        <div class="overlay-content glass-card">
+            <div class="overlay-header">
+                <h2>Rest Timer</h2>
+                <button class="icon-btn" id="timer-minimize-btn"><svg><use xlink:href="#icon-minimize"></use></svg></button>
+            </div>
+            <div class="overlay-body">
+                <h1 id="timer-display">0:00</h1>
+                <div class="timer-controls">
+                    <button class="timer-btn" id="timer-subtract-15s"><svg><use xlink:href="#icon-minus"></use></svg><span>15s</span></button>
+                    <button class="timer-btn" id="timer-add-15s"><svg><use xlink:href="#icon-plus"></use></svg><span>15s</span></button>
+                </div>
+                <button class="action-btn" id="timer-dismiss-btn" style="background-color: var(--system-red); color: var(--text-on-action);">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Workout Session Overlay -->
+    <div class="modal-overlay" id="workout-session-overlay">
+        <div class="overlay-content" id="workout-session-panel">
+            <div class="overlay-header" id="workout-session-header">
+                <button class="icon-btn" id="minimize-workout-btn" title="Pause and Minimize">
+                    <svg><use xlink:href="#icon-chevron-down"></use></svg>
+                </button>
+                <h2 id="workout-session-title"></h2>
+                <button class="icon-btn" id="cancel-workout-btn" title="Cancel Workout">
+                    <svg><use xlink:href="#icon-close"></use></svg>
+                </button>
+            </div>
+            <div class="overlay-body" id="workout-session-body"></div>
+            <div class="overlay-footer" id="workout-session-footer"></div>
+        </div>
+    </div>
+
+    <!-- Guided Welcome Modal -->
+    <div class="modal-overlay" id="welcome-guide-overlay">
+        <div class="overlay-content glass-card" style="text-align: left;">
+            <div class="overlay-header">
+                <h2>Welcome to Your Fitness Tracker!</h2>
+            </div>
+            <div class="overlay-body">
+                <p>Let's get you set up. Here’s how it works:</p>
+                <ol style="padding-left: 25px; line-height: 1.6;">
+                    <li><strong>Create a Plan:</strong> First, you'll need to create a workout plan. This is where you define your exercises, sets, reps, and rest times.</li>
+                    <li><strong>Start a Workout:</strong> Once you have a plan, you can start a workout from the main screen.</li>
+                    <li><strong>Log Your Sets:</strong> As you work out, enter your weight and reps. Tap the checkmark to log the set and start your rest timer.</li>
+                    <li><strong>Track Progress:</strong> All your completed workouts are saved. Visit the "Progress Analytics" section to see your history and personal records.</li>
+                </ol>
+                <p>Ready to build your first plan?</p>
+            </div>
+            <div class="overlay-footer" style="display: flex; justify-content: space-between;">
+                 <button id="welcome-dismiss-btn" class="action-btn" style="background-color: rgba(255,255,255,0.1);">Dismiss</button>
+                 <a href="edit-workouts.html" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">Create a Plan</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workout Complete Modal -->
+    <div class="modal-overlay" id="workout-complete-overlay">
+        <div class="overlay-content glass-card" style="text-align: center;">
+            <div class="overlay-body">
+                <div id="completion-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#30D158"/>
+                    </svg>
+                </div>
+                <h2 style="margin-top: 0;">Workout Complete!</h2>
+                <p id="completion-summary" style="color: var(--text-secondary); line-height: 1.5;">Great job! Your session has been saved to your history.</p>
+                <button id="completion-done-btn" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action); margin-top: 20px;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initial Timer Start Bar -->
+    <div class="timer-bar" id="timer-bar">
+        <div class="timer-bar-content glass-card" style="background-color: var(--system-blue);">
+            <button id="start-rest-btn" class="icon-btn"><svg><use xlink:href="#icon-play"></use></svg></button>
+            <span id="timer-bar-time">0:00</span>
+            <button id="skip-rest-btn" class="icon-btn"><svg><use xlink:href="#icon-skip"></use></svg></button>
+        </div>
+    </div>
+
+    <!-- Minimized Timer Widget -->
+    <div class="timer-widget" id="minimized-timer-widget">
+        <div class="timer-widget-content glass-card">
+            <span id="minimized-timer-time">0:00</span>
+            <button id="timer-expand-btn" class="icon-btn"><svg><use xlink:href="#icon-expand"></use></svg></button>
+        </div>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDe-YVkiX81ISLhVfRdC0srkkHi2JQQeSs",
+      authDomain: "my-fitness-tracker-797e5.firebaseapp.com",
+      projectId: "my-fitness-tracker-797e5",
+      storageBucket: "my-fitness-tracker-797e5.firebasestorage.app",
+      messagingSenderId: "651004817600",
+      appId: "1:651004817600:web:3a277ea0126dfe0388bd25"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentUser = null;
+    let userHistory = [];
+    let workouts = {};
+    let schedule = {};
+    let currentWorkoutName = null;
+
+    const timerBar = document.getElementById('timer-bar');
+    const timerBarTime = document.getElementById('timer-bar-time');
+    const timerOverlay = document.getElementById('timer-overlay');
+    const timerDisplay = document.getElementById('timer-display');
+    const minimizedTimerWidget = document.getElementById('minimized-timer-widget');
+    const minimizedTimerTime = document.getElementById('minimized-timer-time');
+
+    const workoutSessionOverlay = document.getElementById('workout-session-overlay');
+    const workoutSessionTitle = document.getElementById('workout-session-title');
+    const workoutSessionBody = document.getElementById('workout-session-body');
+    const workoutSessionFooter = document.getElementById('workout-session-footer');
+    const minimizeWorkoutBtn = document.getElementById('minimize-workout-btn');
+    const cancelWorkoutBtn = document.getElementById('cancel-workout-btn');
+    const ongoingWorkoutBanner = document.getElementById('ongoing-workout-banner');
+    const ongoingWorkoutNameEl = document.getElementById('ongoing-workout-name');
+    const resumeWorkoutBtn = document.getElementById('resume-workout-btn');
+
+    let restTimeToStart = 0;
+    let timerInitiatorButton = null;
+    let isTimerActive = false;
+    let remainingSeconds = 0; 
+    let localTimerInterval = null;
+
+    function showToast(message, type = 'info', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('exiting');
+            toast.addEventListener('animationend', () => toast.remove());
+        }, duration);
+    }
+
+    function toggleButtonLoading(btn, isLoading) {
+        btn.classList.toggle('loading', isLoading);
+        btn.disabled = isLoading;
+    }
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function parseRestTime(restString) {
+        if (!restString || typeof restString !== 'string') return 90;
+        const timeValue = parseInt(restString, 10);
+        return isNaN(timeValue) ? 90 : (restString.includes('min') ? timeValue * 60 : timeValue);
+    }
+
+    function showTimerBar(restSeconds, button) {
+        restTimeToStart = restSeconds;
+        timerInitiatorButton = button;
+        timerBarTime.textContent = formatTime(restSeconds);
+        timerBar.classList.add('active');
+    }
+
+    function updateAllTimerDisplays(timeInSeconds) {
+        const formattedTime = formatTime(timeInSeconds);
+        timerDisplay.textContent = formattedTime;
+        minimizedTimerTime.textContent = formattedTime;
+    }
+
+    async function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            return 'denied';
+        }
+        if (Notification.permission === 'granted') {
+            return 'granted';
+        }
+        if (Notification.permission !== 'denied') {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                showToast('Notifications enabled!', 'success');
+            }
+            return permission;
+        }
+        return 'denied';
+    }
+
+    function startLocalTimer() {
+        isTimerActive = true;
+        remainingSeconds = restTimeToStart;
+
+        updateAllTimerDisplays(remainingSeconds);
+        timerBar.classList.remove('active');
+        minimizedTimerWidget.classList.add('active');
+
+        localTimerInterval = setInterval(() => {
+            remainingSeconds--;
+            updateAllTimerDisplays(remainingSeconds);
+
+            if (remainingSeconds <= 0) {
+                clearInterval(localTimerInterval);
+                isTimerActive = false;
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]);
+                }
+                showToast("Rest Over!", "success");
+                setTimeout(dismissTimer, 1500);
+            }
+        }, 1000);
+    }
+
+    async function startTimer() {
+        if (restTimeToStart <= 0) return;
+
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            const permission = await requestNotificationPermission();
+            if (permission === 'granted') {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    registration.active.postMessage({
+                        command: 'START_TIMER',
+                        duration: restTimeToStart
+                    });
+                    isTimerActive = true;
+                    remainingSeconds = restTimeToStart;
+                    timerBar.classList.remove('active');
+                    minimizedTimerWidget.classList.add('active');
+                    updateAllTimerDisplays(restTimeToStart);
+                    return; 
+                } catch (error) {
+                    console.error('Service Worker Error:', error);
+                }
+            }
+        }
+        
+        startLocalTimer();
+    }
+
+    function dismissTimer() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                if (registration.active) {
+                    registration.active.postMessage({ command: 'STOP_TIMER' });
+                }
+            }).catch(error => console.error('Service Worker Error on dismiss:', error));
+        }
+        
+        if (localTimerInterval) {
+            clearInterval(localTimerInterval);
+            localTimerInterval = null;
+        }
+
+        isTimerActive = false;
+        timerOverlay.classList.remove('active');
+        minimizedTimerWidget.classList.remove('active');
+        if (timerInitiatorButton) {
+            timerInitiatorButton.classList.remove('completed');
+        }
+    }
+
+    function adjustTimer(seconds) {
+        if (!isTimerActive) return;
+
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.active.postMessage({
+                    command: 'ADJUST_TIMER',
+                    seconds: seconds
+                });
+            });
+        }
+
+        const newTime = remainingSeconds + seconds;
+        remainingSeconds = Math.max(0, newTime);
+        updateAllTimerDisplays(remainingSeconds);
+    }
+
+    function maximizeTimer() {
+        minimizedTimerWidget.classList.remove('active');
+        timerOverlay.classList.add('active');
+    }
+
+    function minimizeTimer() {
+        timerOverlay.classList.remove('active');
+        minimizedTimerWidget.classList.add('active');
+    }
+
+    function findLastExercisePerformance(exerciseName, history) {
+        if (!exerciseName) return null;
+        const normalizedExerciseName = exerciseName.trim().toLowerCase();
+        for (const workout of history) {
+            const foundExercise = workout.exercises?.find(ex => 
+                ex.name && ex.name.trim().toLowerCase() === normalizedExerciseName
+            );
+            if (foundExercise) return foundExercise;
+        }
+        return null;
+    }
+
+    function getWarmupSetDetails(numSets, setIndex) {
+        const protocols = {
+            1: ["~60% weight for ~6-10 reps"],
+            2: ["~50% weight for ~6-10 reps", "~70% weight for 4-6 reps"],
+            3: ["~45% weight for ~6-10 reps", "~65% weight for 4-6 reps", "~85% weight for 3-4 reps"],
+            4: ["~45% weight for ~6-10 reps", "~60% weight for 4-6 reps", "~75% weight for 3-5 reps", "~85% weight for 2-4 reps"]
+        };
+        return (protocols[numSets] && protocols[numSets][setIndex]) || "Warm-up";
+    }
+
+    function displayWorkoutTemplate(workoutName, savedState = null) {
+        if (!workoutName || !workouts[workoutName]) {
+            showToast(`Workout "${workoutName}" not found.`, 'error');
+            return;
+        }
+        currentWorkoutName = workoutName;
+        const workout = workouts[workoutName];
+        document.getElementById('workout-select-text').textContent = workoutName;
+        
+        workoutSessionBody.innerHTML = '';
+        workoutSessionFooter.innerHTML = '';
+        
+        workoutSessionTitle.textContent = workoutName;
+
+        const exercisesHTML = workout.map((exercise, exIndex) => {
+            const lastPerformance = findLastExercisePerformance(exercise.name, userHistory);
+            const restInSeconds = parseRestTime(exercise.rest);
+            return `<div class="exercise glass-card" id="exercise-${exIndex}" data-rest="${restInSeconds}">
+                <div class="exercise-header">
+                    <div class="exercise-name">${exercise.name}</div>
+                    <div class="exercise-rest-tag">${exercise.rest}</div>
+                </div>
+                <div class="sets-container">
+                    ${Array.from({ length: exercise.warmupSets }, (_, i) => `<div class="set warmup-set"><div class="set-number">W</div><div class="set-details">${getWarmupSetDetails(exercise.warmupSets, i)}</div></div>`).join('')}
+                    ${Array.from({ length: exercise.workingSets }, (_, i) => {
+                        const isLastSet = i === exercise.workingSets - 1;
+                        const rpe = isLastSet ? exercise.lastSetRPE : exercise.earlySetRPE;
+                        let prevPerformanceText = "";
+                        const prevSet = lastPerformance?.sets?.[i];
+                        if (prevSet) {
+                            const repsText = prevSet.reps || "Unknown";
+                            prevPerformanceText = ` | Last: ${prevSet.weight}lbs for ${repsText} reps`;
+                        }
+                        return `<div class="set" id="set-${exIndex}-${i}">
+                            <div class="set-number">${i + 1}</div>
+                            <input type="number" placeholder="lbs" inputmode="decimal">
+                            <input type="number" placeholder="${exercise.reps}" inputmode="numeric">
+                            <button class="set-complete-btn"></button>
+                            <div class="set-details">RPE ${rpe}${prevPerformanceText}</div>
+                         </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+        }).join('');
+        workoutSessionBody.innerHTML = exercisesHTML;
+
+        if (savedState) {
+            const exerciseElements = document.querySelectorAll('#workout-session-body .exercise');
+            exerciseElements.forEach((exEl, exIndex) => {
+                const savedExercise = savedState.exercises[exIndex];
+                if (savedExercise) {
+                    const setElements = exEl.querySelectorAll('.set:not(.warmup-set)');
+                    setElements.forEach((setEl, setIndex) => {
+                        const savedSet = savedExercise.sets[setIndex];
+                        if (savedSet) {
+                            setEl.querySelectorAll('input')[0].value = savedSet.weight || '';
+                            setEl.querySelectorAll('input')[1].value = savedSet.reps || '';
+                            if (savedSet.completed) {
+                                setEl.querySelector('.set-complete-btn').classList.add('completed');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        const finishBtn = document.createElement('button');
+        finishBtn.id = 'finish-workout-btn';
+        finishBtn.className = 'action-btn btn-style-90';
+        finishBtn.style.backgroundColor = 'var(--system-blue-muted)';
+        finishBtn.style.color = 'var(--text-on-action)';
+        finishBtn.style.width = '100%';
+        finishBtn.style.marginTop = '20px';
+        finishBtn.innerHTML = `<span class="btn-text">Finish Workout</span><div class="loader"></div>`;
+        workoutSessionBody.appendChild(finishBtn);
+
+        finishBtn.addEventListener('click', finishWorkout);
+        document.querySelectorAll('.set-complete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const button = e.currentTarget;
+                button.classList.toggle('completed');
+                if (button.classList.contains('completed')) {
+                    const restSeconds = parseInt(button.closest('.exercise').dataset.rest, 10);
+                    showTimerBar(restSeconds, button);
+                } else {
+                    dismissTimer();
+                }
+            });
+        });
+
+        workoutSessionOverlay.classList.add('active');
+        ongoingWorkoutBanner.classList.remove('active');
+    }
+
+    function cancelWorkout() {
+        if (confirm("Are you sure you want to cancel this workout? All progress will be lost.")) {
+            localStorage.removeItem('ongoingWorkout');
+            workoutSessionOverlay.classList.remove('active');
+            ongoingWorkoutBanner.classList.remove('active');
+            workoutSessionBody.innerHTML = '';
+            workoutSessionFooter.innerHTML = '';
+            currentWorkoutName = null;
+            document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
+            timerBar.classList.remove('active');
+            dismissTimer();
+            showToast('Workout cancelled.');
+        }
+    }
+
+    async function finishWorkout() {
+        if (confirm("Are you sure you want to finish this workout? This action cannot be undone.")) {
+            if (!currentWorkoutName || !currentUser) return;
+            const btn = document.getElementById('finish-workout-btn');
+            toggleButtonLoading(btn, true);
+            const workoutData = {
+                name: currentWorkoutName,
+                date: new Date().toISOString(),
+                exercises: Array.from(document.querySelectorAll('#workout-session-body .exercise')).map(exEl => ({
+                    name: exEl.querySelector('.exercise-name').textContent,
+                    sets: Array.from(exEl.querySelectorAll('.set:not(.warmup-set)'))
+                        .map(setEl => ({
+                            weight: setEl.querySelectorAll('input')[0].value,
+                            reps: setEl.querySelectorAll('input')[1].value || 'Unknown'
+                        }))
+                        .filter(set => set.weight)
+                })).filter(ex => ex.sets.length > 0)
+            };
+
+            await saveWorkoutToHistory(workoutData);
+            localStorage.removeItem('ongoingWorkout');
+            
+            const totalSets = workoutData.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
+            const totalVolume = workoutData.exercises.reduce((acc, ex) => {
+                return acc + ex.sets.reduce((vol, set) => {
+                    const reps = set.reps === 'Unknown' ? 0 : (parseInt(set.reps, 10) || 0);
+                    return vol + (parseFloat(set.weight) || 0) * reps;
+                }, 0);
+            }, 0);
+            
+            const summaryEl = document.getElementById('completion-summary');
+            summaryEl.innerHTML = `Great job! You completed <strong>${totalSets}</strong> sets with a total volume of <strong>${totalVolume.toLocaleString()} lbs</strong>. Your session has been saved.`;
+            document.getElementById('workout-complete-overlay').classList.add('active');
+
+            workoutSessionOverlay.classList.remove('active');
+            ongoingWorkoutBanner.classList.remove('active');
+            currentWorkoutName = null;
+            document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
+            timerBar.classList.remove('active');
+            dismissTimer();
+        }
+    }
+
+    function saveOngoingWorkoutState() {
+        if (!currentWorkoutName) return;
+
+        const workoutState = {
+            name: currentWorkoutName,
+            exercises: Array.from(document.querySelectorAll('#workout-session-body .exercise')).map(exEl => ({
+                sets: Array.from(exEl.querySelectorAll('.set:not(.warmup-set)')).map(setEl => {
+                    const inputs = setEl.querySelectorAll('input');
+                    const completeBtn = setEl.querySelector('.set-complete-btn');
+                    return {
+                        weight: inputs[0].value,
+                        reps: inputs[1].value,
+                        completed: completeBtn ? completeBtn.classList.contains('completed') : false
+                    };
+                })
+            }))
+        };
+        localStorage.setItem('ongoingWorkout', JSON.stringify(workoutState));
+        showToast('Workout progress saved!', 'info');
+    }
+
+    function minimizeWorkout() {
+        if (!currentWorkoutName) return;
+        saveOngoingWorkoutState();
+        workoutSessionOverlay.classList.remove('active');
+        ongoingWorkoutNameEl.textContent = currentWorkoutName;
+        ongoingWorkoutBanner.classList.add('active');
+    }
+
+    function resumeWorkout() {
+        const savedStateJSON = localStorage.getItem('ongoingWorkout');
+        if (!savedStateJSON) {
+            showToast("Could not find saved workout data.", "error");
+            ongoingWorkoutBanner.classList.remove('active');
+            return;
+        }
+        const savedState = JSON.parse(savedStateJSON);
+        displayWorkoutTemplate(savedState.name, savedState);
+    }
+
+    async function saveWorkoutToHistory(workoutData) {
+        if (!currentUser) return;
+        try {
+            await db.collection('users').doc(currentUser.uid).collection('history').add(workoutData);
+            showToast('Workout saved successfully!', 'success');
+        } catch (error) {
+            showToast('Error saving workout.', 'error');
+        }
+    }
+
+    function setupTodaysWorkout() {
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayKey = dayNames[new Date().getDay()].toLowerCase();
+        const workoutName = schedule[dayKey] || "Rest Day";
+        const container = document.getElementById('todays-workout-area');
+        container.innerHTML = `<h2>Today's Workout</h2>`;
+        if (workoutName === "Rest Day") {
+            container.innerHTML += `<div id="todays-workout-card" class="glass-card rest-day">
+                <div class="day-of-week">${dayNames[new Date().getDay()]}</div>
+                <div class="workout-name">Rest Day</div>
+            </div>`;
+        } else {
+            container.innerHTML += `<button id="todays-workout-card" class="glass-card" onclick="displayWorkoutTemplate('${workoutName}')">
+                <div class="day-of-week">${dayNames[new Date().getDay()]}</div>
+                <div class="workout-name">${workoutName}</div>
+            </button>`;
+        }
+    }
+
+    function toggleDropdown(buttonEl, overlayEl) {
+        const isActive = overlayEl.classList.contains('active');
+        document.querySelectorAll('.dropdown-overlay.active').forEach(d => d.classList.remove('active'));
+        if (isActive) return;
+        const rect = buttonEl.getBoundingClientRect();
+        overlayEl.style.left = `${rect.left}px`;
+        overlayEl.style.top = `${rect.bottom + 5}px`;
+        overlayEl.style.width = `${rect.width}px`;
+        overlayEl.classList.add('active');
+    }
+
+    async function getFullHistory() {
+        if (!currentUser) return;
+        try {
+            const snapshot = await db.collection('users').doc(currentUser.uid).collection('history').orderBy('date', 'desc').limit(50).get();
+            userHistory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } catch (error) {
+            console.error("Error getting full history:", error);
+        }
+    }
+
+    function updateAnalyticsCard() {
+        const totalWorkoutsEl = document.getElementById('stats-total-workouts');
+        const lastWorkoutEl = document.getElementById('stats-last-workout');
+        const statsPreviewEl = document.querySelector('.analytics-stats-preview');
+
+        if (userHistory.length > 0) {
+            totalWorkoutsEl.textContent = userHistory.length;
+            const lastWorkout = userHistory[0];
+            const lastDate = new Date(lastWorkout.date);
+            lastWorkoutEl.textContent = lastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        } else {
+            totalWorkoutsEl.textContent = '0';
+            lastWorkoutEl.textContent = 'N/A';
+        }
+        
+        statsPreviewEl.classList.remove('loading-stats');
+    }
+
+    const mainContentWrapper = document.getElementById('main-content-wrapper');
+    const skeletonLoader = document.getElementById('skeleton-loader');
+
+    async function initAppForUser() {
+        if (!currentUser) return;
+
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        const userData = userDoc.data() || {};
+        workouts = userData.workouts || {};
+        schedule = userData.schedule || {};
+        
+        const savedStateJSON = localStorage.getItem('ongoingWorkout');
+        if (savedStateJSON) {
+            const savedState = JSON.parse(savedStateJSON);
+            currentWorkoutName = savedState.name;
+            ongoingWorkoutNameEl.textContent = currentWorkoutName;
+            ongoingWorkoutBanner.classList.add('active');
+        } else if (Object.keys(workouts).length === 0 && Object.keys(schedule).length === 0) {
+            document.getElementById('welcome-guide-overlay').classList.add('active');
+        }
+
+        await getFullHistory();
+        setupTodaysWorkout();
+        updateAnalyticsCard();
+        const pickerList = document.getElementById('workout-picker-list');
+        const pickerOverlay = document.getElementById('workout-picker-overlay');
+        pickerList.innerHTML = '';
+        Object.keys(workouts).forEach(workoutName => {
+            const btn = document.createElement('button');
+            btn.textContent = workoutName;
+            btn.onclick = () => {
+                displayWorkoutTemplate(workoutName);
+                pickerOverlay.classList.remove('active');
+            };
+            pickerList.appendChild(btn);
+        });
+
+        if (skeletonLoader && mainContentWrapper) {
+            skeletonLoader.style.display = 'none';
+            mainContentWrapper.style.display = 'block';
+            mainContentWrapper.style.animation = 'fade-in 0.5s ease-out';
+        }
+    }
+
+    const signInBtn = document.getElementById('sign-in-btn');
+    const signOutBtn = document.getElementById('sign-out-btn');
+    const userInfoDiv = document.getElementById('user-info');
+    const appContentDiv = document.getElementById('app-content');
+    const provider = new firebase.auth.GoogleAuthProvider();
+    signInBtn.onclick = () => auth.signInWithPopup(provider);
+    signOutBtn.onclick = () => auth.signOut();
+
+    auth.onAuthStateChanged(user => {
+        currentUser = user;
+        if (user) {
+            document.getElementById('user-name').textContent = user.displayName;
+            document.getElementById('user-photo').src = user.photoURL;
+            userInfoDiv.style.display = 'flex';
+            signInBtn.style.display = 'none';
+            appContentDiv.style.display = 'block';
+            
+            if (skeletonLoader && mainContentWrapper) {
+                skeletonLoader.style.display = 'block';
+                mainContentWrapper.style.display = 'none';
+            }
+
+            initAppForUser();
+        } else {
+            userHistory = []; workouts = {}; schedule = {};
+            userInfoDiv.style.display = 'none';
+            signInBtn.style.display = 'block';
+            appContentDiv.style.display = 'none';
+
+            if (skeletonLoader && mainContentWrapper) {
+                skeletonLoader.style.display = 'block';
+                mainContentWrapper.style.display = 'none';
+            }
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (currentWorkoutName && workoutSessionOverlay.classList.contains('active')) {
+            saveOngoingWorkoutState();
+        }
+    });
+
+    document.getElementById('workout-select-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropdown(e.currentTarget, document.getElementById('workout-picker-overlay'));
+    });
+    document.addEventListener('click', () => {
+        const activeDropdown = document.querySelector('.dropdown-overlay.active');
+        if (activeDropdown) activeDropdown.classList.remove('active');
+    });
+
+    document.getElementById('welcome-dismiss-btn').addEventListener('click', () => {
+        document.getElementById('welcome-guide-overlay').classList.remove('active');
+    });
+    document.getElementById('completion-done-btn').addEventListener('click', () => {
+        document.getElementById('workout-complete-overlay').classList.remove('active');
+    });
+
+    document.getElementById('start-rest-btn').addEventListener('click', startTimer);
+
+    document.getElementById('timer-dismiss-btn').addEventListener('click', dismissTimer);
+    document.getElementById('timer-add-15s').addEventListener('click', () => adjustTimer(15));
+    document.getElementById('timer-subtract-15s').addEventListener('click', () => adjustTimer(-15));
+    document.getElementById('timer-expand-btn').addEventListener('click', maximizeTimer);
+    document.getElementById('timer-minimize-btn').addEventListener('click', minimizeTimer);
+    document.getElementById('skip-rest-btn').addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        timerBar.classList.remove('active');
+        dismissTimer();
+        showToast('Rest skipped.');
+    });
+
+    minimizeWorkoutBtn.addEventListener('click', minimizeWorkout);
+    resumeWorkoutBtn.addEventListener('click', resumeWorkout);
+    cancelWorkoutBtn.addEventListener('click', cancelWorkout);
+
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+
+        navigator.serviceWorker.addEventListener('message', event => {
+            if (event.data.type === 'TIMER_UPDATE') {
+                remainingSeconds = event.data.remainingSeconds; // Keep local time in sync
+                if (remainingSeconds > 0) {
+                    updateAllTimerDisplays(remainingSeconds);
+                } else {
+                    isTimerActive = false;
+                    updateAllTimerDisplays(0);
+                    
+                    if (document.visibilityState === 'visible' && navigator.vibrate) {
+                        navigator.vibrate([200, 100, 200]);
+                    }
+
+                    setTimeout(dismissTimer, 1500);
+                }
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && isTimerActive) {
+                if (!localTimerInterval) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.active.postMessage({ command: 'SYNC_TIMER' });
+                    });
+                }
+            }
+        });
+      }
+    </script>
+</body>
+</html>
