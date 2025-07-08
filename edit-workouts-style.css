@@ -75,7 +75,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     display: block;
 }
 
-/* MODIFICATION: Removed specific icon styles, added general one */
 .workout-item-actions .icon-btn svg {
     color: var(--text-primary);
 }
@@ -96,16 +95,15 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .schedule-item label { font-size: 1.1rem; font-weight: 600; }
 .schedule-item select { padding: 8px 12px; background-color: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: 8px; font-size: 1rem; }
 .workout-item-name { font-size: 1.1rem; font-weight: 600; }
-.workout-item-actions { display: flex; align-items: center; gap: 8px; }
+.workout-item-actions { display: flex; align-items: center; gap: 8px; position: relative; } /* MODIFICATION: Added position: relative */
 .workout-item-actions button { margin-left: 0; }
 
-/* MODIFICATION: New Header Styles */
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 15px;
-    position: relative; /* Set positioning context for the title */
+    position: relative;
 }
 .page-header h1 {
     margin: 0;
@@ -115,17 +113,15 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    /* Absolute positioning for perfect centering */
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    /* Prevent title from overlapping side elements */
     max-width: calc(100% - 90px);
 }
 .page-header .back-icon-btn {
     padding: 4px;
-    color: var(--text-primary); /* Set link color to white */
+    color: var(--text-primary);
 }
 .page-header .back-icon-btn svg {
     width: 36px;
@@ -141,7 +137,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     height: 36px;
     border-radius: 50%;
 }
-/* End of Header Modification */
 
 .page-header > div { display: flex; gap: 10px; align-items: center; }
 
@@ -190,6 +185,9 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     min-width: 180px;
     padding: 8px;
     animation: fade-in 0.2s ease-out;
+    /* MODIFICATION: Position relative to the parent container */
+    bottom: calc(100% + 5px); /* Position above the container */
+    right: 0; /* Align to the right of the container */
 }
 .options-menu-popup .menu-item {
     display: flex;
