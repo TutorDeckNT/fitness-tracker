@@ -44,7 +44,6 @@
 
     <div class="container">
         <header>
-            <!-- MODIFICATION: Updated header structure with new icon button -->
             <div class="page-header">
                 <a href="index.html" class="icon-btn back-icon-btn" title="Back">
                     <svg><use xlink:href="#icon-arrow-back"></use></svg>
@@ -266,6 +265,11 @@
         workoutsList.addEventListener('click', (e) => {
             const optionsBtn = e.target.closest('.options-menu-btn');
             if (optionsBtn) {
+                // Close other menus before opening a new one
+                const otherMenu = document.querySelector('.options-menu-popup');
+                if(otherMenu && otherMenu.parentElement !== optionsBtn.parentElement) {
+                    closeOptionsMenu();
+                }
                 openOptionsMenu(optionsBtn);
             }
         });
@@ -279,18 +283,19 @@
     }
 
     function openOptionsMenu(button) {
-        closeOptionsMenu(); 
-
         const workoutName = button.dataset.name;
-        const rect = button.getBoundingClientRect();
+        const actionContainer = button.parentElement;
+
+        // If a menu is already open in this container, close it and stop.
+        if (actionContainer.querySelector('.options-menu-popup')) {
+            closeOptionsMenu();
+            return;
+        }
+        
+        closeOptionsMenu(); // Close any other menus on the page
 
         const menu = document.createElement('div');
         menu.className = 'options-menu-popup glass-card';
-
-        // MODIFICATION: Calculate position to be ABOVE the button
-        menu.style.bottom = `${window.innerHeight - rect.top + 5}px`; // 5px margin above button
-        menu.style.right = `${window.innerWidth - rect.right}px`;
-
         menu.innerHTML = `
             <button class="menu-item" data-action="share">
                 <svg class="share-icon-menu"><use xlink:href="#icon-share"></use></svg>
@@ -306,7 +311,8 @@
             </button>
         `;
 
-        document.body.appendChild(menu);
+        // MODIFICATION: Append to the button's parent and let CSS handle positioning
+        actionContainer.appendChild(menu);
 
         menu.addEventListener('click', (e) => {
             const actionItem = e.target.closest('.menu-item');
@@ -325,7 +331,7 @@
     }
     
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.options-menu-btn') && !e.target.closest('.options-menu-popup')) {
+        if (!e.target.closest('.workout-item-actions')) {
             closeOptionsMenu();
         }
     });
