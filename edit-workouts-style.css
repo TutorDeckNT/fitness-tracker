@@ -69,7 +69,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .icon-btn:active { transform: scale(0.9); }
 .icon-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
 
-/* MODIFICATION: Added fill property to make icons white */
 .icon-btn svg { 
     width: 24px; 
     height: 24px; 
@@ -207,7 +206,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     fill: none;
 }
 
-/* MODIFICATION: Styles for new circular button and modal menu */
+/* MODIFICATION: Styles for circular button and modal menu */
 .add-plan-circle-btn {
     width: 44px;
     height: 44px;
@@ -219,7 +218,11 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     margin-top: 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease-out;
+    /* MODIFICATION: Explicitly set color to white */
+    color: var(--text-primary);
 }
+/* The parent .action-btn class already centers the content using flexbox */
+
 .add-plan-circle-btn:hover {
     background-color: rgba(60, 60, 60, 0.95);
     transform: scale(1.05);
@@ -261,7 +264,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     width: 24px;
     height: 24px;
     color: var(--text-primary);
-    flex-shrink: 0; /* Prevent icon from shrinking */
+    flex-shrink: 0;
 }
 
 .menu-style-btn img {
