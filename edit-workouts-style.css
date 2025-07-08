@@ -79,23 +79,11 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     color: var(--text-primary);
 }
 
-#import-workouts-btn svg {
-    color: var(--text-primary);
-}
-#add-workout-btn {
-    padding: 10px 15px;
-}
-#add-workout-btn svg {
-    width: 20px;
-    height: 20px;
-    stroke: var(--text-on-action);
-}
-
 .schedule-item, .workout-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px; }
 .schedule-item label { font-size: 1.1rem; font-weight: 600; }
 .schedule-item select { padding: 8px 12px; background-color: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: 8px; font-size: 1rem; }
 .workout-item-name { font-size: 1.1rem; font-weight: 600; }
-.workout-item-actions { display: flex; align-items: center; gap: 8px; position: relative; } /* MODIFICATION: Added position: relative */
+.workout-item-actions { display: flex; align-items: center; gap: 8px; position: relative; }
 .workout-item-actions button { margin-left: 0; }
 
 .page-header {
@@ -140,15 +128,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 .page-header > div { display: flex; gap: 10px; align-items: center; }
 
-#ai-section { padding: 0; overflow: hidden; margin-bottom: 30px; }
-#ai-section-header { display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; padding: 20px; box-sizing: border-box; }
-#ai-section-header h2 { margin: 0; min-width: 0; }
-#ai-section-icon { width: 40px; height: 40px; transition: opacity 0.3s ease-out, transform 0.5s ease-out; flex-shrink: 0; }
-#ai-section-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; padding: 0 20px; }
-#ai-section.expanded #ai-section-content { max-height: 500px; padding: 0 20px 20px; transition: max-height 0.4s ease-in, padding 0.4s ease-in; }
-#ai-section.expanded #ai-section-icon { opacity: 0; transform: rotate(180deg); }
 .editor-form-group { margin-bottom: 15px; }
-
 .editor-form-group label { display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 600; }
 .editor-form-group input, .editor-form-group select { width: 100%; padding: 12px; background-color: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
 
@@ -165,7 +145,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .overlay-footer { padding: 15px; border-top: 1px solid var(--glass-border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; background: var(--glass-bg); }
 
 .editor-exercise { padding: 15px; margin-bottom: 15px; animation: fade-in 0.5s; }
-
 .editor-exercise:nth-child(even) { background: rgba(0,0,0,0.15); }
 
 #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -178,16 +157,14 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .action-btn.loading .loader { display: block; }
 .action-btn.loading .btn-text, .action-btn.loading span { visibility: hidden; }
 
-/* MODIFICATION: Styles for the new options pop-up menu */
 .options-menu-popup {
     position: absolute;
     z-index: 100;
     min-width: 180px;
     padding: 8px;
     animation: fade-in 0.2s ease-out;
-    /* MODIFICATION: Position relative to the parent container */
-    bottom: calc(100% + 5px); /* Position above the container */
-    right: 0; /* Align to the right of the container */
+    bottom: calc(100% + 5px);
+    right: 0;
 }
 .options-menu-popup .menu-item {
     display: flex;
@@ -221,14 +198,84 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     stroke-width: 2;
 }
 .menu-item .edit-icon-menu { 
-    color: var(--text-primary); /* This icon uses fill */
+    color: var(--text-primary);
 }
 .menu-item.delete-item .delete-icon-menu { 
     stroke: var(--system-red);
     fill: none;
 }
-/* END of new menu styles */
 
+/* MODIFICATION: Styles for new buttons and modals */
+.btn-style-90 {
+    border-radius: 25px;
+    transform: skewX(-3deg);
+    transition: all 0.2s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 0;
+}
+.btn-style-90 .btn-text, .btn-style-90 > span {
+    display: inline-block;
+    transform: skewX(3deg);
+}
+.btn-style-90:hover {
+    transform: skewX(-3deg) scale(1.03);
+}
+.btn-style-90:active {
+    transform: skewX(-3deg) scale(0.98) !important;
+}
+.matt-black-bkg {
+    background-color: rgba(45, 45, 45, 0.9);
+    color: var(--text-primary);
+}
+.matt-black-bkg:hover {
+    background-color: rgba(60, 60, 60, 0.95);
+}
+
+#show-add-options-btn {
+    padding: 8px 16px;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+#add-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-style-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.menu-style-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--glass-border);
+}
+
+.menu-style-btn svg {
+    width: 24px;
+    height: 24px;
+    color: var(--text-primary);
+}
+
+.menu-style-btn img {
+    width: 24px;
+    height: 24px;
+}
 
 /* SKELETON LOADER STYLES */
 @keyframes shimmer-effect {
@@ -241,11 +288,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     background: linear-gradient(to right, var(--glass-bg) 8%, rgba(255, 255, 255, 0.08) 18%, var(--glass-bg) 33%);
     background-size: 1200px 100%;
     border-radius: 14px;
-}
-
-.sk-ai-card {
-    height: 65px;
-    margin-bottom: 30px;
 }
 
 .skeleton-title {
