@@ -254,7 +254,6 @@
         Object.keys(workouts).forEach(name => {
             const item = document.createElement('div');
             item.className = 'workout-item glass-card';
-            // MODIFICATION: Replaced the three buttons with a single options button
             item.innerHTML = `<span class="workout-item-name">${name}</span>
                 <div class="workout-item-actions">
                     <button class="icon-btn options-menu-btn" data-name="${name}" title="Options">
@@ -264,7 +263,6 @@
             workoutsList.appendChild(item);
         });
         
-        // MODIFICATION: Removed old event listeners and added a single delegated listener
         workoutsList.addEventListener('click', (e) => {
             const optionsBtn = e.target.closest('.options-menu-btn');
             if (optionsBtn) {
@@ -273,7 +271,6 @@
         });
     }
 
-    // MODIFICATION: New function to close any open options menu
     function closeOptionsMenu() {
         const existingMenu = document.querySelector('.options-menu-popup');
         if (existingMenu) {
@@ -281,17 +278,18 @@
         }
     }
 
-    // MODIFICATION: New function to create and open the options menu
     function openOptionsMenu(button) {
-        closeOptionsMenu(); // Close any menu that might be open
+        closeOptionsMenu(); 
 
         const workoutName = button.dataset.name;
         const rect = button.getBoundingClientRect();
 
         const menu = document.createElement('div');
         menu.className = 'options-menu-popup glass-card';
-        menu.style.top = `${rect.bottom + window.scrollY + 5}px`;
-        menu.style.right = `${window.innerWidth - rect.right - window.scrollX}px`;
+
+        // MODIFICATION: Calculate position to be ABOVE the button
+        menu.style.bottom = `${window.innerHeight - rect.top + 5}px`; // 5px margin above button
+        menu.style.right = `${window.innerWidth - rect.right}px`;
 
         menu.innerHTML = `
             <button class="menu-item" data-action="share">
@@ -326,7 +324,6 @@
         });
     }
     
-    // MODIFICATION: Add global click listener to close menu
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.options-menu-btn') && !e.target.closest('.options-menu-popup')) {
             closeOptionsMenu();
