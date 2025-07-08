@@ -206,7 +206,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     fill: none;
 }
 
-/* MODIFICATION: Styles for circular button and modal menu */
 .add-plan-circle-btn {
     width: 44px;
     height: 44px;
@@ -214,14 +213,13 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     border-radius: 50%;
     background-color: rgba(45, 45, 45, 0.9);
     font-size: 1.8rem;
-    line-height: 1;
     margin-top: 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease-out;
-    /* MODIFICATION: Explicitly set color to white */
     color: var(--text-primary);
+    /* MODIFICATION: Remove line-height and add padding to visually center the '+'. */
+    padding-top: 2px; 
 }
-/* The parent .action-btn class already centers the content using flexbox */
 
 .add-plan-circle-btn:hover {
     background-color: rgba(60, 60, 60, 0.95);
