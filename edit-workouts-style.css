@@ -69,10 +69,12 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .icon-btn:active { transform: scale(0.9); }
 .icon-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
 
+/* MODIFICATION: Added fill property to make icons white */
 .icon-btn svg { 
     width: 24px; 
     height: 24px; 
     display: block;
+    fill: var(--text-primary);
 }
 
 .workout-item-actions .icon-btn svg {
@@ -205,36 +207,25 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     fill: none;
 }
 
-/* MODIFICATION: Styles for new buttons and modals */
-.btn-style-90 {
-    border-radius: 25px;
-    transform: skewX(-3deg);
-    transition: all 0.2s ease-out;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 0;
-}
-.btn-style-90 .btn-text, .btn-style-90 > span {
-    display: inline-block;
-    transform: skewX(3deg);
-}
-.btn-style-90:hover {
-    transform: skewX(-3deg) scale(1.03);
-}
-.btn-style-90:active {
-    transform: skewX(-3deg) scale(0.98) !important;
-}
-.matt-black-bkg {
+/* MODIFICATION: Styles for new circular button and modal menu */
+.add-plan-circle-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
     background-color: rgba(45, 45, 45, 0.9);
-    color: var(--text-primary);
-}
-.matt-black-bkg:hover {
-    background-color: rgba(60, 60, 60, 0.95);
-}
-
-#show-add-options-btn {
-    padding: 8px 16px;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     line-height: 1;
+    margin-top: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease-out;
+}
+.add-plan-circle-btn:hover {
+    background-color: rgba(60, 60, 60, 0.95);
+    transform: scale(1.05);
+}
+.add-plan-circle-btn:active {
+    transform: scale(0.95) !important;
 }
 
 #add-options-list {
@@ -270,11 +261,13 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     width: 24px;
     height: 24px;
     color: var(--text-primary);
+    flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 .menu-style-btn img {
     width: 24px;
     height: 24px;
+    flex-shrink: 0;
 }
 
 /* SKELETON LOADER STYLES */
@@ -336,8 +329,8 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 }
 
 .sk-button-icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
 }
 
