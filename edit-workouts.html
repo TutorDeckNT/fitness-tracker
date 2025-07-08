@@ -10,11 +10,9 @@
 <body>
     <div id="toast-container"></div>
     <svg style="display: none;">
-        <!-- MODIFICATION: Added new back arrow icon -->
         <symbol id="icon-arrow-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 6L9 12L15 18"/>
         </symbol>
-        <!-- MODIFICATION: Added new ellipsis icon -->
         <symbol id="icon-ellipsis-vertical" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
         </symbol>
@@ -30,10 +28,6 @@
         <symbol id="icon-file-import" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875Zm5.845 17.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V12a.75.75 0 0 0-1.5 0v4.19l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3Z" clip-rule="evenodd" />
             <path d="M14.25 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25Z" />
-        </symbol>
-        <symbol id="icon-edit-03" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
-            <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
         </symbol>
     </svg>
 
@@ -60,9 +54,9 @@
                 <div id="workouts-section" style="margin-top: 30px;">
                     <div class="page-header">
                         <h2>Workout Plans</h2>
-                        <!-- MODIFICATION: Replaced old buttons with a single new one -->
-                        <button id="show-add-options-btn" class="action-btn btn-style-90 matt-black-bkg" title="Add Plan">
-                            <span class="btn-text">+</span>
+                        <!-- MODIFICATION: Changed to a circular button -->
+                        <button id="show-add-options-btn" class="action-btn add-plan-circle-btn" title="Add Plan">
+                            <span>+</span>
                         </button>
                         <input type="file" id="import-file-input" accept=".json" style="display: none;">
                     </div>
@@ -80,7 +74,7 @@
                 <div class="sk-workouts-header">
                     <div class="skeleton-title skeleton"></div>
                     <div class="sk-workouts-buttons">
-                        <div class="skeleton sk-button-main" style="width: 60px; border-radius: 25px;"></div>
+                        <div class="skeleton sk-button-icon"></div>
                     </div>
                 </div>
                 <div class="skeleton sk-workout-item"></div>
@@ -94,7 +88,6 @@
         </div>
     </div>
 
-    <!-- MODIFICATION: New modal for Add/Import/AI options -->
     <div class="modal-overlay" id="add-options-overlay">
         <div class="overlay-content glass-card" id="add-options-panel">
             <div class="overlay-header">
@@ -102,8 +95,11 @@
                 <button class="icon-btn" id="close-add-options-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
             </div>
             <div class="overlay-body" id="add-options-list">
+                <!-- MODIFICATION: Replaced icon with new SVG -->
                 <button id="add-manual-btn" class="menu-style-btn">
-                    <svg><use xlink:href="#icon-edit-03"></use></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                    </svg>
                     <span>Add Manually</span>
                 </button>
                 <button id="import-from-file-btn" class="menu-style-btn">
@@ -118,7 +114,6 @@
         </div>
     </div>
 
-    <!-- MODIFICATION: New modal for AI Transcription UI -->
     <div class="modal-overlay" id="ai-transcribe-overlay">
         <div class="overlay-content glass-card" id="ai-transcribe-panel">
             <div class="overlay-header">
@@ -194,7 +189,6 @@
     const mainContentWrapper = document.getElementById('main-content-wrapper');
     const skeletonLoader = document.getElementById('skeleton-loader');
 
-    // MODIFICATION: Get new modal elements
     const addOptionsOverlay = document.getElementById('add-options-overlay');
     const aiTranscribeOverlay = document.getElementById('ai-transcribe-overlay');
 
@@ -352,7 +346,6 @@
         }
     });
 
-    // MODIFICATION: Logic from old "Add Workout" button
     async function addWorkoutManually() {
         const name = prompt("Enter a name for the new workout plan:");
         if (name && !workouts[name]) {
@@ -504,7 +497,7 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                 renderAll();
                 showToast(`Successfully added "${planName}"!`, 'success');
                 document.getElementById('ai-plan-name').value = "";
-                aiTranscribeOverlay.classList.remove('active'); // Close modal on success
+                aiTranscribeOverlay.classList.remove('active');
 
             } catch (error) {
                 showToast(`Error: ${error.message}`, 'error');
@@ -561,7 +554,6 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
         reader.readAsText(file);
     }
 
-    // MODIFICATION: Event listeners for the new modal flow
     document.getElementById('show-add-options-btn').addEventListener('click', () => {
         addOptionsOverlay.classList.add('active');
     });
