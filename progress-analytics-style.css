@@ -9,6 +9,7 @@
     --system-red: #FF3B30;
     --text-on-action: #ffffff;
 }
+
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes scale-in { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes spin {
@@ -30,9 +31,6 @@ body {
     margin: 0; padding: 0;
     -webkit-tap-highlight-color: transparent;
     background-color: #0a2a4e;
-    background-size: 400% 400%;
-    animation: gradient-animation 25s ease infinite;
-    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -56,7 +54,6 @@ h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0; }
 h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; }
 .glass-card { background: var(--glass-bg); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
 
-/* MODIFICATION: Updated action-btn and destructive-btn styles */
 .action-btn { 
     display: inline-flex; 
     align-items: center; 
@@ -75,7 +72,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
 .action-btn:active { transform: scale(0.98); }
 .destructive-btn { background-color: var(--system-red); color: var(--text-on-action); }
 
-/* MODIFICATION: New Header Styles */
 .page-header {
     display: flex;
     justify-content: space-between;
