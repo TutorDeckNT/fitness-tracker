@@ -33,10 +33,7 @@ body {
     color: var(--text-primary);
     margin: 0; padding: 0;
     -webkit-tap-highlight-color: transparent;
-    background: linear-gradient(-45deg, #081421, #0a2a4e, #081421, #0a2a4e);
-    background-size: 400% 400%;
-    animation: gradient-animation 25s ease infinite;
-    background-attachment: fixed;
+    background-color: #0a2a4e;
     background-size: 400% 400%;
     animation: gradient-animation 25s ease infinite;
     background-attachment: fixed;
