@@ -10,7 +10,6 @@
     --text-on-action: #ffffff;
 }
 
-@keyframes gradient-animation { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes scale-in { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -26,10 +25,7 @@ body {
     color: var(--text-primary);
     margin: 0; padding: 0;
     -webkit-tap-highlight-color: transparent;
-    background: linear-gradient(-45deg, #081421, #0a2a4e, #081421, #0a2a4e);
-    background-size: 400% 400%;
-    animation: gradient-animation 25s ease infinite;
-    background-attachment: fixed;
+    background-color: #0a2a4e;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -57,7 +53,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
 .action-btn:disabled { background-color: var(--text-tertiary) !important; cursor: not-allowed; opacity: 0.6; }
 .destructive-btn { background-color: var(--system-red) !important; color: var(--text-on-action) !important; }
 
-/* MODIFICATION: New Header Styles */
 .page-header {
     display: flex;
     justify-content: space-between;
