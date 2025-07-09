@@ -566,13 +566,6 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
         addOptionsOverlay.classList.remove('active');
     });
 
-    // MODIFICATION: Added event listener to close modal on backdrop click
-    addOptionsOverlay.addEventListener('click', (event) => {
-        if (event.target === addOptionsOverlay) {
-            addOptionsOverlay.classList.remove('active');
-        }
-    });
-
     document.getElementById('add-manual-btn').addEventListener('click', () => {
         addOptionsOverlay.classList.remove('active');
         addWorkoutManually();
@@ -593,6 +586,15 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
     });
 
     document.getElementById('import-file-input').addEventListener('change', handleWorkoutImport);
+
+    // MODIFICATION: Added listeners to close modals when clicking on the overlay
+    [addOptionsOverlay, aiTranscribeOverlay, editorOverlay].forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+    });
 
     async function initPageForUser() {
         await fetchData();
