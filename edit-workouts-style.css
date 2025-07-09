@@ -206,10 +206,10 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     fill: none;
 }
 
-/* MODIFICATION: Updated styles for the circular button and its SVG icon */
+/* MODIFICATION: Made the button and icon smaller */
 .add-plan-circle-btn {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     border-radius: 50%;
     background-color: rgba(45, 45, 45, 0.9);
@@ -219,8 +219,8 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 }
 
 .add-plan-circle-btn svg {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     color: var(--text-primary);
 }
 
@@ -333,8 +333,8 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 }
 
 .sk-button-icon {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
 }
 
