@@ -357,6 +357,8 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
     display: grid;
     /* This creates a single grid cell for items to stack in */
     grid-template-columns: 1fr;
+    /* THIS IS THE FIX: Prevents content from breaking out and causing horizontal scroll */
+    overflow: hidden;
 }
 
 #main-content-wrapper, #skeleton-loader {
