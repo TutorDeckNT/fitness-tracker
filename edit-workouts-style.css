@@ -1,3 +1,4 @@
+
 :root {
     --background-color: #000000;
     --glass-bg: rgba(30, 30, 30, 0.6);
@@ -70,10 +71,11 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     height: 24px; 
     display: block;
     fill: var(--text-primary);
+    stroke: var(--text-primary);
 }
 
 .workout-item-actions .icon-btn svg {
-    color: var(--text-primary);
+    stroke: none;
 }
 
 .schedule-item, .workout-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px; }
@@ -134,15 +136,28 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .modal-overlay .glass-card { animation: scale-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
 .overlay-content { padding: 0; width: 90%; max-width: 500px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
-.overlay-header { padding: 15px 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-.overlay-header h2 { margin: 0; font-size: 1.1rem; }
+.overlay-header { padding: 15px 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; position: relative; }
+.overlay-header h2 { margin: 0; font-size: 1.1rem; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); }
+.overlay-header .overlay-header-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 
 .overlay-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
 
 .overlay-footer { padding: 15px; border-top: 1px solid var(--glass-border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; background: var(--glass-bg); }
 
-.editor-exercise { padding: 15px; margin-bottom: 15px; animation: fade-in 0.5s; }
+.editor-exercise { padding: 15px; margin-bottom: 15px; animation: fade-in 0.5s; transition: padding 0.2s ease-out, background-color 0.2s; }
 .editor-exercise:nth-child(even) { background: rgba(0,0,0,0.15); }
+
+.editor-exercise.minimized > div:not(.editor-exercise-header) { display: none; }
+.editor-exercise.minimized { padding-top: 12px; padding-bottom: 12px; cursor: grab; }
+.editor-exercise.minimized .remove-exercise-btn { display: none; }
+.editor-exercise.minimized h4 { margin: 0; }
+.editor-exercise.dragging { opacity: 0.6; background: var(--system-blue); }
+
+#editor-overlay.reordering #add-exercise-btn,
+#editor-overlay.reordering #save-workouts-btn,
+#editor-overlay.reordering #reorder-exercises-btn { display: none !important; }
+#editor-overlay.reordering #done-reordering-btn { display: inline-flex !important; }
+
 
 #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .toast { background: rgba(40, 40, 40, 0.85); -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px); color: var(--text-primary); padding: 12px 20px; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); font-weight: 500; animation: slide-up-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--glass-border); }
@@ -196,6 +211,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 }
 .menu-item .edit-icon-menu { 
     color: var(--text-primary);
+    fill: var(--text-primary);
 }
 .menu-item.delete-item .delete-icon-menu { 
     stroke: var(--system-red);
@@ -269,7 +285,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     flex-shrink: 0;
 }
 
-/* SKELETON LOADER STYLES */
 @keyframes shimmer-effect {
     0% { background-position: -1200px 0; }
     100% { background-position: 1200px 0; }
@@ -343,3 +358,4 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     height: 55px;
     margin-bottom: 10px;
 }
+
