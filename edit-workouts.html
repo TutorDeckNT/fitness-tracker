@@ -10,6 +10,9 @@
 <body>
     <div id="toast-container"></div>
     <svg style="display: none;">
+        <symbol id="icon-reorder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+        </symbol>
         <symbol id="icon-arrow-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 6L9 12L15 18"/>
         </symbol>
@@ -150,10 +153,16 @@
         <div class="overlay-content glass-card" id="editor-panel">
             <div class="overlay-header">
                 <h2 id="editor-title">Edit Plan</h2>
-                <button class="icon-btn" id="close-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+                <div class="editor-header-controls">
+                    <button class="icon-btn" id="reorder-exercises-btn" title="Reorder Exercises"><svg><use xlink:href="#icon-reorder"></use></svg></button>
+                    <button class="icon-btn" id="close-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+                </div>
             </div>
             <div class="overlay-body" id="editor-exercises-list"></div>
-            <div class="overlay-footer">
+            <div class="overlay-footer" id="editor-footer">
+                <button class="action-btn" id="done-reordering-btn" style="display: none; background-color: var(--system-green); color: var(--text-on-action); grid-column: 1 / -1;">
+                    <span class="btn-text">Done</span>
+                </button>
                 <button class="action-btn" id="add-exercise-btn" style="background-color: rgba(255,255,255,0.1);">
                     <span class="btn-text">Add Exercise</span>
                 </button>
@@ -401,6 +410,18 @@
 
     function closeEditor() {
         editorOverlay.classList.remove('active');
+        // Ensure reorder mode is off when closing
+        if (document.getElementById('editor-panel').classList.contains('reorder-mode')) {
+            toggleReorderMode(false);
+        }
+    }
+
+    function updateExerciseNumbers() {
+        const exercises = document.querySelectorAll('#editor-exercises-list .editor-exercise');
+        exercises.forEach((ex, index) => {
+            const h4 = ex.querySelector('h4');
+            if (h4) h4.textContent = `Exercise ${index + 1}`;
+        });
     }
 
     function createExerciseEditorForm(exercise, index) {
@@ -408,13 +429,39 @@
         div.className = 'editor-exercise glass-card';
         div.dataset.index = index;
         const ex = { name: exercise.name || "", warmupSets: exercise.warmupSets || "", workingSets: exercise.workingSets || "", reps: exercise.reps || "", rest: exercise.rest || "", earlySetRPE: exercise.earlySetRPE || "", lastSetRPE: exercise.lastSetRPE || "" };
-        div.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center;"><h4>Exercise ${index + 1}</h4><button class="icon-btn" onclick="this.parentElement.parentElement.remove()"><svg style="fill: var(--system-red);"><use xlink:href="#icon-close"></use></svg></button></div><div class="editor-form-group"><label>Name</label><input type="text" value="${ex.name}" data-key="name"></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="editor-form-group"><label>Warmup Sets</label><input type="number" value="${ex.warmupSets}" data-key="warmupSets"></div><div class="editor-form-group"><label>Working Sets</label><input type="number" value="${ex.workingSets}" data-key="workingSets"></div><div class="editor-form-group"><label>Reps</label><input type="text" value="${ex.reps}" data-key="reps"></div><div class="editor-form-group"><label>Rest (e.g., "90s" or "2 min")</label><input type="text" value="${ex.rest}" data-key="rest"></div><div class="editor-form-group"><label>Early RPE</label><input type="text" value="${ex.earlySetRPE}" data-key="earlySetRPE"></div><div class="editor-form-group"><label>Last RPE</label><input type="text" value="${ex.lastSetRPE}" data-key="lastSetRPE"></div></div>`;
+        
+        div.innerHTML = `
+            <div class="editor-exercise-header">
+                <h4>Exercise ${index + 1}</h4>
+                <button class="icon-btn delete-exercise-btn" title="Remove Exercise">
+                    <svg style="fill: var(--system-red);"><use xlink:href="#icon-close"></use></svg>
+                </button>
+            </div>
+            <div class="editor-exercise-body">
+                <div class="editor-form-group"><label>Name</label><input type="text" value="${ex.name}" data-key="name"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="editor-form-group"><label>Warmup Sets</label><input type="number" value="${ex.warmupSets}" data-key="warmupSets"></div>
+                    <div class="editor-form-group"><label>Working Sets</label><input type="number" value="${ex.workingSets}" data-key="workingSets"></div>
+                    <div class="editor-form-group"><label>Reps</label><input type="text" value="${ex.reps}" data-key="reps"></div>
+                    <div class="editor-form-group"><label>Rest (e.g., "90s" or "2 min")</label><input type="text" value="${ex.rest}" data-key="rest"></div>
+                    <div class="editor-form-group"><label>Early RPE</label><input type="text" value="${ex.earlySetRPE}" data-key="earlySetRPE"></div>
+                    <div class="editor-form-group"><label>Last RPE</label><input type="text" value="${ex.lastSetRPE}" data-key="lastSetRPE"></div>
+                </div>
+            </div>
+        `;
+
+        div.querySelector('.delete-exercise-btn').addEventListener('click', () => {
+            div.remove();
+            updateExerciseNumbers();
+        });
+
         return div;
     }
 
     document.getElementById('add-exercise-btn').addEventListener('click', () => {
         const newExercise = { name: "", warmupSets: "", workingSets: "", reps: "", rest: "", earlySetRPE: "", lastSetRPE: "" };
         editorExercisesList.appendChild(createExerciseEditorForm(newExercise, editorExercisesList.children.length));
+        editorExercisesList.scrollTop = editorExercisesList.scrollHeight;
     });
 
     document.getElementById('save-workouts-btn').addEventListener('click', async () => {
@@ -422,7 +469,9 @@
         toggleButtonLoading(btn, true);
         const newWorkoutData = Array.from(document.querySelectorAll('#editor-exercises-list .editor-exercise')).map(form => {
             const exercise = {};
-            form.querySelectorAll('input').forEach(input => { exercise[input.dataset.key] = input.type === 'number' ? parseInt(input.value, 10) || 0 : input.value; });
+            form.querySelectorAll('.editor-exercise-body input').forEach(input => { 
+                exercise[input.dataset.key] = input.type === 'number' ? parseInt(input.value, 10) || 0 : input.value; 
+            });
             return exercise;
         });
         workouts[editingWorkoutName] = newWorkoutData;
@@ -594,6 +643,69 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                 overlay.classList.remove('active');
             }
         });
+    });
+
+    const editorPanel = document.getElementById('editor-panel');
+    const reorderBtn = document.getElementById('reorder-exercises-btn');
+    const doneReorderingBtn = document.getElementById('done-reordering-btn');
+    let draggedItem = null;
+
+    function toggleReorderMode(enable) {
+        editorPanel.classList.toggle('reorder-mode', enable);
+        const exercises = editorExercisesList.querySelectorAll('.editor-exercise');
+        exercises.forEach(ex => {
+            ex.draggable = enable;
+        });
+    }
+
+    reorderBtn.addEventListener('click', () => toggleReorderMode(true));
+    doneReorderingBtn.addEventListener('click', () => toggleReorderMode(false));
+
+    editorExercisesList.addEventListener('dragstart', e => {
+        if (e.target.classList.contains('editor-exercise')) {
+            draggedItem = e.target;
+            setTimeout(() => e.target.classList.add('dragging'), 0);
+        }
+    });
+
+    editorExercisesList.addEventListener('dragend', () => {
+        if (draggedItem) {
+            draggedItem.classList.remove('dragging');
+            draggedItem = null;
+        }
+    });
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.editor-exercise:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    editorExercisesList.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (!editorPanel.classList.contains('reorder-mode')) return;
+        const afterElement = getDragAfterElement(editorExercisesList, e.clientY);
+        if (draggedItem) {
+            if (afterElement == null) {
+                editorExercisesList.appendChild(draggedItem);
+            } else {
+                editorExercisesList.insertBefore(draggedItem, afterElement);
+            }
+        }
+    });
+
+    editorExercisesList.addEventListener('drop', e => {
+        e.preventDefault();
+        if (editorPanel.classList.contains('reorder-mode')) {
+            updateExerciseNumbers();
+        }
     });
 
     async function initPageForUser() {
