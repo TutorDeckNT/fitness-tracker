@@ -10,8 +10,13 @@ jobs:
   update-cache-version:
     runs-on: ubuntu-latest
     
-    # This 'if' condition is now correctly placed inside the job.
-    # It prevents the job from running if the commit message contains '[skip ci]' 
+    # --- FIX: Grant write permissions to the workflow ---
+    # This block is necessary to allow the action to push a commit back to the repository,
+    # resolving the Git exit code 128 permission error.
+    permissions:
+      contents: write
+
+    # This 'if' condition prevents the job from running if the commit message contains '[skip ci]' 
     # or was made by this workflow's bot, preventing an infinite loop.
     if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, 'ci: Auto-update')"
 
