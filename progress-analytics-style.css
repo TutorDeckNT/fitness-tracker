@@ -352,23 +352,25 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
     flex-shrink: 0;
 }
 
-/* --- MODIFICATION: Styles for the smooth cross-fade --- */
+/* --- FIX: Styles for the smooth cross-fade using CSS Grid --- */
 #loader-container {
-    position: relative;
+    display: grid;
+    /* This creates a single grid cell for items to stack in */
+    grid-template-columns: 1fr;
 }
 
 #main-content-wrapper, #skeleton-loader {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    /* This places both elements into the same grid cell (row 1, column 1) */
+    grid-area: 1 / 1;
+    
+    /* This allows the fade effect to work */
     transition: opacity 0.4s ease-in-out;
 }
 
 #skeleton-loader {
-    z-index: 2; /* Starts on top */
+    z-index: 2; /* Ensure skeleton starts on top */
 }
 
 #main-content-wrapper {
-    z-index: 1; /* Starts underneath */
+    z-index: 1; /* Ensure main content starts underneath */
 }
