@@ -207,6 +207,11 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     stroke: var(--system-red);
     fill: none;
 }
+.menu-item .run-icon-menu {
+    stroke: var(--system-green);
+    fill: none;
+}
+
 
 .add-plan-circle-btn {
     width: 40px;
@@ -358,7 +363,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     gap: 8px;
 }
 
-/* THIS IS THE DEFINITIVE FIX FOR THE WHITE ICON */
 #reorder-exercises-btn svg {
     fill: none;
     stroke: var(--text-primary);
@@ -392,7 +396,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 /* --- REORDER MODE --- */
 
-/* THIS IS THE DEFINITIVE FIX FOR THE DONE BUTTON */
 #done-reordering-btn {
     display: none;
 }
@@ -457,15 +460,64 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     font-size: 1.2rem;
 }
 
-.program-week-schedule p {
-    margin: 5px 0;
+.program-week-schedule .day-entry {
+    margin: 8px 0;
     color: var(--text-secondary);
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.program-week-schedule p strong {
+.program-week-schedule .day-entry strong {
     color: var(--text-primary);
     font-weight: 600;
     display: inline-block;
     width: 90px;
+}
+
+.program-week-schedule .day-entry .workout-name-clickable {
+    cursor: pointer;
+    flex-grow: 1;
+    transition: color 0.2s;
+}
+.program-week-schedule .day-entry .workout-name-clickable:hover {
+    color: var(--system-blue);
+}
+
+.week-block-form .editor-form-group {
+    margin-bottom: 10px;
+}
+.week-block-form .day-schedule-group {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+#active-program-banner {
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--system-green);
+}
+#active-program-banner p {
+    margin: 0;
+    font-weight: 600;
+}
+#active-program-banner p span {
+    font-weight: normal;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.schedule-item.program-active {
+    opacity: 0.6;
+    pointer-events: none;
+}
+.schedule-item.program-active select {
+    background-color: rgba(0,0,0,0.4);
 }
