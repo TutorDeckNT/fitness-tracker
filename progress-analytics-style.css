@@ -11,6 +11,8 @@
 }
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* MODIFICATION: Added fade-out animation */
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes scale-in { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes spin {
   from {
@@ -352,27 +354,11 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
     flex-shrink: 0;
 }
 
-/* --- FIX: Styles for the smooth cross-fade using CSS Grid --- */
-#loader-container {
-    display: grid;
-    /* This creates a single grid cell for items to stack in */
-    grid-template-columns: 1fr;
-    /* THIS IS THE FIX: Prevents content from breaking out and causing horizontal scroll */
-    overflow: hidden;
+/* MODIFICATION: Add animation classes for the smooth transition */
+.fade-in {
+    animation: fade-in 0.5s ease-out forwards;
 }
 
-#main-content-wrapper, #skeleton-loader {
-    /* This places both elements into the same grid cell (row 1, column 1) */
-    grid-area: 1 / 1;
-    
-    /* This allows the fade effect to work */
-    transition: opacity 0.4s ease-in-out;
-}
-
-#skeleton-loader {
-    z-index: 2; /* Ensure skeleton starts on top */
-}
-
-#main-content-wrapper {
-    z-index: 1; /* Ensure main content starts underneath */
+.fade-out {
+    animation: fade-out 0.5s ease-out forwards;
 }
