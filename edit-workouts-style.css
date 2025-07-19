@@ -358,10 +358,10 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     gap: 8px;
 }
 
-/* DEFINITIVE FIX FOR WHITE REORDER ICON */
+/* CORRECTED: This rule now correctly makes the reorder icon white */
 #reorder-exercises-btn svg {
-    fill: none !important;
-    stroke: var(--text-primary) !important;
+    fill: none;
+    stroke: var(--text-primary);
 }
 
 .editor-exercise-header {
@@ -392,13 +392,16 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 /* --- REORDER MODE --- */
 
-/* DEFINITIVE FIX FOR DONE BUTTON VISIBILITY */
+/* CORRECTED: This now works because the inline style was removed from the HTML */
+#done-reordering-btn {
+    display: none;
+}
 #editor-panel.reorder-mode #add-exercise-btn,
 #editor-panel.reorder-mode #save-workouts-btn {
-    display: none !important;
+    display: none;
 }
 #editor-panel.reorder-mode #done-reordering-btn {
-    display: inline-flex !important;
+    display: inline-flex;
 }
 
 #editor-panel.reorder-mode .editor-exercise {
