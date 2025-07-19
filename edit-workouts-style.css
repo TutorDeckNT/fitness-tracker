@@ -61,7 +61,18 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .action-btn:disabled { background-color: var(--text-tertiary); cursor: not-allowed; }
 .destructive-btn { background-color: var(--system-red); color: var(--text-on-action); }
 
-.icon-btn { background: transparent; border: none; padding: 8px; cursor: pointer; transition: transform 0.1s ease-out, background-color 0.2s; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.icon-btn {
+    background: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    transition: transform 0.1s ease-out, background-color 0.2s;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+}
 .icon-btn:active { transform: scale(0.9); }
 .icon-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
 
@@ -69,7 +80,8 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     width: 24px; 
     height: 24px; 
     display: block;
-    fill: var(--text-primary);
+    fill: currentColor;
+    stroke: currentColor;
 }
 
 .workout-item-actions .icon-btn svg {
@@ -342,4 +354,96 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .sk-workout-item {
     height: 55px;
     margin-bottom: 10px;
+}
+
+/* NEW STYLES FOR REORDERING FEATURE */
+
+.overlay-header {
+    padding: 15px 15px 15px 20px;
+}
+.overlay-header h2 {
+    flex-grow: 1;
+    text-align: left;
+}
+.editor-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.editor-exercise {
+    padding: 0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.exercise-editor-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    gap: 10px;
+    position: relative;
+}
+
+.drag-handle {
+    display: none;
+    cursor: grab;
+    color: var(--text-secondary);
+}
+.drag-handle svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+}
+
+.exercise-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.exercise-actions {
+    display: flex;
+    align-items: center;
+}
+
+.exercise-editor-body {
+    padding: 5px 15px 15px 15px;
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.editor-exercise.collapsed .exercise-editor-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+}
+
+#editor-exercises-list.reorder-mode .editor-exercise {
+    margin-bottom: 5px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+}
+#editor-exercises-list.reorder-mode .exercise-editor-body {
+    display: none;
+}
+#editor-exercises-list.reorder-mode .drag-handle {
+    display: flex;
+}
+#editor-exercises-list.reorder-mode .exercise-actions {
+    display: none;
+}
+
+.editor-exercise.dragging {
+    opacity: 0.4;
+    background: var(--system-blue);
 }
