@@ -351,3 +351,24 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
     height: 85px;
     flex-shrink: 0;
 }
+
+/* --- MODIFICATION: Styles for the smooth cross-fade --- */
+#loader-container {
+    position: relative;
+}
+
+#main-content-wrapper, #skeleton-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transition: opacity 0.4s ease-in-out;
+}
+
+#skeleton-loader {
+    z-index: 2; /* Starts on top */
+}
+
+#main-content-wrapper {
+    z-index: 1; /* Starts underneath */
+}
