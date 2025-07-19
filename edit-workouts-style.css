@@ -358,7 +358,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     gap: 8px;
 }
 
-/* CORRECTED: This rule now correctly makes the reorder icon white */
+/* THIS IS THE FIX FOR THE WHITE ICON */
 #reorder-exercises-btn svg {
     fill: none;
     stroke: var(--text-primary);
@@ -392,7 +392,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 /* --- REORDER MODE --- */
 
-/* CORRECTED: This now works because the inline style was removed from the HTML */
+/* THIS IS THE FIX FOR THE DONE BUTTON */
 #done-reordering-btn {
     display: none;
 }
