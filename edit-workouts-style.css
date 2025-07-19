@@ -358,7 +358,9 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     gap: 8px;
 }
 
+/* CORRECTED: Explicitly set fill to none and stroke to white */
 #reorder-exercises-btn svg {
+    fill: none;
     stroke: var(--text-primary);
 }
 
@@ -390,6 +392,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 /* --- REORDER MODE --- */
 
+/* CORRECTED: More specific selectors to ensure the rules apply */
 #editor-panel.reorder-mode #add-exercise-btn,
 #editor-panel.reorder-mode #save-workouts-btn {
     display: none;
