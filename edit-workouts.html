@@ -194,48 +194,31 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="program-editor-overlay">
-        <div class="overlay-content glass-card" id="program-editor-panel">
+    <div class="modal-overlay" id="program-detail-overlay">
+        <div class="overlay-content glass-card">
             <div class="overlay-header">
-                <h2 id="program-editor-title">Edit Program</h2>
-                <button class="icon-btn" id="close-program-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+                <h2 id="program-detail-title">Program Workouts</h2>
+                <button class="icon-btn" id="close-program-detail-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
             </div>
-            <div class="overlay-body" id="program-weeks-list"></div>
-            <div class="overlay-footer" id="program-editor-footer">
-                <button class="action-btn" id="add-week-block-btn" style="background-color: rgba(255,255,255,0.1);">
-                    <span class="btn-text">Add Week Block</span>
-                </button>
-                <button class="action-btn" id="save-program-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">
-                    <span class="btn-text">Save Program</span>
-                    <div class="loader"></div>
+            <div class="overlay-body" id="program-detail-list"></div>
+            <div class="overlay-footer" style="grid-template-columns: 1fr;">
+                <button class="action-btn" id="add-workout-to-program-btn" style="background-color: rgba(255,255,255,0.1);">
+                    <span class="btn-text">Add Workout to Program</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="week-block-editor-overlay">
+    <div class="modal-overlay" id="program-week-editor-overlay">
         <div class="overlay-content glass-card">
             <div class="overlay-header">
-                <h2 id="week-block-editor-title">Add Week Block</h2>
-                <button class="icon-btn" id="close-week-block-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+                <h2 id="program-week-editor-title">Edit Week Blocks</h2>
+                <button class="icon-btn" id="close-program-week-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
             </div>
-            <div class="overlay-body week-block-form">
-                <div class="editor-form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label for="week-start-input">Start Week</label>
-                        <input type="number" id="week-start-input" min="1">
-                    </div>
-                    <div>
-                        <label for="week-end-input">End Week</label>
-                        <input type="number" id="week-end-input" min="1">
-                    </div>
-                </div>
-                <hr style="border-color: var(--glass-border); margin: 15px 0;">
-                <div id="week-block-schedule-editor"></div>
-            </div>
-            <div class="overlay-footer">
-                <button class="action-btn" id="save-week-block-btn" style="background-color: var(--system-blue); color: var(--text-on-action); grid-column: 1 / -1;">
-                    <span class="btn-text">Save Week Block</span>
+            <div class="overlay-body" id="program-week-editor-list"></div>
+            <div class="overlay-footer" style="grid-template-columns: 1fr;">
+                 <button class="action-btn" id="add-program-week-block-btn" style="background-color: rgba(255,255,255,0.1);">
+                    <span class="btn-text">Add Week Block</span>
                 </button>
             </div>
         </div>
@@ -275,8 +258,8 @@
     const skeletonLoader = document.getElementById('skeleton-loader');
     const addOptionsOverlay = document.getElementById('add-options-overlay');
     const aiTranscribeOverlay = document.getElementById('ai-transcribe-overlay');
-    const programEditorOverlay = document.getElementById('program-editor-overlay');
-    const weekBlockEditorOverlay = document.getElementById('week-block-editor-overlay');
+    const programDetailOverlay = document.getElementById('program-detail-overlay');
+    const programWeekEditorOverlay = document.getElementById('program-week-editor-overlay');
 
     // --- EDITING STATE ---
     let editingContext = null; // { type: 'plan'/'program', name: 'planName', programName?: 'progName', weekIndex?: 0 }
@@ -333,6 +316,11 @@
         const activeProgramBanner = document.getElementById('active-program-banner');
         scheduleList.innerHTML = '';
 
+        let optionsHTML = '<option value="Rest Day">Rest Day</option>';
+        Object.keys(workouts).forEach(workoutName => {
+            optionsHTML += `<option value="${workoutName}">${workoutName}</option>`;
+        });
+
         if (activeProgram && programs[activeProgram.name]) {
             const program = programs[activeProgram.name];
             const startDate = new Date(activeProgram.startDate);
@@ -340,44 +328,43 @@
             const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
             const currentProgramWeek = Math.floor(daysSinceStart / 7) + 1;
 
-            const weekBlock = program.weeks.find(w => currentProgramWeek >= w.weekRange[0] && currentProgramWeek <= w.weekRange[1]);
-            
             activeProgramBanner.style.display = 'flex';
             activeProgramBanner.innerHTML = `
                 <p>${activeProgram.name} - Week ${currentProgramWeek}<br><span>Program is currently active.</span></p>
                 <button class="action-btn destructive-btn" style="margin-top: 0; padding: 8px 12px;" onclick="stopProgram()">Stop</button>
             `;
-
-            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-            days.forEach(day => {
-                const dayKey = day.toLowerCase();
-                const workoutName = weekBlock ? (weekBlock.schedule[dayKey] || "Rest Day") : "Rest Day";
-                const item = document.createElement('div');
-                item.className = 'schedule-item program-active';
-                item.innerHTML = `<label>${day}</label><span>${workoutName}</span>`;
-                scheduleList.appendChild(item);
+            
+            // Add program-specific workouts to the options
+            Object.keys(program.workouts).forEach(workoutName => {
+                const weekBlock = program.workouts[workoutName].find(w => currentProgramWeek >= w.weekRange[0] && currentProgramWeek <= w.weekRange[1]);
+                if (weekBlock) {
+                    const optionValue = `program--${program.programName}--${workoutName}`;
+                    const optionText = `${program.programName} - ${workoutName}`;
+                    optionsHTML += `<option value="${optionValue}">${optionText}</option>`;
+                }
             });
 
         } else {
             activeProgramBanner.style.display = 'none';
-            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-            days.forEach(day => {
-                const dayKey = day.toLowerCase();
-                const item = document.createElement('div');
-                item.className = 'schedule-item';
-                let optionsHTML = '<option value="Rest Day">Rest Day</option>';
-                Object.keys(workouts).forEach(workoutName => {
-                    const selected = schedule[dayKey] === workoutName ? 'selected' : '';
-                    optionsHTML += `<option value="${workoutName}" ${selected}>${workoutName}</option>`;
-                });
-                item.innerHTML = `<label for="schedule-${dayKey}">${day}</label><select id="schedule-${dayKey}" data-day="${dayKey}">${optionsHTML}</select>`;
-                scheduleList.appendChild(item);
-                item.querySelector('select').addEventListener('change', async (e) => {
-                    schedule[e.target.dataset.day] = e.target.value;
-                    await saveUserData('schedule', schedule);
-                });
-            });
         }
+
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        days.forEach(day => {
+            const dayKey = day.toLowerCase();
+            const item = document.createElement('div');
+            item.className = 'schedule-item';
+            item.innerHTML = `<label for="schedule-${dayKey}">${day}</label><select id="schedule-${dayKey}" data-day="${dayKey}">${optionsHTML}</select>`;
+            scheduleList.appendChild(item);
+            
+            const selectEl = item.querySelector('select');
+            if (schedule[dayKey]) {
+                selectEl.value = schedule[dayKey];
+            }
+            selectEl.addEventListener('change', async (e) => {
+                schedule[e.target.dataset.day] = e.target.value;
+                await saveUserData('schedule', schedule);
+            });
+        });
     }
 
     function renderWorkouts() {
@@ -548,7 +535,7 @@
     async function addProgramManually() {
         const name = prompt("Enter a name for the new workout program:");
         if (name && !programs[name]) {
-            programs[name] = { programName: name, weeks: [] };
+            programs[name] = { programName: name, workouts: {} };
             await saveUserData('programs', programs);
             renderAll();
             openProgramEditor(name);
@@ -638,9 +625,10 @@
             workouts[editingContext.name] = newWorkoutData;
             await saveUserData('workouts', workouts);
         } else if (editingContext.type === 'program') {
-            const { programName, weekIndex, workoutName } = editingContext;
-            programs[programName].weeks[weekIndex].workouts[workoutName] = newWorkoutData;
+            const { programName, workoutName, weekIndex } = editingContext;
+            programs[programName].workouts[workoutName][weekIndex].exercises = newWorkoutData;
             await saveUserData('programs', programs);
+            openProgramWeekEditor(programName, workoutName); // Re-render the week editor
         }
         
         renderAll();
@@ -658,129 +646,83 @@
 
     // --- PROGRAM EDITOR ---
     function openProgramEditor(name) {
-        editingProgramName = name;
-        programEditorOverlay.classList.add('active');
-        document.getElementById('program-editor-title').textContent = `Editing: ${name}`;
-        renderProgramWeeks();
+        editingContext = { type: 'program', name: name };
+        programDetailOverlay.classList.add('active');
+        document.getElementById('program-detail-title').textContent = `Program: ${name}`;
+        renderProgramWorkoutsList();
     }
 
-    function renderProgramWeeks() {
-        const program = programs[editingProgramName];
-        const weeksList = document.getElementById('program-weeks-list');
-        weeksList.innerHTML = '';
-        if (!program || !program.weeks) return;
+    function renderProgramWorkoutsList() {
+        const program = programs[editingContext.name];
+        const listEl = document.getElementById('program-detail-list');
+        listEl.innerHTML = '';
+        if (!program || !program.workouts || Object.keys(program.workouts).length === 0) {
+            listEl.innerHTML = `<p style="text-align: center; color: var(--text-secondary);">This program has no workouts yet.</p>`;
+            return;
+        }
 
-        program.weeks.forEach((weekBlock, index) => {
-            const weekBlockEl = document.createElement('div');
-            weekBlockEl.className = 'program-week-block glass-card';
-            const weekRangeText = `Weeks ${weekBlock.weekRange[0]}` + (weekBlock.weekRange[1] > weekBlock.weekRange[0] ? `-${weekBlock.weekRange[1]}` : '');
-            
-            let scheduleHTML = '';
-            const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-            days.forEach(day => {
-                const workoutName = weekBlock.schedule[day] || 'Rest Day';
-                const isClickable = workoutName !== 'Rest Day' ? `class="workout-name-clickable" onclick="editProgramWorkout('${editingProgramName}', ${index}, '${workoutName}')"` : '';
-                scheduleHTML += `<div class="day-entry"><strong>${day.charAt(0).toUpperCase() + day.slice(1)}:</strong> <span ${isClickable}>${workoutName}</span></div>`;
-            });
-
-            weekBlockEl.innerHTML = `
-                <div class="program-week-header">
-                    <h3>${weekRangeText}</h3>
-                    <div class="week-block-controls">
-                        <button class="action-btn destructive-btn" style="padding: 5px 10px; font-size: 0.9rem; margin-top: 0;" onclick="deleteWeekBlock(${index})">Delete</button>
-                    </div>
-                </div>
-                <div class="program-week-schedule">${scheduleHTML}</div>`;
-            weeksList.appendChild(weekBlockEl);
+        Object.keys(program.workouts).forEach(workoutName => {
+            const item = document.createElement('div');
+            item.className = 'workout-item glass-card';
+            item.innerHTML = `<span class="workout-item-name">${workoutName}</span>
+                <div class="workout-item-actions">
+                    <button class="action-btn" style="margin-top:0; padding: 8px 12px;" onclick="openProgramWeekEditor('${editingContext.name}', '${workoutName}')">Edit</button>
+                </div>`;
+            listEl.appendChild(item);
         });
     }
 
-    function editProgramWorkout(programName, weekIndex, workoutName) {
-        const workoutData = programs[programName].weeks[weekIndex].workouts[workoutName];
-        if (!workoutData) {
-            showToast("Workout data not found in program.", "error");
+    document.getElementById('add-workout-to-program-btn').addEventListener('click', async () => {
+        const workoutName = prompt("Enter a name for the new workout in this program (e.g., Push Day):");
+        if (!workoutName) return;
+
+        const program = programs[editingContext.name];
+        if (program.workouts[workoutName]) {
+            showToast("A workout with this name already exists in the program.", "error");
             return;
         }
-        // Set the context before opening the editor
-        editingContext = { type: 'program', programName, weekIndex, workoutName };
+
+        // Create a default first week block
+        program.workouts[workoutName] = [{
+            weekRange: [1, 1],
+            exercises: workouts[workoutName] ? JSON.parse(JSON.stringify(workouts[workoutName])) : [{ name: "New Exercise", warmupSets: 0, workingSets: 3, reps: "8-12", rest: "60s", earlySetRPE: "~7", lastSetRPE: "~9" }]
+        }];
+
+        await saveUserData('programs', programs);
+        renderProgramWorkoutsList();
+    });
+
+    function openProgramWeekEditor(programName, workoutName) {
+        editingContext = { type: 'program', name: programName, workoutName: workoutName };
+        programWeekEditorOverlay.classList.add('active');
+        document.getElementById('program-week-editor-title').textContent = `Editing: ${workoutName}`;
+        renderProgramWeekBlocks();
+    }
+
+    function renderProgramWeekBlocks() {
+        const { name, workoutName } = editingContext;
+        const weekBlocks = programs[name].workouts[workoutName];
+        const listEl = document.getElementById('program-week-editor-list');
+        listEl.innerHTML = '';
+
+        weekBlocks.forEach((block, index) => {
+            const weekRangeText = `Weeks ${block.weekRange[0]}` + (block.weekRange[1] > block.weekRange[0] ? `-${block.weekRange[1]}` : '');
+            const item = document.createElement('div');
+            item.className = 'workout-item glass-card';
+            item.innerHTML = `<span class="workout-item-name">${weekRangeText}</span>
+                <div class="workout-item-actions">
+                     <button class="action-btn" style="margin-top:0; padding: 8px 12px;" onclick="editProgramWeekBlock('${name}', '${workoutName}', ${index})">Edit Workout</button>
+                </div>`;
+            listEl.appendChild(item);
+        });
+    }
+
+    function editProgramWeekBlock(programName, workoutName, weekIndex) {
+        const workoutData = programs[programName].workouts[workoutName][weekIndex].exercises;
+        editingContext = { type: 'program', programName, workoutName, weekIndex };
         openEditor(workoutName, workoutData);
     }
-
-    document.getElementById('add-week-block-btn').addEventListener('click', () => {
-        const program = programs[editingProgramName];
-        if (!program) return;
-
-        const nextWeekStart = program.weeks.length > 0 ? Math.max(...program.weeks.map(w => w.weekRange[1])) + 1 : 1;
-
-        document.getElementById('week-block-editor-title').textContent = "Add Week Block";
-        document.getElementById('week-start-input').value = nextWeekStart;
-        document.getElementById('week-end-input').value = nextWeekStart;
-        
-        const scheduleEditor = document.getElementById('week-block-schedule-editor');
-        const datalist = document.getElementById('workout-options-datalist');
-        scheduleEditor.innerHTML = '';
-        datalist.innerHTML = Object.keys(workouts).map(w => `<option value="${w}"></option>`).join('');
-
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-        days.forEach(day => {
-            scheduleEditor.innerHTML += `
-                <div class="day-schedule-group">
-                    <label for="week-block-${day}">${day}</label>
-                    <input type="text" list="workout-options-datalist" id="week-block-${day}" placeholder="Select or type new plan...">
-                </div>`;
-        });
-        weekBlockEditorOverlay.classList.add('active');
-    });
-
-    document.getElementById('save-week-block-btn').addEventListener('click', () => {
-        const startWeek = parseInt(document.getElementById('week-start-input').value);
-        const endWeek = parseInt(document.getElementById('week-end-input').value);
-        if (!startWeek || !endWeek || startWeek > endWeek) {
-            showToast("Invalid week range.", "error");
-            return;
-        }
-
-        const newWeekBlock = {
-            weekRange: [startWeek, endWeek],
-            schedule: {},
-            workouts: {}
-        };
-
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-        days.forEach(day => {
-            const dayKey = day.toLowerCase();
-            const workoutName = document.getElementById(`week-block-${day}`).value.trim();
-            if (workoutName && workoutName !== 'Rest Day') {
-                newWeekBlock.schedule[dayKey] = workoutName;
-                if (workouts[workoutName]) {
-                    // Deep copy existing workout
-                    newWeekBlock.workouts[workoutName] = JSON.parse(JSON.stringify(workouts[workoutName]));
-                } else {
-                    // Create a new blank workout if it doesn't exist
-                    newWeekBlock.workouts[workoutName] = [{ name: "New Exercise", warmupSets: 0, workingSets: 3, reps: "8-12", rest: "60s", earlySetRPE: "~7", lastSetRPE: "~9" }];
-                }
-            }
-        });
-
-        programs[editingProgramName].weeks.push(newWeekBlock);
-        programs[editingProgramName].weeks.sort((a, b) => a.weekRange[0] - b.weekRange[0]); // Keep sorted
-        
-        weekBlockEditorOverlay.classList.remove('active');
-        renderProgramWeeks();
-    });
-
-    function deleteWeekBlock(index) {
-        if (!confirm("Are you sure you want to delete this week block?")) return;
-        programs[editingProgramName].weeks.splice(index, 1);
-        renderProgramWeeks();
-    }
-
-    document.getElementById('save-program-btn').addEventListener('click', async () => {
-        await saveUserData('programs', programs);
-        programEditorOverlay.classList.remove('active');
-        renderAll();
-    });
-
+    
     // --- AI TRANSCRIPTION ---
     document.getElementById('transcribe-btn').addEventListener('click', async () => {
         const apiKey = document.getElementById('gemini-api-key').value;
@@ -976,12 +918,12 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
     document.getElementById('import-file-input').addEventListener('change', handleWorkoutImport);
     document.getElementById('import-program-file-input').addEventListener('change', handleProgramImport);
 
-    [addOptionsOverlay, aiTranscribeOverlay, editorOverlay, programEditorOverlay, weekBlockEditorOverlay].forEach(overlay => {
+    [addOptionsOverlay, aiTranscribeOverlay, editorOverlay, programDetailOverlay, programWeekEditorOverlay].forEach(overlay => {
         overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
     });
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
-    document.getElementById('close-program-editor-btn').addEventListener('click', () => programEditorOverlay.classList.remove('active'));
-    document.getElementById('close-week-block-editor-btn').addEventListener('click', () => weekBlockEditorOverlay.classList.remove('active'));
+    document.getElementById('close-program-detail-btn').addEventListener('click', () => programDetailOverlay.classList.remove('active'));
+    document.getElementById('close-program-week-editor-btn').addEventListener('click', () => programWeekEditorOverlay.classList.remove('active'));
 
     // --- REORDER LOGIC ---
     const editorPanel = document.getElementById('editor-panel');
