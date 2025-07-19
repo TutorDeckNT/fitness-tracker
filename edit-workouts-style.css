@@ -141,7 +141,13 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 .overlay-footer { padding: 15px; border-top: 1px solid var(--glass-border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; background: var(--glass-bg); }
 
-.editor-exercise { padding: 15px; margin-bottom: 15px; animation: fade-in 0.5s; }
+/* CORRECTED: Original padding was on the card itself. Now it's handled by header/body for collapse animation. */
+.editor-exercise { 
+    padding: 0; /* Padding is now handled by inner elements */
+    margin-bottom: 15px; 
+    animation: fade-in 0.5s;
+    overflow: hidden; /* Important for child border-radius */
+}
 .editor-exercise:nth-child(even) { background: rgba(0,0,0,0.15); }
 
 #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -344,50 +350,77 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     margin-bottom: 10px;
 }
 
-.editor-header-controls { display: flex; align-items: center; gap: 8px; }
-#reorder-exercises-btn svg { stroke: var(--text-primary); }
+/* --- REORDER FEATURE STYLES --- */
 
-#editor-footer {
-    grid-template-columns: 1fr 1fr;
+.editor-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-#editor-panel.reorder-mode #add-exercise-btn,
-#editor-panel.reorder-mode #save-workouts-btn {
-    display: none;
+/* Make reorder icon white */
+#reorder-exercises-btn svg {
+    stroke: var(--text-primary);
 }
 
-#editor-panel.reorder-mode #done-reordering-btn {
-    display: inline-flex;
-}
-
+/* Layout for exercise card header (title and delete button) */
 .editor-exercise-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 15px;
+    padding: 15px;
+    padding-bottom: 10px;
 }
 .editor-exercise-header h4 {
     margin: 0;
-}
-.editor-exercise-body {
-    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
-    max-height: 1000px; /* Large value for expanded state */
-    opacity: 1;
-    overflow: hidden;
-    padding: 0 15px 15px 15px;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
+/* Layout for exercise card body (the form fields) */
+.editor-exercise-body {
+    padding: 0 15px 15px 15px;
+    /* Animation for collapsing */
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.4s ease-in-out;
+    max-height: 1000px; /* Needs a large value for expanded state */
+    opacity: 1;
+    overflow: hidden;
+}
+
+/* --- REORDER MODE --- */
+
+/* Hide Add/Save buttons and show Done button in reorder mode */
+#editor-panel.reorder-mode #add-exercise-btn,
+#editor-panel.reorder-mode #save-workouts-btn {
+    display: none;
+}
+#editor-panel.reorder-mode #done-reordering-btn {
+    display: inline-flex;
+}
+
+/* Add grab cursor to exercises in reorder mode */
 #editor-panel.reorder-mode .editor-exercise {
     cursor: grab;
-    padding-top: 15px;
-    padding-bottom: 15px;
 }
+#editor-panel.reorder-mode .editor-exercise:active {
+    cursor: grabbing;
+}
+
+/* Style for the item being dragged */
 #editor-panel.reorder-mode .editor-exercise.dragging {
     opacity: 0.6;
     background: var(--system-blue);
 }
+
+/* MINIMIZE: Collapse the body of the exercise card in reorder mode */
 #editor-panel.reorder-mode .editor-exercise-body {
     max-height: 0;
     opacity: 0;
-    padding: 0 15px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Adjust header padding when body is collapsed */
+#editor-panel.reorder-mode .editor-exercise-header {
+    padding-bottom: 15px;
 }
