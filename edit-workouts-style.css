@@ -141,12 +141,12 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 .overlay-footer { padding: 15px; border-top: 1px solid var(--glass-border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; background: var(--glass-bg); }
 
-/* CORRECTED: Original padding was on the card itself. Now it's handled by header/body for collapse animation. */
 .editor-exercise { 
-    padding: 0; /* Padding is now handled by inner elements */
+    padding: 0;
     margin-bottom: 15px; 
     animation: fade-in 0.5s;
-    overflow: hidden; /* Important for child border-radius */
+    overflow: hidden;
+    will-change: transform; /* Performance boost for dragging */
 }
 .editor-exercise:nth-child(even) { background: rgba(0,0,0,0.15); }
 
@@ -160,196 +160,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .action-btn.loading .loader { display: block; }
 .action-btn.loading .btn-text, .action-btn.loading span { visibility: hidden; }
 
-.options-menu-popup {
-    position: absolute;
-    z-index: 100;
-    min-width: 180px;
-    padding: 8px;
-    animation: fade-in 0.2s ease-out;
-    bottom: calc(100% + 5px);
-    right: 0;
-}
-.options-menu-popup .menu-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: none;
-    border: none;
-    width: 100%;
-    box-sizing: border-box;
-    text-align: left;
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.options-menu-popup .menu-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-.options-menu-popup .menu-item svg {
-    width: 20px;
-    height: 20px;
-}
-.options-menu-popup .menu-item.delete-item {
-    color: var(--system-red);
-}
-.menu-item .share-icon-menu { 
-    stroke: var(--text-primary);
-    stroke-width: 2;
-}
-.menu-item .edit-icon-menu { 
-    color: var(--text-primary);
-}
-.menu-item.delete-item .delete-icon-menu { 
-    stroke: var(--system-red);
-    fill: none;
-}
-
-.add-plan-circle-btn {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border-radius: 50%;
-    background-color: rgba(45, 45, 45, 0.9);
-    margin-top: 0;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease-out;
-}
-
-.add-plan-circle-btn svg {
-    width: 24px;
-    height: 24px;
-    color: var(--text-primary);
-}
-
-.add-plan-circle-btn:hover {
-    background-color: rgba(60, 60, 60, 0.95);
-    transform: scale(1.05);
-}
-.add-plan-circle-btn:active {
-    transform: scale(0.95) !important;
-}
-
-#add-options-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.menu-style-btn {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid transparent;
-    width: 100%;
-    box-sizing: border-box;
-    text-align: left;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-}
-
-.menu-style-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: var(--glass-border);
-}
-
-.menu-style-btn svg {
-    width: 24px;
-    height: 24px;
-    color: var(--text-primary);
-    flex-shrink: 0;
-}
-
-.menu-style-btn img {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-}
-
-/* SKELETON LOADER STYLES */
-@keyframes shimmer-effect {
-    0% { background-position: -1200px 0; }
-    100% { background-position: 1200px 0; }
-}
-
-.skeleton {
-    animation: shimmer-effect 2s linear infinite;
-    background: linear-gradient(to right, var(--glass-bg) 8%, rgba(255, 255, 255, 0.08) 18%, var(--glass-bg) 33%);
-    background-size: 1200px 100%;
-    border-radius: 14px;
-}
-
-.skeleton-title {
-    height: 22px;
-    width: 200px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-}
-
-.sk-schedule-card {
-    height: 280px;
-    margin-bottom: 30px;
-    padding: 10px;
-}
-
-.sk-schedule-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 5px;
-}
-
-.sk-schedule-label {
-    height: 20px;
-    width: 100px;
-    border-radius: 6px;
-}
-
-.sk-schedule-select {
-    height: 38px;
-    width: 150px;
-    border-radius: 8px;
-}
-
-.sk-workouts-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.sk-workouts-buttons {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.sk-button-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.sk-button-main {
-    width: 120px;
-    height: 44px;
-    border-radius: 14px;
-}
-
-.sk-workout-item {
-    height: 55px;
-    margin-bottom: 10px;
-}
-
 /* --- REORDER FEATURE STYLES --- */
 
 .editor-header-controls {
@@ -358,38 +168,38 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     gap: 8px;
 }
 
-/* Make reorder icon white */
 #reorder-exercises-btn svg {
-    stroke: var(--text-primary);
+    stroke: var(--text-primary); /* Correctly sets icon color to white */
 }
 
-/* Layout for exercise card header (title and delete button) */
 .editor-exercise-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    padding-bottom: 10px;
+    cursor: default; /* Default cursor for the header */
 }
 .editor-exercise-header h4 {
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Layout for exercise card body (the form fields) */
+.exercise-name-title { display: none; } /* Hide name title by default */
+
 .editor-exercise-body {
     padding: 0 15px 15px 15px;
-    /* Animation for collapsing */
     transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.4s ease-in-out;
-    max-height: 1000px; /* Needs a large value for expanded state */
+    max-height: 1000px;
     opacity: 1;
     overflow: hidden;
 }
 
 /* --- REORDER MODE --- */
 
-/* Hide Add/Save buttons and show Done button in reorder mode */
 #editor-panel.reorder-mode #add-exercise-btn,
 #editor-panel.reorder-mode #save-workouts-btn {
     display: none;
@@ -398,21 +208,23 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     display: inline-flex;
 }
 
-/* Add grab cursor to exercises in reorder mode */
 #editor-panel.reorder-mode .editor-exercise {
-    cursor: grab;
+    cursor: grab; /* Show grab cursor for the whole card in reorder mode */
 }
 #editor-panel.reorder-mode .editor-exercise:active {
     cursor: grabbing;
 }
 
-/* Style for the item being dragged */
-#editor-panel.reorder-mode .editor-exercise.dragging {
-    opacity: 0.6;
-    background: var(--system-blue);
+/* Show exercise name and hide number in reorder mode */
+#editor-panel.reorder-mode .exercise-number { display: none; }
+#editor-panel.reorder-mode .exercise-name-title { display: inline; }
+
+/* Hide delete button in reorder mode */
+#editor-panel.reorder-mode .delete-exercise-btn {
+    display: none;
 }
 
-/* MINIMIZE: Collapse the body of the exercise card in reorder mode */
+/* Collapse the exercise body */
 #editor-panel.reorder-mode .editor-exercise-body {
     max-height: 0;
     opacity: 0;
@@ -420,7 +232,14 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     padding-bottom: 0;
 }
 
-/* Adjust header padding when body is collapsed */
-#editor-panel.reorder-mode .editor-exercise-header {
-    padding-bottom: 15px;
+/* --- DRAGGING STATES (from tutorial) --- */
+
+.editor-exercise.is-idle {
+    transition: transform 0.25s ease;
+}
+
+.editor-exercise.is-draggable {
+    z-index: 10;
+    opacity: 0.9;
+    transform: scale(1.02);
 }
