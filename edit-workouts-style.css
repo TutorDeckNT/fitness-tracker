@@ -343,3 +343,51 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     height: 55px;
     margin-bottom: 10px;
 }
+
+.editor-header-controls { display: flex; align-items: center; gap: 8px; }
+#reorder-exercises-btn svg { stroke: var(--text-primary); }
+
+#editor-footer {
+    grid-template-columns: 1fr 1fr;
+}
+
+#editor-panel.reorder-mode #add-exercise-btn,
+#editor-panel.reorder-mode #save-workouts-btn {
+    display: none;
+}
+
+#editor-panel.reorder-mode #done-reordering-btn {
+    display: inline-flex;
+}
+
+.editor-exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+}
+.editor-exercise-header h4 {
+    margin: 0;
+}
+.editor-exercise-body {
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
+    max-height: 1000px; /* Large value for expanded state */
+    opacity: 1;
+    overflow: hidden;
+    padding: 0 15px 15px 15px;
+}
+
+#editor-panel.reorder-mode .editor-exercise {
+    cursor: grab;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+#editor-panel.reorder-mode .editor-exercise.dragging {
+    opacity: 0.6;
+    background: var(--system-blue);
+}
+#editor-panel.reorder-mode .editor-exercise-body {
+    max-height: 0;
+    opacity: 0;
+    padding: 0 15px;
+}
