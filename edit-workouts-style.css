@@ -436,3 +436,36 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     opacity: 0.95;
     transform: scale(1.02);
 }
+
+/* --- PROGRAM EDITOR STYLES --- */
+.program-week-block {
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.program-week-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.program-week-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.program-week-schedule p {
+    margin: 5px 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.program-week-schedule p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+    display: inline-block;
+    width: 90px;
+}
