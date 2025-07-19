@@ -146,7 +146,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     margin-bottom: 15px; 
     animation: fade-in 0.5s;
     overflow: hidden;
-    will-change: transform; /* Performance boost for dragging */
+    will-change: transform;
 }
 .editor-exercise:nth-child(even) { background: rgba(0,0,0,0.15); }
 
@@ -169,7 +169,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 }
 
 #reorder-exercises-btn svg {
-    stroke: var(--text-primary); /* Correctly sets icon color to white */
+    stroke: var(--text-primary);
 }
 
 .editor-exercise-header {
@@ -177,7 +177,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    cursor: default; /* Default cursor for the header */
+    cursor: default;
 }
 .editor-exercise-header h4 {
     margin: 0;
@@ -188,7 +188,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     text-overflow: ellipsis;
 }
 
-.exercise-name-title { display: none; } /* Hide name title by default */
+.exercise-name-title { display: none; }
 
 .editor-exercise-body {
     padding: 0 15px 15px 15px;
@@ -209,22 +209,19 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 }
 
 #editor-panel.reorder-mode .editor-exercise {
-    cursor: grab; /* Show grab cursor for the whole card in reorder mode */
+    cursor: grab;
 }
 #editor-panel.reorder-mode .editor-exercise:active {
     cursor: grabbing;
 }
 
-/* Show exercise name and hide number in reorder mode */
 #editor-panel.reorder-mode .exercise-number { display: none; }
 #editor-panel.reorder-mode .exercise-name-title { display: inline; }
 
-/* Hide delete button in reorder mode */
 #editor-panel.reorder-mode .delete-exercise-btn {
     display: none;
 }
 
-/* Collapse the exercise body */
 #editor-panel.reorder-mode .editor-exercise-body {
     max-height: 0;
     opacity: 0;
@@ -240,6 +237,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 .editor-exercise.is-draggable {
     z-index: 10;
-    opacity: 0.9;
+    opacity: 0.95;
     transform: scale(1.02);
 }
