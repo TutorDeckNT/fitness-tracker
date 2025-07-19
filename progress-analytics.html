@@ -32,105 +32,102 @@
         </header>
 
         <div id="app-content" style="display: none;">
-            <!-- MODIFICATION: Added a wrapper div for the cross-fade effect -->
-            <div id="loader-container">
-                <div id="main-content-wrapper">
-                    <h2 style="margin-top:0;">At a Glance</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card glass-card"><div id="total-workouts" class="stat-value">0</div><div class="stat-label">Total Workouts</div></div>
-                        <div class="stat-card glass-card"><div id="total-volume" class="stat-value">0</div><div class="stat-label">Weight Lifted (lbs)</div></div>
-                        <div class="stat-card glass-card"><div id="total-sets" class="stat-value">0</div><div class="stat-label">Sets Done</div></div>
-                    </div>
+            <div id="main-content-wrapper" style="display: none;">
+                <h2 style="margin-top:0;">At a Glance</h2>
+                <div class="stats-grid">
+                    <div class="stat-card glass-card"><div id="total-workouts" class="stat-value">0</div><div class="stat-label">Total Workouts</div></div>
+                    <div class="stat-card glass-card"><div id="total-volume" class="stat-value">0</div><div class="stat-label">Weight Lifted (lbs)</div></div>
+                    <div class="stat-card glass-card"><div id="total-sets" class="stat-value">0</div><div class="stat-label">Sets Done</div></div>
+                </div>
 
-                    <h2 style="margin-top: 40px;">Progress Charts</h2>
-                    <div class="glass-card" style="padding: 20px; margin-bottom: 20px;">
-                        <div class="chart-controls">
-                            <div>
-                                <label for="chart-metric-select">Select Metric:</label>
-                                <select id="chart-metric-select">
-                                    <option value="volume">Total Weight Lifted Over Time</option>
-                                    <option value="1rm">Est. 1RM Over Time</option>
-                                </select>
-                            </div>
-                            <div id="chart-exercise-select-container" style="display: none;">
-                                <label for="chart-exercise-select">Select Exercise:</label>
-                                <select id="chart-exercise-select">
-                                    <option value="">-- Choose an exercise --</option>
-                                </select>
-                            </div>
+                <h2 style="margin-top: 40px;">Progress Charts</h2>
+                <div class="glass-card" style="padding: 20px; margin-bottom: 20px;">
+                    <div class="chart-controls">
+                        <div>
+                            <label for="chart-metric-select">Select Metric:</label>
+                            <select id="chart-metric-select">
+                                <option value="volume">Total Weight Lifted Over Time</option>
+                                <option value="1rm">Est. 1RM Over Time</option>
+                            </select>
                         </div>
-                        <canvas id="progress-chart"></canvas>
-                    </div>
-
-                    <div class="section-header" style="margin-top: 40px;">
-                        <h2>Data Tools</h2>
-                    </div>
-                    <a href="manage-data.html" class="management-link-card glass-card">
-                        <div class="management-link-content">
-                            <h3>Manage Exercise Names</h3>
-                            <p>Clean up your data by merging exercises you've accidentally named differently.</p>
-                        </div>
-                        <div class="management-link-arrow">
-                            <span>→</span>
-                        </div>
-                    </a>
-
-                    <h2 style="margin-top: 40px;">Personal Record Finder</h2>
-                    <div id="pr-finder" class="glass-card">
-                        <div class="pr-finder-form">
-                            <label for="pr-exercise-select">Select an Exercise:</label>
-                            <select id="pr-exercise-select">
+                        <div id="chart-exercise-select-container" style="display: none;">
+                            <label for="chart-exercise-select">Select Exercise:</label>
+                            <select id="chart-exercise-select">
                                 <option value="">-- Choose an exercise --</option>
                             </select>
                         </div>
-                        <div id="pr-result-area">
-                            <p class="pr-prompt">Select an exercise to see your all-time personal record.</p>
-                        </div>
                     </div>
+                    <canvas id="progress-chart"></canvas>
+                </div>
 
-                    <div class="section-header">
-                        <h2>Workout History</h2>
-                        <button id="choose-date-btn" class="action-btn btn-style-90 matt-black-bkg" style="padding: 8px 16px;"><span class="btn-text">Choose Date</span></button>
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2>Data Tools</h2>
+                </div>
+                <a href="manage-data.html" class="management-link-card glass-card">
+                    <div class="management-link-content">
+                        <h3>Manage Exercise Names</h3>
+                        <p>Clean up your data by merging exercises you've accidentally named differently.</p>
                     </div>
-                    
-                    <div class="history-carousel-container" id="history-carousel-container">
-                        <div class="history-carousel" id="history-carousel"></div>
+                    <div class="management-link-arrow">
+                        <span>→</span>
                     </div>
+                </a>
 
-                    <div id="calendar-popup" class="glass-card">
-                        <div class="calendar-header">
-                            <button id="prev-month-btn" class="calendar-nav-btn">←</button>
-                            <span id="calendar-month-year"></span>
-                            <button id="next-month-btn" class="calendar-nav-btn">→</button>
-                        </div>
-                        <div class="calendar-weekdays">
-                            <div class="weekday">S</div><div class="weekday">M</div><div class="weekday">T</div><div class="weekday">W</div><div class="weekday">T</div><div class="weekday">F</div><div class="weekday">S</div>
-                        </div>
-                        <div class="calendar-grid" id="calendar-grid"></div>
+                <h2 style="margin-top: 40px;">Personal Record Finder</h2>
+                <div id="pr-finder" class="glass-card">
+                    <div class="pr-finder-form">
+                        <label for="pr-exercise-select">Select an Exercise:</label>
+                        <select id="pr-exercise-select">
+                            <option value="">-- Choose an exercise --</option>
+                        </select>
+                    </div>
+                    <div id="pr-result-area">
+                        <p class="pr-prompt">Select an exercise to see your all-time personal record.</p>
                     </div>
                 </div>
-                <div id="skeleton-loader">
-                    <div class="skeleton-title skeleton"></div>
-                    <div class="sk-stats-grid">
-                        <div class="skeleton sk-stat-card"></div>
-                        <div class="skeleton sk-stat-card"></div>
-                        <div class="skeleton sk-stat-card"></div>
+
+                <div class="section-header">
+                    <h2>Workout History</h2>
+                    <button id="choose-date-btn" class="action-btn btn-style-90 matt-black-bkg" style="padding: 8px 16px;"><span class="btn-text">Choose Date</span></button>
+                </div>
+                
+                <div class="history-carousel-container" id="history-carousel-container">
+                    <div class="history-carousel" id="history-carousel"></div>
+                </div>
+
+                <div id="calendar-popup" class="glass-card">
+                    <div class="calendar-header">
+                        <button id="prev-month-btn" class="calendar-nav-btn">←</button>
+                        <span id="calendar-month-year"></span>
+                        <button id="next-month-btn" class="calendar-nav-btn">→</button>
                     </div>
-                    <div class="skeleton-title skeleton"></div>
-                    <div class="skeleton sk-chart-card"></div>
-                    <div class="skeleton-title skeleton"></div>
-                    <div class="skeleton sk-link-card"></div>
-                    <div class="skeleton-title skeleton"></div>
-                    <div class="skeleton sk-pr-card"></div>
-                    <div class="sk-history-header">
-                        <div class="skeleton-title skeleton"></div>
-                        <div class="skeleton sk-button"></div>
+                    <div class="calendar-weekdays">
+                        <div class="weekday">S</div><div class="weekday">M</div><div class="weekday">T</div><div class="weekday">W</div><div class="weekday">T</div><div class="weekday">F</div><div class="weekday">S</div>
                     </div>
-                    <div class="sk-history-carousel">
-                        <div class="skeleton sk-history-card"></div>
-                        <div class="skeleton sk-history-card"></div>
-                        <div class="skeleton sk-history-card"></div>
-                    </div>
+                    <div class="calendar-grid" id="calendar-grid"></div>
+                </div>
+            </div>
+            <div id="skeleton-loader">
+                <div class="skeleton-title skeleton"></div>
+                <div class="sk-stats-grid">
+                    <div class="skeleton sk-stat-card"></div>
+                    <div class="skeleton sk-stat-card"></div>
+                    <div class="skeleton sk-stat-card"></div>
+                </div>
+                <div class="skeleton-title skeleton"></div>
+                <div class="skeleton sk-chart-card"></div>
+                <div class="skeleton-title skeleton"></div>
+                <div class="skeleton sk-link-card"></div>
+                <div class="skeleton-title skeleton"></div>
+                <div class="skeleton sk-pr-card"></div>
+                <div class="sk-history-header">
+                    <div class="skeleton-title skeleton"></div>
+                    <div class="skeleton sk-button"></div>
+                </div>
+                <div class="sk-history-carousel">
+                    <div class="skeleton sk-history-card"></div>
+                    <div class="skeleton sk-history-card"></div>
+                    <div class="skeleton sk-history-card"></div>
                 </div>
             </div>
         </div>
@@ -523,11 +520,19 @@
         renderProgressCharts();
         populateHistoryCarousel();
 
-        // --- MODIFICATION: Use opacity for a smooth cross-fade ---
+        // --- MODIFICATION: This is the new, safe way to handle the transition ---
         if (skeletonLoader && mainContentWrapper) {
-            skeletonLoader.style.opacity = '0';
-            skeletonLoader.style.pointerEvents = 'none'; // Make skeleton non-interactive
-            mainContentWrapper.style.opacity = '1';
+            // 1. Start the fade-out animation on the skeleton
+            skeletonLoader.classList.add('fade-out');
+
+            // 2. After the animation finishes, hide it completely so it doesn't block clicks
+            skeletonLoader.addEventListener('animationend', () => {
+                skeletonLoader.style.display = 'none';
+            }, { once: true }); // {once: true} automatically removes the event listener
+
+            // 3. Immediately display the main content and start its fade-in animation
+            mainContentWrapper.style.display = 'block';
+            mainContentWrapper.classList.add('fade-in');
         }
     }
 
@@ -542,11 +547,13 @@
             signInPrompt.style.display = 'none';
             userInfoDiv.style.display = 'flex';
 
-            // --- MODIFICATION: Set initial states for the fade ---
+            // This part remains the same, setting the correct initial state
             if (skeletonLoader && mainContentWrapper) {
-                skeletonLoader.style.opacity = '1';
-                skeletonLoader.style.pointerEvents = 'auto';
-                mainContentWrapper.style.opacity = '0';
+                skeletonLoader.style.display = 'block';
+                mainContentWrapper.style.display = 'none';
+                // Remove any animation classes from previous loads
+                skeletonLoader.classList.remove('fade-out');
+                mainContentWrapper.classList.remove('fade-in');
             }
 
             await initAnalyticsPage();
