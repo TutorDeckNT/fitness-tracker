@@ -1,0 +1,223 @@
+name: Automate Service Worker Cache Version
+
+# This action runs on every push to the 'main' branch.
+on:
+  push:
+    branches:
+      - main
+
+# This condition prevents the workflow from running in an infinite loop.
+# It checks if the commit message contains '[skip ci]' or was made by the bot itself.
+if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, 'ci: Auto-update')"
+
+jobs:
+  update-cache-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code from your repository.
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # We need a token to be able to push changes back to the repo.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 2: Configure Git to use the GitHub Actions bot as the author.
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # Step 3: Get the short version of the latest commit hash.
+      - name: Generate Cache Version
+        id: generate_version
+        run: echo "CACHE_VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      # Step 4: Find the CACHE_NAME line in sw.js and replace it with the new version.
+      - name: Update Service Worker Cache Name
+        run: |
+          sed -i "s/const CACHE_NAME = '.*';/const CACHE_NAME = 'fitness-tracker-cache-v${{ env.CACHE_VERSION }}';/" sw.js
+
+      # Step 5: Check for changes, and if the file was updated, commit and push.
+      - name: Commit and Push if changed
+        run: |
+          # Check if there are any changes to commit.
+          if ! git diff --quiet sw.js; then
+            echo "Service worker cache version has been updated. Committing changes."
+            git add sw.js
+            git commit -m "ci: Auto-update service worker cache version to ${{ env.CACHE_VERSION }}"
+            git push
+          else
+            echo "Service worker cache version is already up to date."
+          fi```
+
+---
+
+### File 2: `sw.js`
+
+This is the updated service worker file. It includes the full list of assets to cache and a placeholder `CACHE_NAME` that the automation will update.
+
+```javascript
+const CACHE_NAME = 'fitness-tracker-cache-v-initial'; // This line will be automatically updated by GitHub Actions
+const APP_SHELL = [
+    '/',
+    'index.html',
+    'edit-workouts.html',
+    'manage-data.html',
+    'progress-analytics.html',
+    'style.css',
+    'edit-workouts-style.css',
+    'manage-data-style.css',
+    'progress-analytics-style.css',
+    'manifest.json',
+    'images/eagle.png',
+    'images/Rosecurve.png',
+    // --- CRITICAL: All external CDN scripts are included ---
+    'https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js',
+    'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js',
+    'https://cdn.jsdelivr.net/npm/chart.js',
+    'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js'
+];
+
+let timerInterval = null;
+let timerEndTime = null;
+
+// --- Caching Logic ---
+
+// On install, pre-cache the entire application shell.
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Service Worker: Caching App Shell');
+        // addAll is atomic. If one file fails, the whole cache operation fails.
+        return cache.addAll(APP_SHELL);
+      })
+      .then(() => {
+        // Force the waiting service worker to become the active service worker.
+        return self.skipWaiting();
+      })
+  );
+});
+
+// On activation, clean up any old, unused caches.
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          // If a cache is not our current one, delete it.
+          if (cache !== CACHE_NAME) {
+            console.log('Service Worker: Clearing old cache:', cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => {
+      // Tell the active service worker to take control of the page immediately.
+      return self.clients.claim();
+    })
+  );
+});
+
+// The core of our caching strategy: Cache-First, falling back to Network.
+self.addEventListener('fetch', event => {
+  // We only want to cache GET requests.
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        // If the response is in the cache, return it immediately.
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // If it's not in the cache, fetch it from the network.
+        return fetch(event.request).then(
+          networkResponse => {
+            // We need to clone the response. A response is a stream
+            // and can only be consumed once. We need one for the browser
+            // and one for the cache.
+            const responseToCache = networkResponse.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                // Cache the new response for future use.
+                cache.put(event.request, responseToCache);
+              });
+
+            // Return the network response to the browser.
+            return networkResponse;
+          }
+        );
+      })
+      .catch(error => {
+        // If both the cache and the network fail (e.g., user is offline
+        // and the resource was never cached), the request will fail.
+        // The browser will show its default offline error page.
+        console.error('Service Worker: Fetch failed:', error);
+        // You could optionally return a fallback offline page here.
+      })
+  );
+});
+
+
+// --- Existing Timer and Message Logic (Unchanged) ---
+
+function runCountdown() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (!timerEndTime) {
+            clearInterval(timerInterval);
+            return;
+        }
+        const remainingMs = timerEndTime - Date.now();
+        const remainingSeconds = Math.max(0, Math.round(remainingMs / 1000));
+        
+        self.clients.matchAll().then(clients => {
+            clients.forEach(client => {
+                client.postMessage({ type: 'TIMER_UPDATE', remainingSeconds: remainingSeconds });
+            });
+        });
+
+        if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            timerEndTime = null;
+            self.registration.showNotification('Rest Over!', {
+                body: 'Time to start your next set!',
+                vibrate: [200, 100, 200],
+                tag: 'fitness-timer-notification'
+            });
+        }
+    }, 1000);
+}
+
+self.addEventListener('message', (event) => {
+    if (event.data.command === 'START_TIMER') {
+        if (event.data.duration > 0) {
+            timerEndTime = Date.now() + event.data.duration * 1000;
+            runCountdown();
+        }
+    }
+
+    if (event.data.command === 'STOP_TIMER') {
+        clearInterval(timerInterval);
+        timerEndTime = null;
+    }
+
+    if (event.data.command === 'SYNC_TIMER') {
+        if (timerEndTime) {
+            runCountdown();
+        }
+    }
+    
+    if (event.data.command === 'ADJUST_TIMER') {
+        if (timerEndTime) {
+            timerEndTime += event.data.seconds * 1000;
+        }
+    }
+});
