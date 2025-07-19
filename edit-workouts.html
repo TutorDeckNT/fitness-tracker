@@ -70,6 +70,24 @@
                     </div>
                     <div id="workouts-list"></div>
                 </div>
+
+                <div id="programs-section" style="margin-top: 30px;">
+                    <div class="page-header">
+                        <h2>Workout Programs</h2>
+                        <button id="show-add-program-options-btn" class="action-btn add-plan-circle-btn" title="Add Program">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                        </button>
+                        <input type="file" id="import-program-file-input" accept=".json" style="display: none;">
+                    </div>
+                    <div id="programs-list">
+                        <div class="glass-card" style="padding: 30px; text-align: center; margin-top: 10px;">
+                            <p style="margin: 0; color: var(--text-secondary); line-height: 1.5;">You don't have any programs yet. <br> Click the '+' button to create your first one!</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div id="skeleton-loader">
                 <div class="skeleton-title skeleton"></div>
@@ -99,7 +117,7 @@
     <div class="modal-overlay" id="add-options-overlay">
         <div class="overlay-content glass-card" id="add-options-panel">
             <div class="overlay-header">
-                <h2>Add a New Plan</h2>
+                <h2 id="add-options-title">Add a New Plan</h2>
                 <button class="icon-btn" id="close-add-options-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
             </div>
             <div class="overlay-body" id="add-options-list">
@@ -124,17 +142,17 @@
     <div class="modal-overlay" id="ai-transcribe-overlay">
         <div class="overlay-content glass-card" id="ai-transcribe-panel">
             <div class="overlay-header">
-                <h2>Transcribe with AI</h2>
+                <h2 id="ai-transcribe-title">Transcribe with AI</h2>
                 <button class="icon-btn" id="close-ai-transcribe-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
             </div>
             <div class="overlay-body">
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0;">Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.</p>
+                <p id="ai-transcribe-description" style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0;">Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.</p>
                 <div class="editor-form-group">
                     <label for="gemini-api-key">Google Gemini API Key (<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--system-blue);">Get one here</a>)</label>
                     <input type="password" id="gemini-api-key" placeholder="Enter your API key">
                 </div>
                 <div class="editor-form-group">
-                    <label for="ai-plan-name">New Plan Name</label>
+                    <label for="ai-plan-name">New Plan/Program Name</label>
                     <input type="text" id="ai-plan-name" placeholder="e.g., My Hypertrophy Push Day">
                 </div>
                 <div class="editor-form-group">
@@ -174,6 +192,28 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="program-editor-overlay">
+        <div class="overlay-content glass-card" id="program-editor-panel">
+            <div class="overlay-header">
+                <h2 id="program-editor-title">Edit Program</h2>
+                <button class="icon-btn" id="close-program-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+            </div>
+            <div class="overlay-body" id="program-weeks-list">
+                <!-- JS will generate week blocks here -->
+            </div>
+            <div class="overlay-footer" id="program-editor-footer">
+                <button class="action-btn" id="add-week-block-btn" style="background-color: rgba(255,255,255,0.1);">
+                    <span class="btn-text">Add Week Block</span>
+                </button>
+                <button class="action-btn" id="save-program-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">
+                    <span class="btn-text">Save Program</span>
+                    <div class="loader"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -194,6 +234,7 @@
     let currentUser = null;
     let workouts = {};
     let schedule = {};
+    let programs = {}; // New data structure for programs
 
     const editorOverlay = document.getElementById('editor-overlay');
     const editorExercisesList = document.getElementById('editor-exercises-list');
@@ -204,6 +245,8 @@
 
     const addOptionsOverlay = document.getElementById('add-options-overlay');
     const aiTranscribeOverlay = document.getElementById('ai-transcribe-overlay');
+
+    let currentAddMode = 'plan'; // 'plan' or 'program'
 
     function showToast(message, type = 'info', duration = 3000) {
         const container = document.getElementById('toast-container');
@@ -228,6 +271,7 @@
         const userData = userDoc.data() || {};
         workouts = userData.workouts || {};
         schedule = userData.schedule || {};
+        programs = userData.programs || {}; // Fetch programs
     }
 
     async function saveUserData(key, data) {
@@ -243,6 +287,7 @@
     function renderAll() {
         renderSchedule();
         renderWorkouts();
+        renderPrograms(); // New render function
     }
 
     function renderSchedule() {
@@ -299,6 +344,29 @@
             }
         });
     }
+
+    function renderPrograms() {
+        const programsList = document.getElementById('programs-list');
+        programsList.innerHTML = '';
+
+        if (Object.keys(programs).length === 0) {
+            programsList.innerHTML = `<div class="glass-card" style="padding: 30px; text-align: center; margin-top: 10px;"><p style="margin: 0; color: var(--text-secondary); line-height: 1.5;">You don't have any programs yet. <br> Click the '+' button to create your first one!</p></div>`;
+            return;
+        }
+
+        Object.keys(programs).forEach(name => {
+            const item = document.createElement('div');
+            item.className = 'workout-item glass-card'; // Can reuse the same style
+            item.innerHTML = `<span class="workout-item-name">${name}</span>
+                <div class="workout-item-actions">
+                    <button class="icon-btn" onclick="openProgramEditor('${name}')" title="Edit Program">
+                         <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                    </button>
+                </div>`;
+            programsList.appendChild(item);
+        });
+    }
+
 
     function closeOptionsMenu() {
         const existingMenu = document.querySelector('.options-menu-popup');
@@ -371,6 +439,20 @@
         }
     }
 
+    async function addProgramManually() {
+        // Placeholder for adding a program manually
+        const name = prompt("Enter a name for the new workout program:");
+        if (name && !programs[name]) {
+            programs[name] = { programName: name, weeks: [] };
+            await saveUserData('programs', programs);
+            renderAll();
+            openProgramEditor(name);
+        } else if (name) {
+            showToast("A program with this name already exists.", 'error');
+        }
+    }
+
+
     async function deleteWorkout(name) {
         if (confirm(`Are you sure you want to delete the workout plan "${name}"?`)) {
             if (!currentUser) { showToast("Not signed in.", "error"); return; }
@@ -407,6 +489,47 @@
         workouts[name].forEach((ex, index) => editorExercisesList.appendChild(createExerciseEditorForm(ex, index)));
         editorOverlay.classList.add('active');
     }
+
+    function openProgramEditor(name) {
+        const program = programs[name];
+        if (!program) {
+            showToast("Program not found.", "error");
+            return;
+        }
+        document.getElementById('program-editor-title').textContent = `Editing Program: ${name}`;
+        const weeksList = document.getElementById('program-weeks-list');
+        weeksList.innerHTML = ''; // Clear previous content
+
+        program.weeks.forEach(weekBlock => {
+            const weekBlockEl = document.createElement('div');
+            weekBlockEl.className = 'program-week-block glass-card';
+            
+            const weekRangeText = `Weeks ${weekBlock.weekRange[0]}` + (weekBlock.weekRange[1] > weekBlock.weekRange[0] ? `-${weekBlock.weekRange[1]}` : '');
+
+            let scheduleHTML = '';
+            const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+            days.forEach(day => {
+                const workoutName = weekBlock.schedule[day] || 'Rest';
+                scheduleHTML += `<p><strong>${day.charAt(0).toUpperCase() + day.slice(1)}:</strong> ${workoutName}</p>`;
+            });
+
+            weekBlockEl.innerHTML = `
+                <div class="program-week-header">
+                    <h3>${weekRangeText}</h3>
+                    <div class="week-block-controls">
+                        <button class="action-btn" style="padding: 5px 10px; font-size: 0.9rem; margin-top: 0;">Edit Week</button>
+                    </div>
+                </div>
+                <div class="program-week-schedule">
+                    ${scheduleHTML}
+                </div>
+            `;
+            weeksList.appendChild(weekBlockEl);
+        });
+
+        document.getElementById('program-editor-overlay').classList.add('active');
+    }
+
 
     function closeEditor() {
         editorOverlay.classList.remove('active');
@@ -492,6 +615,7 @@
     });
 
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
+    document.getElementById('close-program-editor-btn').addEventListener('click', () => document.getElementById('program-editor-overlay').classList.remove('active'));
     
     document.getElementById('transcribe-btn').addEventListener('click', async () => {
         const apiKey = document.getElementById('gemini-api-key').value;
@@ -501,25 +625,58 @@
             showToast("Please fill out all AI fields.", "error");
             return;
         }
-        if (workouts[planName]) {
-            showToast(`Plan "${planName}" already exists.`, "error");
-            return;
-        }
+        
         const btn = document.getElementById('transcribe-btn');
         toggleButtonLoading(btn, true);
+
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = async () => {
             const dataUrl = reader.result;
             const base64Data = dataUrl.substring(dataUrl.indexOf(',') + 1);
             const mimeType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';'));
-            try {
-                const systemPrompt = `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe it into a structured JSON format. The output MUST be a single, valid JSON array of exercise objects. Your entire response must be only the JSON data. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON array. Each exercise object in the array must have the following keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE".
+            
+            let systemPrompt = '';
+            let isProgram = currentAddMode === 'program';
+
+            if (isProgram) {
+                if (programs[planName]) {
+                    showToast(`Program "${planName}" already exists.`, "error");
+                    toggleButtonLoading(btn, false);
+                    return;
+                }
+                systemPrompt = `You are an expert fitness assistant. Your task is to analyze the provided user file (a multi-week workout program) and transcribe it into a single, valid JSON object. Your entire response must be only the JSON data. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON object.
+
+The final JSON object must have two top-level keys: "programName" and "weeks".
+- "programName": This should be the name the user provided: "${planName}".
+- "weeks": An array of "week block" objects.
+
+Each "week block" object in the "weeks" array represents a period of training with a consistent structure. It must contain the following keys:
+1. "weekRange": An array of two integers representing the start and end week for this block. For example, if a plan is the same for weeks 1, 2, 3, and 4, this should be [1, 4]. If it's just for one week, it would be [1, 1].
+2. "schedule": An object mapping lowercase day names ("monday", "tuesday", etc.) to the name of the workout for that day (e.g., "Upper (Strength Focus)"). If a day is a rest day, map it to "Rest Day".
+3. "workouts": An object where keys are the workout names defined in the "schedule" (e.g., "Upper (Strength Focus)") and values are arrays of exercise objects for that workout.
+
+Each exercise object within the "workouts" array must have the following keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE".
+
+Key Rules:
+- Analyze the entire document to identify repeating weekly patterns to create the "weekRange". For example, the document shows "WEEK 1", "WEEK 2", etc. Group them if their structure is identical.
+- For "warmupSets", provide an integer count. If a range is given (e.g., "1-2"), use the lower number. Default to 0 if not mentioned.
+- For RPE values, if only one is given, use it for both "earlySetRPE" and "lastSetRPE". Prepend a "~" to the RPE value. If none, use an empty string "".
+- The entire response must be only the JSON data, starting with { and ending with }.`;
+            } else { // isPlan
+                if (workouts[planName]) {
+                    showToast(`Plan "${planName}" already exists.`, "error");
+                    toggleButtonLoading(btn, false);
+                    return;
+                }
+                systemPrompt = `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe it into a structured JSON format. The output MUST be a single, valid JSON array of exercise objects. Your entire response must be only the JSON data. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON array. Each exercise object in the array must have the following keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE".
                             
 Warm-up Sets Rule: For the "warmupSets" key, you must provide a single integer representing the *count* of warm-up sets listed for that exercise. For example, if the text says '2 warm-up sets' or lists two separate warm-up lines (e.g., 'Warm-up: 50lbs x 10, 70lbs x 5'), the value for "warmupSets" must be the number 2. If a range is provided (e.g., "1-2 warm-up sets"), you must always choose the lower number in the range (in this case, 1). If no warm-ups are mentioned, the value should be 0.
 
 RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetRPE" to an empty string "". If only ONE RPE value is mentioned (e.g., "RPE 8"), set BOTH "earlySetRPE" and "lastSetRPE" to that same value (e.g., "~8"). If two distinct RPEs are mentioned, assign them correctly. If a value is not present, use a sensible default or an empty string. Be intelligent about common abbreviations. Your entire response must be only the JSON data, starting with [ and ending with ].`;
+            }
 
+            try {
                 const requestBody = {
                     contents: [{
                         parts: [
@@ -529,15 +686,9 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                     }],
                     generationConfig: {
                         temperature: 0,
-                        thinkingConfig: {
-                            thinkingBudget: 8192
-                        }
+                        thinkingConfig: { thinkingBudget: 8192 }
                     },
-                    systemInstruction: {
-                        parts: [
-                            { text: systemPrompt }
-                        ]
-                    }
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
                 };
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
@@ -553,12 +704,20 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                 
                 const data = await response.json();
                 const rawText = data.candidates[0].content.parts[0].text;
-                const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
                 
-                workouts[planName] = JSON.parse(jsonString);
-                await saveUserData('workouts', workouts);
+                if (isProgram) {
+                    const jsonString = rawText.substring(rawText.indexOf('{'), rawText.lastIndexOf('}') + 1);
+                    programs[planName] = JSON.parse(jsonString);
+                    await saveUserData('programs', programs);
+                    showToast(`Successfully added program "${planName}"!`, 'success');
+                } else {
+                    const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
+                    workouts[planName] = JSON.parse(jsonString);
+                    await saveUserData('workouts', workouts);
+                    showToast(`Successfully added plan "${planName}"!`, 'success');
+                }
+
                 renderAll();
-                showToast(`Successfully added "${planName}"!`, 'success');
                 document.getElementById('ai-plan-name').value = "";
                 aiTranscribeOverlay.classList.remove('active');
 
@@ -617,15 +776,62 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
         reader.readAsText(file);
     }
 
+    async function handleProgramImport(event) {
+        // Placeholder for program import logic
+        showToast("Program import is not yet implemented.", "info");
+        event.target.value = '';
+    }
+
+
     // --- UI Event Listeners ---
-    document.getElementById('show-add-options-btn').addEventListener('click', () => addOptionsOverlay.classList.add('active'));
+    document.getElementById('show-add-options-btn').addEventListener('click', () => {
+        currentAddMode = 'plan';
+        document.getElementById('add-options-title').textContent = 'Add a New Plan';
+        addOptionsOverlay.classList.add('active');
+    });
+    document.getElementById('show-add-program-options-btn').addEventListener('click', () => {
+        currentAddMode = 'program';
+        document.getElementById('add-options-title').textContent = 'Add a New Program';
+        addOptionsOverlay.classList.add('active');
+    });
+
     document.getElementById('close-add-options-btn').addEventListener('click', () => addOptionsOverlay.classList.remove('active'));
-    document.getElementById('add-manual-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); addWorkoutManually(); });
-    document.getElementById('import-from-file-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); document.getElementById('import-file-input').click(); });
-    document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); aiTranscribeOverlay.classList.add('active'); });
+    
+    document.getElementById('add-manual-btn').addEventListener('click', () => { 
+        addOptionsOverlay.classList.remove('active'); 
+        if (currentAddMode === 'plan') {
+            addWorkoutManually();
+        } else {
+            addProgramManually();
+        }
+    });
+    
+    document.getElementById('import-from-file-btn').addEventListener('click', () => { 
+        addOptionsOverlay.classList.remove('active'); 
+        if (currentAddMode === 'plan') {
+            document.getElementById('import-file-input').click();
+        } else {
+            document.getElementById('import-program-file-input').click();
+        }
+    });
+
+    document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { 
+        addOptionsOverlay.classList.remove('active'); 
+        if (currentAddMode === 'program') {
+            document.getElementById('ai-transcribe-title').textContent = 'Transcribe Program with AI';
+            document.getElementById('ai-transcribe-description').innerHTML = `Get a free Google Gemini API key and upload a file containing a <b>multi-week program</b>. The AI will automatically create a new program for you.`;
+        } else {
+            document.getElementById('ai-transcribe-title').textContent = 'Transcribe Plan with AI';
+            document.getElementById('ai-transcribe-description').innerHTML = `Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.`;
+        }
+        aiTranscribeOverlay.classList.add('active'); 
+    });
+
     document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => aiTranscribeOverlay.classList.remove('active'));
     document.getElementById('import-file-input').addEventListener('change', handleWorkoutImport);
-    [addOptionsOverlay, aiTranscribeOverlay, editorOverlay].forEach(overlay => {
+    document.getElementById('import-program-file-input').addEventListener('change', handleProgramImport);
+
+    [addOptionsOverlay, aiTranscribeOverlay, editorOverlay, document.getElementById('program-editor-overlay')].forEach(overlay => {
         overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
     });
 
