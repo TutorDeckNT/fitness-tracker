@@ -33,6 +33,16 @@
             <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
             <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
         </symbol>
+        <!-- NEW ICONS -->
+        <symbol id="icon-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </symbol>
+        <symbol id="icon-chevron-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+        </symbol>
+        <symbol id="icon-drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+        </symbol>
     </svg>
 
     <div class="container">
@@ -150,7 +160,12 @@
         <div class="overlay-content glass-card" id="editor-panel">
             <div class="overlay-header">
                 <h2 id="editor-title">Edit Plan</h2>
-                <button class="icon-btn" id="close-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+                <div class="editor-header-actions">
+                    <button class="icon-btn" id="toggle-reorder-btn" title="Reorder Exercises">
+                        <svg><use xlink:href="#icon-chevron-up"></use></svg>
+                    </button>
+                    <button class="icon-btn" id="close-editor-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+                </div>
             </div>
             <div class="overlay-body" id="editor-exercises-list"></div>
             <div class="overlay-footer">
@@ -189,6 +204,7 @@
     const editorOverlay = document.getElementById('editor-overlay');
     const editorExercisesList = document.getElementById('editor-exercises-list');
     let editingWorkoutName = '';
+    let draggedItem = null;
 
     const mainContentWrapper = document.getElementById('main-content-wrapper');
     const skeletonLoader = document.getElementById('skeleton-loader');
@@ -397,6 +413,12 @@
         editorExercisesList.innerHTML = '';
         workouts[name].forEach((ex, index) => editorExercisesList.appendChild(createExerciseEditorForm(ex, index)));
         editorOverlay.classList.add('active');
+
+        // Reset reorder mode when opening editor
+        editorExercisesList.classList.remove('reorder-mode');
+        const reorderBtn = document.getElementById('toggle-reorder-btn');
+        reorderBtn.title = "Reorder Exercises";
+        reorderBtn.querySelector('use').setAttribute('xlink:href', '#icon-chevron-up');
     }
 
     function closeEditor() {
@@ -407,19 +429,80 @@
         const div = document.createElement('div');
         div.className = 'editor-exercise glass-card';
         div.dataset.index = index;
+        div.setAttribute('draggable', 'true');
+
         const ex = { name: exercise.name || "", warmupSets: exercise.warmupSets || "", workingSets: exercise.workingSets || "", reps: exercise.reps || "", rest: exercise.rest || "", earlySetRPE: exercise.earlySetRPE || "", lastSetRPE: exercise.lastSetRPE || "" };
-        div.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center;"><h4>Exercise ${index + 1}</h4><button class="icon-btn" onclick="this.parentElement.parentElement.remove()"><svg style="fill: var(--system-red);"><use xlink:href="#icon-close"></use></svg></button></div><div class="editor-form-group"><label>Name</label><input type="text" value="${ex.name}" data-key="name"></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="editor-form-group"><label>Warmup Sets</label><input type="number" value="${ex.warmupSets}" data-key="warmupSets"></div><div class="editor-form-group"><label>Working Sets</label><input type="number" value="${ex.workingSets}" data-key="workingSets"></div><div class="editor-form-group"><label>Reps</label><input type="text" value="${ex.reps}" data-key="reps"></div><div class="editor-form-group"><label>Rest (e.g., "90s" or "2 min")</label><input type="text" value="${ex.rest}" data-key="rest"></div><div class="editor-form-group"><label>Early RPE</label><input type="text" value="${ex.earlySetRPE}" data-key="earlySetRPE"></div><div class="editor-form-group"><label>Last RPE</label><input type="text" value="${ex.lastSetRPE}" data-key="lastSetRPE"></div></div>`;
+        const exerciseTitle = ex.name ? ex.name : `Exercise ${index + 1}`;
+
+        div.innerHTML = `
+            <div class="exercise-editor-header">
+                <div class="drag-handle">
+                    <svg><use xlink:href="#icon-drag-handle"></use></svg>
+                </div>
+                <h4 class="exercise-title">${exerciseTitle}</h4>
+                <div class="exercise-actions">
+                    <button class="icon-btn toggle-collapse-btn" title="Collapse Exercise">
+                        <svg><use xlink:href="#icon-chevron-down"></use></svg>
+                    </button>
+                    <button class="icon-btn delete-exercise-btn" title="Delete Exercise">
+                        <svg style="fill: var(--system-red);"><use xlink:href="#icon-close"></use></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="exercise-editor-body">
+                <div class="editor-form-group">
+                    <label>Name</label>
+                    <input type="text" value="${ex.name}" data-key="name" class="exercise-name-input">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="editor-form-group"><label>Warmup Sets</label><input type="number" value="${ex.warmupSets}" data-key="warmupSets"></div>
+                    <div class="editor-form-group"><label>Working Sets</label><input type="number" value="${ex.workingSets}" data-key="workingSets"></div>
+                    <div class="editor-form-group"><label>Reps</label><input type="text" value="${ex.reps}" data-key="reps"></div>
+                    <div class="editor-form-group"><label>Rest (e.g., "90s" or "2 min")</label><input type="text" value="${ex.rest}" data-key="rest"></div>
+                    <div class="editor-form-group"><label>Early RPE</label><input type="text" value="${ex.earlySetRPE}" data-key="earlySetRPE"></div>
+                    <div class="editor-form-group"><label>Last RPE</label><input type="text" value="${ex.lastSetRPE}" data-key="lastSetRPE"></div>
+                </div>
+            </div>
+        `;
+
+        div.querySelector('.exercise-name-input').addEventListener('input', (e) => {
+            const title = div.querySelector('.exercise-title');
+            if (e.target.value.trim()) {
+                title.textContent = e.target.value;
+            } else {
+                const allExercises = Array.from(editorExercisesList.children);
+                const currentIndex = allExercises.indexOf(div);
+                title.textContent = `Exercise ${currentIndex + 1}`;
+            }
+        });
+
         return div;
+    }
+
+    function updateExerciseIndices() {
+        const exercises = document.querySelectorAll('#editor-exercises-list .editor-exercise');
+        exercises.forEach((ex, index) => {
+            ex.dataset.index = index;
+            const title = ex.querySelector('.exercise-title');
+            const nameInput = ex.querySelector('.exercise-name-input');
+            if (!nameInput.value.trim()) {
+                title.textContent = `Exercise ${index + 1}`;
+            }
+        });
     }
 
     document.getElementById('add-exercise-btn').addEventListener('click', () => {
         const newExercise = { name: "", warmupSets: "", workingSets: "", reps: "", rest: "", earlySetRPE: "", lastSetRPE: "" };
-        editorExercisesList.appendChild(createExerciseEditorForm(newExercise, editorExercisesList.children.length));
+        const newIndex = editorExercisesList.children.length;
+        const newExerciseElement = createExerciseEditorForm(newExercise, newIndex);
+        editorExercisesList.appendChild(newExerciseElement);
+        newExerciseElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
     });
 
     document.getElementById('save-workouts-btn').addEventListener('click', async () => {
         const btn = document.getElementById('save-workouts-btn');
         toggleButtonLoading(btn, true);
+        updateExerciseIndices();
         const newWorkoutData = Array.from(document.querySelectorAll('#editor-exercises-list .editor-exercise')).map(form => {
             const exercise = {};
             form.querySelectorAll('input').forEach(input => { exercise[input.dataset.key] = input.type === 'number' ? parseInt(input.value, 10) || 0 : input.value; });
@@ -433,6 +516,73 @@
     });
 
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
+
+    document.getElementById('toggle-reorder-btn').addEventListener('click', () => {
+        editorExercisesList.classList.toggle('reorder-mode');
+        const isReorderMode = editorExercisesList.classList.contains('reorder-mode');
+        const btn = document.getElementById('toggle-reorder-btn');
+        const icon = btn.querySelector('use');
+
+        if (isReorderMode) {
+            btn.title = "Finish Reordering";
+            icon.setAttribute('xlink:href', '#icon-chevron-down');
+        } else {
+            btn.title = "Reorder Exercises";
+            icon.setAttribute('xlink:href', '#icon-chevron-up');
+            updateExerciseIndices();
+        }
+    });
+
+    editorExercisesList.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-exercise-btn');
+        if (deleteBtn) {
+            e.stopPropagation();
+            deleteBtn.closest('.editor-exercise').remove();
+            updateExerciseIndices();
+            return;
+        }
+
+        const toggleBtn = e.target.closest('.toggle-collapse-btn');
+        if (toggleBtn) {
+            e.stopPropagation();
+            const exerciseElement = toggleBtn.closest('.editor-exercise');
+            exerciseElement.classList.toggle('collapsed');
+            const icon = toggleBtn.querySelector('use');
+            const isCollapsed = exerciseElement.classList.contains('collapsed');
+            icon.setAttribute('xlink:href', isCollapsed ? '#icon-chevron-up' : '#icon-chevron-down');
+            toggleBtn.title = isCollapsed ? "Expand Exercise" : "Collapse Exercise";
+            return;
+        }
+    });
+
+    editorExercisesList.addEventListener('dragstart', e => {
+        if (!editorExercisesList.classList.contains('reorder-mode')) {
+            e.preventDefault();
+            return;
+        }
+        draggedItem = e.target.closest('.editor-exercise');
+        if (!draggedItem) return;
+        setTimeout(() => {
+            if(draggedItem) draggedItem.classList.add('dragging');
+        }, 0);
+    });
+
+    editorExercisesList.addEventListener('dragend', () => {
+        if (!draggedItem) return;
+        draggedItem.classList.remove('dragging');
+        draggedItem = null;
+    });
+
+    editorExercisesList.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (!draggedItem) return;
+        const target = e.target.closest('.editor-exercise');
+        if (target && target !== draggedItem) {
+            const rect = target.getBoundingClientRect();
+            const nextSibling = (e.clientY - rect.top) > (rect.height / 2) ? target.nextSibling : target;
+            editorExercisesList.insertBefore(draggedItem, nextSibling);
+        }
+    });
     
     document.getElementById('transcribe-btn').addEventListener('click', async () => {
         const apiKey = document.getElementById('gemini-api-key').value;
