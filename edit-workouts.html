@@ -36,6 +36,12 @@
             <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
             <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
         </symbol>
+        <symbol id="icon-manual-add" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+             <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+        </symbol>
+        <symbol id="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 4.625-2.625 2.625m2.625-2.625-2.625-2.625m2.625 2.625H12" />
+        </symbol>
     </svg>
 
     <div class="container">
@@ -124,9 +130,7 @@
             </div>
             <div class="overlay-body" id="add-options-list">
                 <button id="add-manual-btn" class="menu-style-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
-                    </svg>
+                    <svg><use xlink:href="#icon-manual-add"></use></svg>
                     <span>Add Manually</span>
                 </button>
                 <button id="import-from-file-btn" class="menu-style-btn">
@@ -149,9 +153,7 @@
             </div>
             <div class="overlay-body" id="add-program-options-list">
                 <button id="add-program-manual-btn" class="menu-style-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
-                    </svg>
+                    <svg><use xlink:href="#icon-manual-add"></use></svg>
                     <span>Create Manually</span>
                 </button>
                 <button id="import-program-from-file-btn" class="menu-style-btn">
@@ -261,6 +263,44 @@
         </div>
     </div>
     
+    <!-- New Modal for adding a workout to a week -->
+    <div class="modal-overlay" id="add-workout-to-week-overlay">
+        <div class="overlay-content glass-card" id="add-workout-to-week-panel">
+            <div class="overlay-header">
+                <h2 id="add-workout-to-week-title">Add Workout to Week</h2>
+                <button class="icon-btn" id="close-add-workout-to-week-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+            </div>
+            <div id="add-workout-to-week-main-options">
+                <div class="overlay-body" id="add-workout-to-week-options-list">
+                    <button id="add-new-workout-to-program-btn" class="menu-style-btn">
+                        <svg><use xlink:href="#icon-manual-add"></use></svg>
+                        <span>Create New Workout</span>
+                    </button>
+                    <button id="add-existing-workout-to-program-btn" class="menu-style-btn">
+                        <svg><use xlink:href="#icon-copy"></use></svg>
+                        <span>Copy Existing Workout</span>
+                    </button>
+                    <button id="ai-transcribe-to-program-btn" class="menu-style-btn">
+                        <img src="images/Rosecurve.png" alt="AI Icon">
+                        <span>Transcribe with AI</span>
+                    </button>
+                </div>
+            </div>
+            <div id="existing-workouts-selection" style="display: none;">
+                <div class="overlay-body">
+                    <div class="editor-form-group">
+                        <label for="existing-workout-select">Select a workout to add</label>
+                        <select id="existing-workout-select"></select>
+                    </div>
+                </div>
+                <div class="overlay-footer">
+                    <button id="back-to-add-workout-options-btn" class="action-btn" style="background-color: rgba(255,255,255,0.1);">Back</button>
+                    <button id="confirm-add-existing-btn" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">Add Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
     <input type="file" id="import-program-file-input" accept=".json" style="display: none;">
 
@@ -290,6 +330,7 @@
     let activeProgram = null;
     let editingContext = {}; // CRITICAL: {type: 'workout'/'program', name, programName, weekIndex, workoutName}
     let aiContext = {}; // For AI transcription
+    let programEditorContext = {}; // For modals inside program editor
 
     // --- DOM ELEMENT GETTERS ---
     const editorOverlay = document.getElementById('editor-overlay');
@@ -301,6 +342,7 @@
     const addOptionsOverlay = document.getElementById('add-options-overlay');
     const addProgramOptionsOverlay = document.getElementById('add-program-options-overlay');
     const aiTranscribeOverlay = document.getElementById('ai-transcribe-overlay');
+    const addWorkoutToWeekOverlay = document.getElementById('add-workout-to-week-overlay');
 
     // --- UTILITY FUNCTIONS ---
     function showToast(message, type = 'info', duration = 3000) {
@@ -469,23 +511,52 @@
         const menu = document.createElement('div');
         menu.className = 'options-menu-popup glass-card';
         
-        let menuItems = `
-            <button class="menu-item" data-action="share">
-                <svg class="share-icon-menu" stroke-width="2"><use xlink:href="#icon-share"></use></svg>
-                <span>Share</span>
-            </button>
-            <button class="menu-item" data-action="edit">
-                <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
-                <span>Edit</span>
-            </button>
-            <button class="menu-item delete-item" data-action="delete">
-                <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
-                <span>Delete</span>
-            </button>
-        `;
-        if (type === 'program') {
-            menuItems = `<button class="menu-item" data-action="run"><span>Run Program</span></button>` + menuItems;
+        let menuItems = '';
+
+        if (type === 'workout') {
+            menuItems = `
+                <button class="menu-item" data-action="share">
+                    <svg class="share-icon-menu" stroke-width="2"><use xlink:href="#icon-share"></use></svg>
+                    <span>Share</span>
+                </button>
+                <button class="menu-item" data-action="edit">
+                    <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                    <span>Edit</span>
+                </button>
+                <button class="menu-item delete-item" data-action="delete">
+                    <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
+                    <span>Delete</span>
+                </button>
+            `;
+        } else if (type === 'program') {
+            menuItems = `
+                <button class="menu-item" data-action="run"><span>Run Program</span></button>
+                <button class="menu-item" data-action="share">
+                    <svg class="share-icon-menu" stroke-width="2"><use xlink:href="#icon-share"></use></svg>
+                    <span>Share</span>
+                </button>
+                <button class="menu-item" data-action="edit">
+                    <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                    <span>Edit</span>
+                </button>
+                <button class="menu-item delete-item" data-action="delete">
+                    <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
+                    <span>Delete</span>
+                </button>
+            `;
+        } else if (type === 'program-workout') {
+             menuItems = `
+                <button class="menu-item" data-action="edit">
+                    <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                    <span>Edit</span>
+                </button>
+                <button class="menu-item delete-item" data-action="remove">
+                    <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
+                    <span>Remove from Week</span>
+                </button>
+            `;
         }
+
         menu.innerHTML = menuItems;
         actionContainer.appendChild(menu);
 
@@ -503,6 +574,23 @@
                 else if (action === 'delete') deleteProgram(name);
                 else if (action === 'run') showRunProgramPrompt(name);
                 else if (action === 'share') exportProgram(name);
+            } else if (type === 'program-workout') {
+                const { programName, weekIndex, workoutName } = button.dataset;
+                if (action === 'edit') {
+                    openEditor({ type: 'program', programName, weekIndex: parseInt(weekIndex), workoutName });
+                } else if (action === 'remove') {
+                    if (confirm(`Are you sure you want to remove "${workoutName}" from this week?`)) {
+                        delete programs[programName].weeks[weekIndex].workouts[workoutName];
+                        // Re-render just this week block
+                        const weekBlock = document.querySelector(`.program-week-block[data-week-index='${weekIndex}']`);
+                        if(weekBlock) {
+                            const newWeekBlock = createWeekBlock(programs[programName].weeks[weekIndex], parseInt(weekIndex));
+                            weekBlock.parentNode.replaceChild(newWeekBlock, weekBlock);
+                            newWeekBlock.querySelector('.week-content-collapsible').style.maxHeight = '1000px'; // Keep it open
+                            newWeekBlock.dataset.state = 'open';
+                        }
+                    }
+                }
             }
             closeOptionsMenu();
         });
@@ -721,42 +809,54 @@
     }
 
     function createWeekBlock(weekData, index) {
+        const programName = document.getElementById('program-name-input').value;
         const div = document.createElement('div');
         div.className = 'program-week-block';
         div.dataset.weekIndex = index;
+        div.dataset.state = 'closed';
         
         let workoutsHTML = '';
         if (weekData.workouts) {
             Object.keys(weekData.workouts).forEach(workoutName => {
-                workoutsHTML += createWeekWorkoutItemHTML(workoutName);
+                workoutsHTML += createWeekWorkoutItemHTML(programName, index, workoutName);
             });
         }
 
         div.innerHTML = `
-            <div class="program-week-header">
+            <div class="program-week-header program-week-header-clickable">
                 <div class="week-label-group">
-                    <label>Week Block</label>
-                    <div>
-                        <span class="week-label-title">${weekData.weekLabel || `Week ${index + 1}`}</span>
-                        <button class="action-btn change-duration-btn">Change Duration</button>
-                    </div>
+                    <span class="week-label-title">${weekData.weekLabel || `Week ${index + 1}`}</span>
                 </div>
-                <button class="icon-btn delete-week-btn" title="Delete Week"><svg style="fill: var(--system-red);"><use xlink:href="#icon-close"></use></svg></button>
+                <div class="week-header-controls">
+                    <button class="icon-btn change-duration-btn" title="Change Duration">
+                        <svg><use xlink:href="#icon-edit-03"></use></svg>
+                    </button>
+                    <button class="icon-btn delete-week-btn" title="Delete Week">
+                        <svg style="fill: var(--system-red);"><use xlink:href="#icon-close"></use></svg>
+                    </button>
+                </div>
             </div>
-            <div class="program-week-workouts-list">${workoutsHTML}</div>
-            <button class="action-btn add-workout-to-week-btn">Add Workout to Week</button>
+            <div class="week-content-collapsible">
+                <div class="program-week-workouts-list">${workoutsHTML}</div>
+                <button class="action-btn add-workout-to-week-btn">Add Workout to Week</button>
+            </div>
         `;
         return div;
     }
     
-    function createWeekWorkoutItemHTML(workoutName) {
+    function createWeekWorkoutItemHTML(programName, weekIndex, workoutName) {
         return `
-            <div class="week-workout-item" data-workout-name="${workoutName}">
-                <span class="workout-name">${workoutName}</span>
-                <div class="actions">
-                    <button class="action-btn ai-transcribe-btn">AI</button>
-                    <button class="action-btn edit-week-workout-btn">Edit</button>
-                    <button class="action-btn delete-week-workout-btn destructive-btn">Del</button>
+            <div class="workout-item glass-card week-workout-item" data-workout-name="${workoutName}">
+                <span class="workout-item-name">${workoutName}</span>
+                <div class="workout-item-actions">
+                    <button class="icon-btn options-menu-btn" 
+                            data-type="program-workout" 
+                            data-program-name="${programName}" 
+                            data-week-index="${weekIndex}" 
+                            data-workout-name="${workoutName}" 
+                            title="Options">
+                        <svg><use xlink:href="#icon-ellipsis-vertical"></use></svg>
+                    </button>
                 </div>
             </div>
         `;
@@ -774,24 +874,14 @@
         }
 
         const oldProgramName = editingContext.name;
-        const tempProgram = programs[oldProgramName] || { name: oldProgramName, weeks: [] };
-        
-        const newProgramData = {
-            name: newProgramName,
-            weeks: []
-        };
-
-        document.querySelectorAll('.program-week-block').forEach((weekBlock, index) => {
-            const weekLabel = weekBlock.querySelector('.week-label-title').textContent;
-            const existingWorkouts = tempProgram.weeks[index]?.workouts || {};
-            newProgramData.weeks.push({ weekLabel, workouts: existingWorkouts });
-        });
-
+        // The `programs` object is now the source of truth, modified by other functions.
+        // We just need to handle renaming.
         if (oldProgramName && oldProgramName !== newProgramName) {
+            programs[newProgramName] = programs[oldProgramName];
+            programs[newProgramName].name = newProgramName;
             delete programs[oldProgramName];
         }
         
-        programs[newProgramName] = newProgramData;
         await saveUserData('programs', programs);
         
         toggleButtonLoading(btn, false);
@@ -1006,9 +1096,14 @@ Follow the rules for "warmupSets" and "RPE" from previous instructions. Be intel
                     showToast(`Successfully added "${planName}"!`, 'success');
                 } else if (aiContext.type === 'program_workout') {
                     programs[aiContext.programName].weeks[aiContext.weekIndex].workouts[aiContext.workoutName] = resultData;
-                    await saveUserData('programs', programs);
+                    const weekBlock = document.querySelector(`.program-week-block[data-week-index='${aiContext.weekIndex}']`);
+                    if(weekBlock) {
+                        const newWeekBlock = createWeekBlock(programs[aiContext.programName].weeks[aiContext.weekIndex], aiContext.weekIndex);
+                        weekBlock.parentNode.replaceChild(newWeekBlock, weekBlock);
+                        newWeekBlock.querySelector('.week-content-collapsible').style.maxHeight = '1000px';
+                        newWeekBlock.dataset.state = 'open';
+                    }
                     showToast(`Successfully transcribed "${aiContext.workoutName}"!`, 'success');
-                    openProgramEditor(aiContext.programName);
                 } else { // full_program
                     programs[planName] = resultData;
                     await saveUserData('programs', programs);
@@ -1268,38 +1363,43 @@ Follow the rules for "warmupSets" and "RPE" from previous instructions. Be intel
         weeksList.appendChild(createWeekBlock(newWeekData, newIndex));
     });
 
+    // --- NEW PROGRAM EDITOR EVENT DELEGATION ---
     document.getElementById('program-editor-body').addEventListener('click', e => {
         const programName = document.getElementById('program-name-input').value;
         const weekBlock = e.target.closest('.program-week-block');
         if (!weekBlock) return;
         const weekIndex = parseInt(weekBlock.dataset.weekIndex, 10);
 
-        if (e.target.closest('.edit-week-workout-btn')) {
-            const workoutName = e.target.closest('.week-workout-item').dataset.workoutName;
-            openEditor({ type: 'program', programName, weekIndex, workoutName });
-        } else if (e.target.closest('.add-workout-to-week-btn')) {
-            const workoutName = prompt("Enter name for this workout (e.g., Push, Pull):");
-            if (workoutName) {
-                if (!programs[programName].weeks[weekIndex].workouts) {
-                    programs[programName].weeks[weekIndex].workouts = {};
-                }
-                programs[programName].weeks[weekIndex].workouts[workoutName] = [];
-                weekBlock.querySelector('.program-week-workouts-list').innerHTML += createWeekWorkoutItemHTML(workoutName);
+        // Accordion logic
+        if (e.target.closest('.program-week-header-clickable')) {
+            const content = weekBlock.querySelector('.week-content-collapsible');
+            if (weekBlock.dataset.state === 'closed') {
+                // Close all others
+                document.querySelectorAll('.program-week-block').forEach(wb => {
+                    wb.dataset.state = 'closed';
+                    wb.querySelector('.week-content-collapsible').style.maxHeight = null;
+                });
+                // Open this one
+                weekBlock.dataset.state = 'open';
+                content.style.maxHeight = content.scrollHeight + "px";
+            } else {
+                // Close this one
+                weekBlock.dataset.state = 'closed';
+                content.style.maxHeight = null;
             }
-        } else if (e.target.closest('.ai-transcribe-btn')) {
-            const workoutName = e.target.closest('.week-workout-item').dataset.workoutName;
-            aiContext = {
-                type: 'program_workout',
-                programName: programName,
-                weekIndex: weekIndex,
-                weekLabel: programs[programName].weeks[weekIndex].weekLabel,
-                workoutName: workoutName
-            };
-            document.getElementById('ai-transcribe-title').textContent = `Transcribe for Program`;
-            document.getElementById('ai-transcribe-description').textContent = `This will find and transcribe '${workoutName}' for '${aiContext.weekLabel}' and add it to your program.`;
-            document.getElementById('ai-plan-name-group').style.display = 'none';
-            aiTranscribeOverlay.classList.add('active');
-        } else if (e.target.closest('.change-duration-btn')) {
+        }
+
+        // Delete week logic
+        if (e.target.closest('.delete-week-btn')) {
+            if (confirm(`Are you sure you want to delete "${programs[programName].weeks[weekIndex].weekLabel}"?`)) {
+                programs[programName].weeks.splice(weekIndex, 1);
+                openProgramEditor(programName); // Re-render the whole editor
+                showToast("Week deleted.", "info");
+            }
+        }
+
+        // Change duration logic
+        if (e.target.closest('.change-duration-btn')) {
             const currentLabel = weekBlock.querySelector('.week-label-title').textContent;
             const startWeek = parseWeekLabel(currentLabel).start;
             const endWeek = prompt(`This block starts at Week ${startWeek}. What week should it end on?`, startWeek);
@@ -1311,6 +1411,94 @@ Follow the rules for "warmupSets" and "RPE" from previous instructions. Be intel
                 showToast("Invalid end week.", "error");
             }
         }
+
+        // Add workout to week logic
+        if (e.target.closest('.add-workout-to-week-btn')) {
+            programEditorContext = { programName, weekIndex };
+            document.getElementById('add-workout-to-week-main-options').style.display = 'block';
+            document.getElementById('existing-workouts-selection').style.display = 'none';
+            addWorkoutToWeekOverlay.classList.add('active');
+        }
+    });
+
+    // --- NEW "ADD WORKOUT TO WEEK" MODAL LISTENERS ---
+    document.getElementById('close-add-workout-to-week-btn').addEventListener('click', () => addWorkoutToWeekOverlay.classList.remove('active'));
+    document.getElementById('back-to-add-workout-options-btn').addEventListener('click', () => {
+        document.getElementById('add-workout-to-week-main-options').style.display = 'block';
+        document.getElementById('existing-workouts-selection').style.display = 'none';
+    });
+
+    document.getElementById('add-new-workout-to-program-btn').addEventListener('click', () => {
+        const { programName, weekIndex } = programEditorContext;
+        const workoutName = prompt("Enter name for this new workout (e.g., Push, Pull):");
+        if (workoutName) {
+            if (!programs[programName].weeks[weekIndex].workouts) {
+                programs[programName].weeks[weekIndex].workouts = {};
+            }
+            programs[programName].weeks[weekIndex].workouts[workoutName] = [{ name: "", warmupSets: "", workingSets: "", reps: "", rest: "", earlySetRPE: "", lastSetRPE: "" }];
+            
+            addWorkoutToWeekOverlay.classList.remove('active');
+            openProgramEditor(programName); // Re-render
+            setTimeout(() => { // Open the editor for the new workout
+                openEditor({ type: 'program', programName, weekIndex, workoutName });
+            }, 100);
+        }
+    });
+
+    document.getElementById('add-existing-workout-to-program-btn').addEventListener('click', () => {
+        const select = document.getElementById('existing-workout-select');
+        select.innerHTML = '<option value="">-- Select a workout --</option>';
+        const standaloneWorkouts = Object.keys(workouts).filter(name => !activeProgram || !name.startsWith(activeProgram.programName));
+        standaloneWorkouts.forEach(name => {
+            select.innerHTML += `<option value="${name}">${name}</option>`;
+        });
+        document.getElementById('add-workout-to-week-main-options').style.display = 'none';
+        document.getElementById('existing-workouts-selection').style.display = 'block';
+    });
+
+    document.getElementById('confirm-add-existing-btn').addEventListener('click', () => {
+        const { programName, weekIndex } = programEditorContext;
+        const selectedWorkoutName = document.getElementById('existing-workout-select').value;
+        if (!selectedWorkoutName) {
+            showToast("Please select a workout.", "error");
+            return;
+        }
+        
+        const workoutDataCopy = JSON.parse(JSON.stringify(workouts[selectedWorkoutName]));
+        if (!programs[programName].weeks[weekIndex].workouts) {
+            programs[programName].weeks[weekIndex].workouts = {};
+        }
+        programs[programName].weeks[weekIndex].workouts[selectedWorkoutName] = workoutDataCopy;
+
+        addWorkoutToWeekOverlay.classList.remove('active');
+        const weekBlock = document.querySelector(`.program-week-block[data-week-index='${weekIndex}']`);
+        if(weekBlock) {
+            const newWeekBlock = createWeekBlock(programs[programName].weeks[weekIndex], weekIndex);
+            weekBlock.parentNode.replaceChild(newWeekBlock, weekBlock);
+            newWeekBlock.querySelector('.week-content-collapsible').style.maxHeight = '1000px';
+            newWeekBlock.dataset.state = 'open';
+        }
+        showToast(`Copied "${selectedWorkoutName}" to the program.`, "success");
+    });
+
+    document.getElementById('ai-transcribe-to-program-btn').addEventListener('click', () => {
+        const { programName, weekIndex } = programEditorContext;
+        const workoutName = prompt("What is the name of the workout in the file? (e.g., Push Day)");
+        if (!workoutName) return;
+
+        aiContext = {
+            type: 'program_workout',
+            programName: programName,
+            weekIndex: weekIndex,
+            weekLabel: programs[programName].weeks[weekIndex].weekLabel,
+            workoutName: workoutName
+        };
+        document.getElementById('ai-transcribe-title').textContent = `Transcribe for Program`;
+        document.getElementById('ai-transcribe-description').textContent = `This will find and transcribe '${workoutName}' for '${aiContext.weekLabel}' and add it to your program.`;
+        document.getElementById('ai-plan-name-group').style.display = 'none';
+        
+        addWorkoutToWeekOverlay.classList.remove('active');
+        aiTranscribeOverlay.classList.add('active');
     });
 
     // --- PAGE INITIALIZATION ---
