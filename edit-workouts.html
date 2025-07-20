@@ -490,22 +490,21 @@
         statusBar.style.display = 'flex';
     }
 
-    // --- OPTIONS MENU LOGIC (REWRITTEN) ---
+    // --- OPTIONS MENU LOGIC (REWRITTEN WITH ICONS) ---
     function closeOptionsMenu() {
         const existingMenu = document.getElementById('active-options-menu');
         if (existingMenu) {
             existingMenu.remove();
         }
-        // Clean up any 'data-menu-active' attributes from buttons
         document.querySelectorAll('[data-menu-active="true"]').forEach(btn => btn.removeAttribute('data-menu-active'));
     }
 
     function openOptionsMenu(button) {
-        closeOptionsMenu(); // Always close any existing menu first.
+        closeOptionsMenu(); 
 
         const menu = document.createElement('div');
         menu.className = 'options-menu-popup glass-card';
-        menu.id = 'active-options-menu'; // Use an ID for easy targeting
+        menu.id = 'active-options-menu';
 
         const name = button.dataset.name;
         const type = button.dataset.type;
@@ -513,26 +512,49 @@
 
         if (type === 'workout') {
             menuItems = `
-                <button class="menu-item" data-action="share"><span>Share</span></button>
-                <button class="menu-item" data-action="edit"><span>Edit</span></button>
-                <button class="menu-item delete-item" data-action="delete"><span>Delete</span></button>
+                <button class="menu-item" data-action="share">
+                    <svg class="share-icon-menu"><use xlink:href="#icon-share"></use></svg>
+                    <span>Share</span>
+                </button>
+                <button class="menu-item" data-action="edit">
+                    <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                    <span>Edit</span>
+                </button>
+                <button class="menu-item delete-item" data-action="delete">
+                    <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
+                    <span>Delete</span>
+                </button>
             `;
         } else if (type === 'program') {
             menuItems = `
                 <button class="menu-item" data-action="run"><span>Run Program</span></button>
-                <button class="menu-item" data-action="share"><span>Share</span></button>
-                <button class="menu-item" data-action="edit"><span>Edit</span></button>
-                <button class="menu-item delete-item" data-action="delete"><span>Delete</span></button>
+                <button class="menu-item" data-action="share">
+                    <svg class="share-icon-menu"><use xlink:href="#icon-share"></use></svg>
+                    <span>Share</span>
+                </button>
+                <button class="menu-item" data-action="edit">
+                    <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                    <span>Edit</span>
+                </button>
+                <button class="menu-item delete-item" data-action="delete">
+                    <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
+                    <span>Delete</span>
+                </button>
             `;
         } else if (type === 'program-workout') {
              menuItems = `
-                <button class="menu-item" data-action="edit"><span>Edit</span></button>
-                <button class="menu-item delete-item" data-action="remove"><span>Remove from Week</span></button>
+                <button class="menu-item" data-action="edit">
+                    <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                    <span>Edit</span>
+                </button>
+                <button class="menu-item delete-item" data-action="remove">
+                    <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
+                    <span>Remove from Week</span>
+                </button>
             `;
         }
         menu.innerHTML = menuItems;
         
-        // Mark the button that opened this menu
         button.dataset.menuActive = 'true';
         
         document.body.appendChild(menu);
@@ -540,10 +562,7 @@
         const buttonRect = button.getBoundingClientRect();
         const menuRect = menu.getBoundingClientRect();
 
-        // Position horizontally: align right edges
         let left = buttonRect.right - menuRect.width;
-        
-        // Position vertically: try below first, then flip above if no space
         let top = buttonRect.bottom + 5;
         if (top + menuRect.height > window.innerHeight) {
             top = buttonRect.top - menuRect.height - 5;
@@ -552,7 +571,7 @@
         menu.style.position = 'fixed';
         menu.style.top = `${top}px`;
         menu.style.left = `${left}px`;
-        menu.style.zIndex = '2000'; // Ensure it's on top of modals
+        menu.style.zIndex = '2000';
 
         menu.addEventListener('click', (e) => {
             const actionItem = e.target.closest('.menu-item');
@@ -1073,7 +1092,7 @@ Follow the rules for "warmupSets" and "RPE" from previous instructions. Be intel
                     systemInstruction: { parts: [{ text: systemPrompt }] }
                 };
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
