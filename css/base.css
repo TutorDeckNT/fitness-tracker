@@ -189,3 +189,38 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
     margin-bottom: 10px;
     border-radius: 8px;
 }
+.link-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: transform 0.2s, background-color 0.2s;
+    margin-top: 10px;
+}
+.link-card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.link-card:active {
+    transform: scale(0.98);
+}
+.link-card-content {
+    flex-grow: 1;
+}
+.link-card-content h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+}
+.link-card-content p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+.link-card-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--text-tertiary);
+    padding-left: 15px;
+}
