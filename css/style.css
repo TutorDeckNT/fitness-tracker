@@ -60,15 +60,6 @@ header { margin-bottom: 10px; }
 .timer-btn svg { width: 28px; height: 28px; }
 
 .section-header { display: flex; justify-content: space-between; align-items: center; }
-.analytics-link-card { display: flex; justify-content: space-between; align-items: stretch; padding: 20px; text-decoration: none; color: var(--text-primary); transition: transform 0.2s, background-color 0.2s; margin-top: 10px; }
-.analytics-link-card:hover { background-color: rgba(255,255,255,0.1); }
-.analytics-link-card:active { transform: scale(0.98); }
-.analytics-link-content { flex-grow: 1; }
-.analytics-link-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.analytics-link-header h3 { margin: 0; font-size: 1.2rem; }
-.analytics-link-card p { margin: 0 0 20px 0; color: var(--text-secondary); }
-.analytics-icon { width: 24px; height: 24px; stroke: var(--text-secondary); }
-.analytics-link-arrow { display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-tertiary); padding-left: 15px; }
 
 .analytics-stats-preview { display: flex; gap: 25px; border-top: 1px solid var(--glass-border); padding-top: 15px; min-height: 50px; transition: opacity 0.3s ease-in-out; }
 .analytics-stats-preview.loading-stats { opacity: 0; }
