@@ -233,7 +233,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     transform: scale(0.95) !important;
 }
 
-#add-options-list, #add-program-options-list {
+#add-options-list, #add-program-options-list, #add-workout-to-week-options-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -435,7 +435,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     transform: scale(1.02);
 }
 
-/* --- NEW PROGRAM STYLES --- */
+/* --- NEW & MODIFIED PROGRAM STYLES --- */
 
 /* Active Program Status Bar */
 #active-program-status-bar {
@@ -461,66 +461,109 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     font-size: 0.9rem;
 }
 
-/* Program Editor */
+/* Program Editor Week Block */
 .program-week-block {
     border: 1px solid var(--glass-border);
     border-radius: 14px;
-    padding: 15px;
     margin-bottom: 15px;
     background: rgba(0,0,0,0.1);
+    overflow: hidden; /* Important for collapsing content */
 }
+
 .program-week-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
     gap: 10px;
+    padding: 15px;
 }
-.program-week-header .week-label-group {
+
+.program-week-header-clickable {
+    cursor: pointer;
+    position: relative;
+    padding-right: 100px; /* Space for controls and chevron */
+}
+
+/* Chevron icon for accordion */
+.program-week-header-clickable::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-style: solid;
+    border-color: var(--text-secondary);
+    border-width: 0 2px 2px 0;
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+.program-week-block[data-state="open"] .program-week-header-clickable::after {
+    transform: translateY(-40%) rotate(-135deg);
+}
+
+.week-label-group {
     flex-grow: 1;
 }
-.program-week-header .week-label-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-    font-weight: 600;
-}
-.program-week-header .week-label-title {
-    font-size: 1.1rem;
+
+.week-label-title {
+    font-size: 1.2rem;
     font-weight: 700;
 }
-.program-week-header .change-duration-btn {
-    margin-top: 0;
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    margin-left: 10px;
+
+.week-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    right: 40px; /* Position next to chevron */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.week-header-controls .icon-btn {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    background-color: rgba(255,255,255,0.1);
+}
+.week-header-controls .icon-btn svg {
+    width: 20px;
+    height: 20px;
+}
+.week-header-controls .change-duration-btn svg {
+    fill: var(--text-primary);
+}
+
+/* Collapsible Content Area */
+.week-content-collapsible {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+}
+
+.program-week-block[data-state="open"] .week-content-collapsible {
+    /* max-height is set by JS, but transition is handled here */
+}
+
+.program-week-workouts-list {
+    padding: 0 15px;
+}
+
+/* Style for workout items inside a week block */
+.week-workout-item {
+    padding: 12px 15px; /* Slightly smaller padding */
+    margin-bottom: 10px;
+}
+
+.add-workout-to-week-btn {
+    width: calc(100% - 30px);
+    margin: 15px;
     background-color: rgba(255,255,255,0.1);
 }
 
-.program-week-workouts-list .week-workout-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    background-color: rgba(255,255,255,0.05);
-    border-radius: 8px;
-    margin-bottom: 8px;
-}
-.week-workout-item .workout-name {
-    font-weight: 600;
-}
-.week-workout-item .actions {
-    display: flex;
-    gap: 5px;
-}
-.week-workout-item .actions button {
-    font-size: 0.8rem;
-    padding: 5px 10px;
-    margin-left: 0;
-    border-radius: 6px;
-    margin-top: 0;
-}
-.week-workout-item .actions .ai-transcribe-btn {
-    background-color: var(--system-blue);
-    color: var(--text-on-action);
+/* Styles for the new "Add Workout to Week" modal */
+#existing-workouts-selection .overlay-body {
+    padding-bottom: 0;
 }
