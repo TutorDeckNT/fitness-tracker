@@ -233,7 +233,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     transform: scale(0.95) !important;
 }
 
-#add-options-list {
+#add-options-list, #add-program-options-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -474,11 +474,29 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    gap: 10px;
 }
-.program-week-header .editor-form-group {
+.program-week-header .week-label-group {
     flex-grow: 1;
-    margin-bottom: 0;
 }
+.program-week-header .week-label-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+.program-week-header .week-label-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.program-week-header .change-duration-btn {
+    margin-top: 0;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+    background-color: rgba(255,255,255,0.1);
+}
+
 .program-week-workouts-list .week-workout-item {
     display: flex;
     align-items: center;
