@@ -358,7 +358,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     gap: 8px;
 }
 
-/* THIS IS THE DEFINITIVE FIX FOR THE WHITE ICON */
 #reorder-exercises-btn svg {
     fill: none;
     stroke: var(--text-primary);
@@ -392,7 +391,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 /* --- REORDER MODE --- */
 
-/* THIS IS THE DEFINITIVE FIX FOR THE DONE BUTTON */
 #done-reordering-btn {
     display: none;
 }
@@ -435,4 +433,76 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     z-index: 10;
     opacity: 0.95;
     transform: scale(1.02);
+}
+
+/* --- NEW PROGRAM STYLES --- */
+
+/* Active Program Status Bar */
+#active-program-status-bar {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fade-in 0.5s;
+    border: 1px solid var(--system-green);
+}
+#active-program-info {
+    font-weight: 600;
+}
+#active-program-week {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-left: 8px;
+}
+#stop-program-btn {
+    margin-top: 0;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+/* Program Editor */
+.program-week-block {
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: rgba(0,0,0,0.1);
+}
+.program-week-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.program-week-header .editor-form-group {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+.program-week-workouts-list .week-workout-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+.week-workout-item .workout-name {
+    font-weight: 600;
+}
+.week-workout-item .actions {
+    display: flex;
+    gap: 5px;
+}
+.week-workout-item .actions button {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    margin-left: 0;
+    border-radius: 6px;
+    margin-top: 0;
+}
+.week-workout-item .actions .ai-transcribe-btn {
+    background-color: var(--system-blue);
+    color: var(--text-on-action);
 }
