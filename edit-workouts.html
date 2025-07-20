@@ -158,6 +158,10 @@
                     <svg><use xlink:href="#icon-file-import"></use></svg>
                     <span>Import from File</span>
                 </button>
+                <button id="open-ai-program-transcribe-btn" class="menu-style-btn">
+                    <img src="images/Rosecurve.png" alt="AI Icon">
+                    <span>Transcribe Entire Program with AI</span>
+                </button>
             </div>
         </div>
     </div>
@@ -438,7 +442,7 @@
         }
 
         const weeksPassed = Math.floor((new Date() - new Date(activeProgram.startDate)) / (1000 * 60 * 60 * 24 * 7));
-        const currentProgramWeek = weeksPassed + 1;
+        const currentProgramWeek = (activeProgram.startWeekIndex) + weeksPassed + 1;
 
         document.getElementById('active-program-name').textContent = `Running: ${activeProgram.programName}`;
         document.getElementById('active-program-week').textContent = `(Week ${currentProgramWeek})`;
@@ -585,7 +589,7 @@
                 title = `Editing: ${context.name}`;
             } else { // type === 'program'
                 workoutData = programs[context.programName].weeks[context.weekIndex].workouts[context.workoutName];
-                title = `Editing: ${context.workoutName} (W${context.weekIndex + 1})`;
+                title = `Editing: ${context.workoutName} (${programs[context.programName].weeks[context.weekIndex].weekLabel})`;
             }
             if (!workoutData) throw new Error("Workout data not found.");
         } catch (err) {
@@ -724,24 +728,18 @@
         let workoutsHTML = '';
         if (weekData.workouts) {
             Object.keys(weekData.workouts).forEach(workoutName => {
-                workoutsHTML += `
-                    <div class="week-workout-item" data-workout-name="${workoutName}">
-                        <span class="workout-name">${workoutName}</span>
-                        <div class="actions">
-                            <button class="action-btn ai-transcribe-btn">AI</button>
-                            <button class="action-btn edit-week-workout-btn">Edit</button>
-                            <button class="action-btn delete-week-workout-btn destructive-btn">Del</button>
-                        </div>
-                    </div>
-                `;
+                workoutsHTML += createWeekWorkoutItemHTML(workoutName);
             });
         }
 
         div.innerHTML = `
             <div class="program-week-header">
-                <div class="editor-form-group">
-                    <label>Week Label (e.g., "Week 1")</label>
-                    <input type="text" class="week-label-input" value="${weekData.weekLabel || ''}">
+                <div class="week-label-group">
+                    <label>Week Block</label>
+                    <div>
+                        <span class="week-label-title">${weekData.weekLabel || `Week ${index + 1}`}</span>
+                        <button class="action-btn change-duration-btn">Change Duration</button>
+                    </div>
                 </div>
                 <button class="icon-btn delete-week-btn" title="Delete Week"><svg style="fill: var(--system-red);"><use xlink:href="#icon-close"></use></svg></button>
             </div>
@@ -749,6 +747,19 @@
             <button class="action-btn add-workout-to-week-btn">Add Workout to Week</button>
         `;
         return div;
+    }
+    
+    function createWeekWorkoutItemHTML(workoutName) {
+        return `
+            <div class="week-workout-item" data-workout-name="${workoutName}">
+                <span class="workout-name">${workoutName}</span>
+                <div class="actions">
+                    <button class="action-btn ai-transcribe-btn">AI</button>
+                    <button class="action-btn edit-week-workout-btn">Edit</button>
+                    <button class="action-btn delete-week-workout-btn destructive-btn">Del</button>
+                </div>
+            </div>
+        `;
     }
 
     async function saveProgram() {
@@ -771,7 +782,7 @@
         };
 
         document.querySelectorAll('.program-week-block').forEach((weekBlock, index) => {
-            const weekLabel = weekBlock.querySelector('.week-label-input').value;
+            const weekLabel = weekBlock.querySelector('.week-label-title').textContent;
             const existingWorkouts = tempProgram.weeks[index]?.workouts || {};
             newProgramData.weeks.push({ weekLabel, workouts: existingWorkouts });
         });
@@ -860,6 +871,12 @@
             showToast("Program stopped.", "info");
         }
     }
+    
+    function parseWeekLabel(label) {
+        const parts = label.replace('Week ', '').split('-').map(Number);
+        if (parts.length === 1) return { start: parts[0], end: parts[0] };
+        return { start: parts[0], end: parts[1] };
+    }
 
     async function checkActiveProgram(forceUpdate = false) {
         if (!activeProgram) return;
@@ -870,8 +887,17 @@
         }
 
         const weeksPassed = Math.floor((new Date() - new Date(activeProgram.startDate)) / (1000 * 60 * 60 * 24 * 7));
-        let targetWeekIndex = activeProgram.startWeekIndex + weeksPassed;
-        targetWeekIndex = Math.min(targetWeekIndex, programBlueprint.weeks.length - 1);
+        const currentProgramWeek = (activeProgram.startWeekIndex) + weeksPassed + 1;
+        
+        let targetWeekIndex = -1;
+        for(let i = 0; i < programBlueprint.weeks.length; i++) {
+            const range = parseWeekLabel(programBlueprint.weeks[i].weekLabel);
+            if(currentProgramWeek >= range.start && currentProgramWeek <= range.end) {
+                targetWeekIndex = i;
+                break;
+            }
+        }
+        if (targetWeekIndex === -1) targetWeekIndex = programBlueprint.weeks.length - 1; // Default to last week if out of range
 
         const targetWorkouts = programBlueprint.weeks[targetWeekIndex]?.workouts;
         if (!targetWorkouts) return;
@@ -888,7 +914,7 @@
         if (needsDbUpdate) {
             await saveUserData('workouts', workouts);
             if (forceUpdate) renderAll();
-            else showToast(`Program updated to Week ${weeksPassed + 1}!`, 'success');
+            else showToast(`Program updated to Week ${currentProgramWeek}!`, 'success');
         }
     }
 
@@ -901,8 +927,26 @@ Warm-up Sets Rule: For the "warmupSets" key, you must provide a single integer r
 RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetRPE" to an empty string "". If only ONE RPE value is mentioned (e.g., "RPE 8"), set BOTH "earlySetRPE" and "lastSetRPE" to that same value (e.g., "~8"). If two distinct RPEs are mentioned, assign them correctly. If a value is not present, use a sensible default or an empty string. Be intelligent about common abbreviations. Your entire response must be only the JSON data, starting with [ and ending with ].`;
     }
 
-    function getProgramAiPrompt(programName, weekLabel, workoutName) {
+    function getProgramWorkoutAiPrompt(programName, weekLabel, workoutName) {
         return `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe the exercises specifically for the workout named '${workoutName}' as described for the period labeled '${weekLabel}' within the program titled '${programName}'. Your entire response MUST be a single, valid JSON array of exercise objects. Each object must have these keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE". Look for contextual clues in the document to find the correct section. If you cannot find a specific match, return an empty array []. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON array.`;
+    }
+
+    function getFullProgramAiPrompt() {
+        return `You are an expert fitness assistant. Your task is to analyze the entire provided user file and transcribe it into a single, structured JSON object representing a complete multi-week program.
+
+Your entire response MUST be only the JSON object. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON object.
+
+The root JSON object MUST have two keys:
+1.  "name": A string for the program's title. Infer this from the document.
+2.  "weeks": An array of week-block objects.
+
+Each object inside the "weeks" array represents a block of training and MUST have two keys:
+1.  "weekLabel": A string describing the week or range (e.g., "Week 1", "Weeks 2-5", "Week 6: Deload").
+2.  "workouts": An object where each key is the name of a workout for that week (e.g., "Push", "Pull", "Legs"), and the value is an array of exercise objects.
+
+Each exercise object in the workout array MUST have the following keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE".
+
+Follow the rules for "warmupSets" and "RPE" from previous instructions. Be intelligent in identifying week ranges and consistent workout names across weeks.`;
     }
 
     document.getElementById('transcribe-btn').addEventListener('click', async () => {
@@ -910,20 +954,19 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
         const file = document.getElementById('ai-file-input').files[0];
         
         let systemPrompt;
+        const planName = document.getElementById('ai-plan-name').value.trim();
+
         if (aiContext.type === 'workout') {
-            const planName = document.getElementById('ai-plan-name').value.trim();
-            if (!apiKey || !planName || !file) {
-                showToast("Please fill out all AI fields.", "error"); return;
-            }
-            if (workouts[planName]) {
-                showToast(`Plan "${planName}" already exists.`, "error"); return;
-            }
+            if (!apiKey || !planName || !file) { showToast("Please fill out all AI fields.", "error"); return; }
+            if (workouts[planName]) { showToast(`Plan "${planName}" already exists.`, "error"); return; }
             systemPrompt = getWorkoutAiPrompt();
-        } else { // type === 'program'
-             if (!apiKey || !file) {
-                showToast("Please provide an API key and file.", "error"); return;
-            }
-            systemPrompt = getProgramAiPrompt(aiContext.programName, aiContext.weekLabel, aiContext.workoutName);
+        } else if (aiContext.type === 'program_workout') {
+             if (!apiKey || !file) { showToast("Please provide an API key and file.", "error"); return; }
+            systemPrompt = getProgramWorkoutAiPrompt(aiContext.programName, aiContext.weekLabel, aiContext.workoutName);
+        } else { // full_program
+            if (!apiKey || !planName || !file) { showToast("Please fill out all AI fields.", "error"); return; }
+            if (programs[planName]) { showToast(`Program "${planName}" already exists.`, "error"); return; }
+            systemPrompt = getFullProgramAiPrompt();
         }
 
         const btn = document.getElementById('transcribe-btn');
@@ -941,7 +984,7 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                     systemInstruction: { parts: [{ text: systemPrompt }] }
                 };
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
@@ -954,19 +997,22 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                 
                 const data = await response.json();
                 const rawText = data.candidates[0].content.parts[0].text;
-                const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
-                const newExercises = JSON.parse(jsonString);
+                const jsonString = rawText.substring(rawText.indexOf('{'), rawText.lastIndexOf('}') + 1) || rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
+                const resultData = JSON.parse(jsonString);
 
                 if (aiContext.type === 'workout') {
-                    const planName = document.getElementById('ai-plan-name').value.trim();
-                    workouts[planName] = newExercises;
+                    workouts[planName] = resultData;
                     await saveUserData('workouts', workouts);
                     showToast(`Successfully added "${planName}"!`, 'success');
-                } else { // type === 'program'
-                    programs[aiContext.programName].weeks[aiContext.weekIndex].workouts[aiContext.workoutName] = newExercises;
+                } else if (aiContext.type === 'program_workout') {
+                    programs[aiContext.programName].weeks[aiContext.weekIndex].workouts[aiContext.workoutName] = resultData;
                     await saveUserData('programs', programs);
                     showToast(`Successfully transcribed "${aiContext.workoutName}"!`, 'success');
-                    openProgramEditor(aiContext.programName); // Refresh editor
+                    openProgramEditor(aiContext.programName);
+                } else { // full_program
+                    programs[planName] = resultData;
+                    await saveUserData('programs', programs);
+                    showToast(`Successfully transcribed program "${planName}"!`, 'success');
                 }
                 
                 renderAll();
@@ -984,7 +1030,26 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
         };
     });
     
-    function exportSingleWorkout(name) { /* ... original implementation ... */ }
+    function exportSingleWorkout(name) {
+        if (!workouts[name]) {
+            showToast("Workout not found.", "error");
+            return;
+        }
+        const workoutToExport = { [name]: workouts[name] };
+        const dataStr = JSON.stringify(workoutToExport, null, 2);
+        const dataBlob = new Blob([dataStr], {type: "application/json"});
+        const url = URL.createObjectURL(dataBlob);
+        const a = document.createElement('a');
+        const safeName = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        a.href = url;
+        a.download = `workout_${safeName}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`Exported "${name}" successfully!`, "success");
+    }
+
     function exportProgram(name) {
         if (!programs[name]) {
             showToast("Program not found.", "error");
@@ -1173,6 +1238,14 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
     document.getElementById('add-program-manual-btn').addEventListener('click', () => { addProgramOptionsOverlay.classList.remove('active'); addProgramManually(); });
     document.getElementById('import-program-from-file-btn').addEventListener('click', () => { addProgramOptionsOverlay.classList.remove('active'); document.getElementById('import-program-file-input').click(); });
     document.getElementById('import-program-file-input').addEventListener('change', (e) => handleFileImport(e, 'program'));
+    document.getElementById('open-ai-program-transcribe-btn').addEventListener('click', () => {
+        aiContext = { type: 'full_program' };
+        document.getElementById('ai-transcribe-title').textContent = 'Transcribe Entire Program';
+        document.getElementById('ai-transcribe-description').textContent = 'The AI will attempt to parse the entire file into a new multi-week program.';
+        document.getElementById('ai-plan-name-group').style.display = 'block';
+        addProgramOptionsOverlay.classList.remove('active');
+        aiTranscribeOverlay.classList.add('active');
+    });
 
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
     document.getElementById('stop-program-btn').addEventListener('click', () => stopProgram(false));
@@ -1211,12 +1284,12 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                     programs[programName].weeks[weekIndex].workouts = {};
                 }
                 programs[programName].weeks[weekIndex].workouts[workoutName] = [];
-                weekBlock.querySelector('.program-week-workouts-list').appendChild(createWeekWorkoutItem(workoutName));
+                weekBlock.querySelector('.program-week-workouts-list').innerHTML += createWeekWorkoutItemHTML(workoutName);
             }
         } else if (e.target.closest('.ai-transcribe-btn')) {
             const workoutName = e.target.closest('.week-workout-item').dataset.workoutName;
             aiContext = {
-                type: 'program',
+                type: 'program_workout',
                 programName: programName,
                 weekIndex: weekIndex,
                 weekLabel: programs[programName].weeks[weekIndex].weekLabel,
@@ -1226,23 +1299,19 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
             document.getElementById('ai-transcribe-description').textContent = `This will find and transcribe '${workoutName}' for '${aiContext.weekLabel}' and add it to your program.`;
             document.getElementById('ai-plan-name-group').style.display = 'none';
             aiTranscribeOverlay.classList.add('active');
+        } else if (e.target.closest('.change-duration-btn')) {
+            const currentLabel = weekBlock.querySelector('.week-label-title').textContent;
+            const startWeek = parseWeekLabel(currentLabel).start;
+            const endWeek = prompt(`This block starts at Week ${startWeek}. What week should it end on?`, startWeek);
+            if (endWeek && !isNaN(endWeek) && parseInt(endWeek) >= startWeek) {
+                const newLabel = parseInt(endWeek) === startWeek ? `Week ${startWeek}` : `Week ${startWeek}-${endWeek}`;
+                weekBlock.querySelector('.week-label-title').textContent = newLabel;
+                programs[programName].weeks[weekIndex].weekLabel = newLabel;
+            } else if (endWeek !== null) {
+                showToast("Invalid end week.", "error");
+            }
         }
     });
-
-    function createWeekWorkoutItem(workoutName) {
-        const div = document.createElement('div');
-        div.className = 'week-workout-item';
-        div.dataset.workoutName = workoutName;
-        div.innerHTML = `
-            <span class="workout-name">${workoutName}</span>
-            <div class="actions">
-                <button class="action-btn ai-transcribe-btn">AI</button>
-                <button class="action-btn edit-week-workout-btn">Edit</button>
-                <button class="action-btn delete-week-workout-btn destructive-btn">Del</button>
-            </div>
-        `;
-        return div;
-    }
 
     // --- PAGE INITIALIZATION ---
     async function initPageForUser() {
