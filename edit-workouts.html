@@ -74,7 +74,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                         </button>
-                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
                     </div>
                     <div id="workouts-list"></div>
                 </div>
@@ -120,7 +119,7 @@
     <div class="modal-overlay" id="add-options-overlay">
         <div class="overlay-content glass-card" id="add-options-panel">
             <div class="overlay-header">
-                <h2>Add a New Plan</h2>
+                <h2>Add a New Workout Plan</h2>
                 <button class="icon-btn" id="close-add-options-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
             </div>
             <div class="overlay-body" id="add-options-list">
@@ -137,6 +136,27 @@
                 <button id="open-ai-transcribe-btn" class="menu-style-btn">
                     <img src="images/Rosecurve.png" alt="AI Icon">
                     <span>Transcribe with AI</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="add-program-options-overlay">
+        <div class="overlay-content glass-card" id="add-program-options-panel">
+            <div class="overlay-header">
+                <h2>Add a New Program</h2>
+                <button class="icon-btn" id="close-add-program-options-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+            </div>
+            <div class="overlay-body" id="add-program-options-list">
+                <button id="add-program-manual-btn" class="menu-style-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                    </svg>
+                    <span>Create Manually</span>
+                </button>
+                <button id="import-program-from-file-btn" class="menu-style-btn">
+                    <svg><use xlink:href="#icon-file-import"></use></svg>
+                    <span>Import from File</span>
                 </button>
             </div>
         </div>
@@ -236,6 +256,8 @@
             </div>
         </div>
     </div>
+    
+    <input type="file" id="import-program-file-input" accept=".json" style="display: none;">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -270,6 +292,8 @@
     const mainContentWrapper = document.getElementById('main-content-wrapper');
     const skeletonLoader = document.getElementById('skeleton-loader');
     const editorExercisesList = document.getElementById('editor-exercises-list');
+    const addOptionsOverlay = document.getElementById('add-options-overlay');
+    const addProgramOptionsOverlay = document.getElementById('add-program-options-overlay');
 
     // --- UTILITY FUNCTIONS ---
     function showToast(message, type = 'info', duration = 3000) {
@@ -418,7 +442,7 @@
         statusBar.style.display = 'flex';
     }
 
-    // --- OPTIONS MENU LOGIC ---
+    // --- OPTIONS MENU LOGIC (RESTORED ICONS) ---
     function closeOptionsMenu() {
         const existingMenu = document.querySelector('.options-menu-popup');
         if (existingMenu) existingMenu.remove();
@@ -439,9 +463,18 @@
         menu.className = 'options-menu-popup glass-card';
         
         let menuItems = `
-            <button class="menu-item" data-action="share"><span>Share</span></button>
-            <button class="menu-item" data-action="edit"><span>Edit</span></button>
-            <button class="menu-item delete-item" data-action="delete"><span>Delete</span></button>
+            <button class="menu-item" data-action="share">
+                <svg class="share-icon-menu"><use xlink:href="#icon-share"></use></svg>
+                <span>Share</span>
+            </button>
+            <button class="menu-item" data-action="edit">
+                <svg class="edit-icon-menu"><use xlink:href="#icon-edit-03"></use></svg>
+                <span>Edit</span>
+            </button>
+            <button class="menu-item delete-item" data-action="delete">
+                <svg class="delete-icon-menu"><use xlink:href="#icon-cancel-circle-sharp"></use></svg>
+                <span>Delete</span>
+            </button>
         `;
         if (type === 'program') {
             menuItems = `<button class="menu-item" data-action="run"><span>Run Program</span></button>` + menuItems;
@@ -488,6 +521,18 @@
             openEditor({ type: 'workout', name: name });
         } else if (name) {
             showToast("A workout with this name already exists.", 'error');
+        }
+    }
+    
+    async function addProgramManually() {
+        const name = prompt("Enter a name for the new program:");
+        if (name && !programs[name]) {
+            programs[name] = { name: name, weeks: [] };
+            await saveUserData('programs', programs);
+            renderAll();
+            openProgramEditor(name);
+        } else if (name) {
+            showToast("A program with this name already exists.", 'error');
         }
     }
 
@@ -715,6 +760,8 @@
         }
 
         const oldProgramName = editingContext.name;
+        const tempProgram = programs[oldProgramName] || { name: oldProgramName, weeks: [] };
+        
         const newProgramData = {
             name: newProgramName,
             weeks: []
@@ -722,7 +769,7 @@
 
         document.querySelectorAll('.program-week-block').forEach((weekBlock, index) => {
             const weekLabel = weekBlock.querySelector('.week-label-input').value;
-            const existingWorkouts = (programs[oldProgramName]?.weeks[index]?.workouts) || {};
+            const existingWorkouts = tempProgram.weeks[index]?.workouts || {};
             newProgramData.weeks.push({ weekLabel, workouts: existingWorkouts });
         });
 
@@ -789,11 +836,9 @@
         }
 
         const newSchedule = { ...schedule };
-        let scheduleChanged = false;
         for (const day in newSchedule) {
             if (newSchedule[day].startsWith(prefix)) {
                 newSchedule[day] = "Rest Day";
-                scheduleChanged = true;
             }
         }
         
@@ -845,13 +890,11 @@
     }
 
     // --- AI & IMPORT/EXPORT ---
-    // Original AI transcription for single workouts
     document.getElementById('transcribe-btn').addEventListener('click', async () => { /* ... original implementation ... */ });
     
     function getProgramAiPrompt(programName, weekLabel, workoutName) {
         return `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe the exercises specifically for the workout named '${workoutName}' as described for the period labeled '${weekLabel}' within the program titled '${programName}'. Your entire response MUST be a single, valid JSON array of exercise objects. Each object must have these keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE". Look for contextual clues in the document to find the correct section. If you cannot find a specific match, return an empty array []. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON array.`;
     }
-    // The function to call this prompt would be attached via event delegation in the program editor.
 
     function exportSingleWorkout(name) { /* ... original implementation ... */ }
     function exportProgram(name) {
@@ -874,25 +917,181 @@
         showToast(`Exported "${name}" successfully!`, "success");
     }
 
-    async function handleWorkoutImport(event) { /* ... original implementation ... */ }
+    async function handleFileImport(event, type) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (typeof importedData !== 'object' || importedData === null) { throw new Error("Invalid JSON format."); }
+                
+                if (type === 'workout') {
+                    workouts = { ...workouts, ...importedData };
+                    await saveUserData('workouts', workouts);
+                } else { // type === 'program'
+                    programs = { ...programs, ...importedData };
+                    await saveUserData('programs', programs);
+                }
+                renderAll();
+                showToast(`${type.charAt(0).toUpperCase() + type.slice(1)}s imported successfully!`, "success");
+            } catch (error) {
+                showToast(`Import failed: ${error.message}`, "error");
+            } finally {
+                event.target.value = '';
+            }
+        };
+        reader.onerror = () => showToast("Error reading the file.", "error");
+        reader.readAsText(file);
+    }
+
+    // --- REORDER LOGIC (RESTORED) ---
+    const editorPanel = document.getElementById('editor-panel');
+    const reorderBtn = document.getElementById('reorder-exercises-btn');
+    const doneReorderingBtn = document.getElementById('done-reordering-btn');
+    let draggableItem = null;
+    let pointerStart = { x: 0, y: 0 };
+    let itemsCache = [];
+    const ITEMS_GAP = 15;
+
+    function toggleReorderMode(enable) {
+        editorPanel.classList.toggle('reorder-mode', enable);
+    }
+
+    reorderBtn.addEventListener('click', () => toggleReorderMode(true));
+    doneReorderingBtn.addEventListener('click', () => toggleReorderMode(false));
+
+    function dragStart(e) {
+        if (!editorPanel.classList.contains('reorder-mode')) return;
+        draggableItem = e.target.closest('.editor-exercise');
+        if (!draggableItem) return;
+        e.preventDefault();
+        pointerStart.x = e.clientX || e.touches[0].clientX;
+        pointerStart.y = e.clientY || e.touches[0].clientY;
+        draggableItem.classList.add('is-draggable');
+        itemsCache = Array.from(editorExercisesList.children);
+        const draggableIndex = itemsCache.indexOf(draggableItem);
+        itemsCache.forEach((item, index) => {
+            if (item === draggableItem) return;
+            item.classList.add('is-idle');
+            if (index < draggableIndex) item.dataset.isAbove = '';
+        });
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchend', dragEnd);
+    }
+
+    function drag(e) {
+        if (!draggableItem) return;
+        e.preventDefault();
+        const currentX = e.clientX || e.touches[0].clientX;
+        const currentY = e.clientY || e.touches[0].clientY;
+        const pointerOffset = { x: currentX - pointerStart.x, y: currentY - pointerStart.y };
+        draggableItem.style.transform = `translate(${pointerOffset.x}px, ${pointerOffset.y}px)`;
+        updateIdleItemsStateAndPosition();
+    }
+
+    function dragEnd() {
+        if (!draggableItem) return;
+        applyNewItemsOrder();
+        cleanup();
+    }
+
+    function cleanup() {
+        itemsCache.forEach(item => {
+            item.classList.remove('is-draggable', 'is-idle');
+            delete item.dataset.isAbove;
+            delete item.dataset.isToggled;
+            item.style.transform = '';
+        });
+        draggableItem = null;
+        itemsCache = [];
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('touchmove', drag);
+        document.removeEventListener('mouseup', dragEnd);
+        document.removeEventListener('touchend', dragEnd);
+        updateExerciseNumbers();
+    }
+
+    function updateIdleItemsStateAndPosition() {
+        const draggableRect = draggableItem.getBoundingClientRect();
+        const draggableCenterY = draggableRect.top + draggableRect.height / 2;
+        itemsCache.forEach(item => {
+            if (item === draggableItem) return;
+            const itemRect = item.getBoundingClientRect();
+            const itemCenterY = itemRect.top + itemRect.height / 2;
+            const isAbove = item.hasAttribute('data-is-above');
+            if (isAbove) {
+                if (draggableCenterY <= itemCenterY) item.dataset.isToggled = '';
+                else delete item.dataset.isToggled;
+            } else {
+                if (draggableCenterY >= itemCenterY) item.dataset.isToggled = '';
+                else delete item.dataset.isToggled;
+            }
+        });
+        itemsCache.forEach(item => {
+            if (item === draggableItem) return;
+            if (item.hasAttribute('data-is-toggled')) {
+                const direction = item.hasAttribute('data-is-above') ? 1 : -1;
+                item.style.transform = `translateY(${direction * (draggableRect.height + ITEMS_GAP)}px)`;
+            } else {
+                item.style.transform = '';
+            }
+        });
+    }
+
+    function applyNewItemsOrder() {
+        const reorderedItems = [];
+        itemsCache.forEach((item, index) => {
+            if (item === draggableItem) return;
+            if (!item.hasAttribute('data-is-toggled')) {
+                reorderedItems[index] = item;
+                return;
+            }
+            const newIndex = item.hasAttribute('data-is-above') ? index + 1 : index - 1;
+            reorderedItems[newIndex] = item;
+        });
+        for (let i = 0; i < itemsCache.length; i++) {
+            if (typeof reorderedItems[i] === 'undefined') {
+                reorderedItems[i] = draggableItem;
+                break;
+            }
+        }
+        reorderedItems.forEach(item => editorExercisesList.appendChild(item));
+    }
+
+    editorExercisesList.addEventListener('mousedown', dragStart);
+    editorExercisesList.addEventListener('touchstart', dragStart, { passive: false });
 
     // --- EVENT LISTENERS ---
-    document.getElementById('show-add-options-btn').addEventListener('click', () => document.getElementById('add-options-overlay').classList.add('active'));
-    document.getElementById('close-add-options-btn').addEventListener('click', () => document.getElementById('add-options-overlay').classList.remove('active'));
-    document.getElementById('add-manual-btn').addEventListener('click', () => { document.getElementById('add-options-overlay').classList.remove('active'); addWorkoutManually(); });
-    document.getElementById('import-from-file-btn').addEventListener('click', () => { document.getElementById('add-options-overlay').classList.remove('active'); document.getElementById('import-file-input').click(); });
-    document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { document.getElementById('add-options-overlay').classList.remove('active'); document.getElementById('ai-transcribe-overlay').classList.add('active'); });
+    document.getElementById('show-add-options-btn').addEventListener('click', () => addOptionsOverlay.classList.add('active'));
+    document.getElementById('close-add-options-btn').addEventListener('click', () => addOptionsOverlay.classList.remove('active'));
+    document.getElementById('add-manual-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); addWorkoutManually(); });
+    document.getElementById('import-from-file-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); document.getElementById('import-file-input').click(); });
+    document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); document.getElementById('ai-transcribe-overlay').classList.add('active'); });
     document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => document.getElementById('ai-transcribe-overlay').classList.remove('active'));
-    document.getElementById('import-file-input').addEventListener('change', handleWorkoutImport);
+    document.getElementById('import-file-input').addEventListener('change', (e) => handleFileImport(e, 'workout'));
     
+    document.getElementById('add-program-btn').addEventListener('click', () => addProgramOptionsOverlay.classList.add('active'));
+    document.getElementById('close-add-program-options-btn').addEventListener('click', () => addProgramOptionsOverlay.classList.remove('active'));
+    document.getElementById('add-program-manual-btn').addEventListener('click', () => { addProgramOptionsOverlay.classList.remove('active'); addProgramManually(); });
+    document.getElementById('import-program-from-file-btn').addEventListener('click', () => { addProgramOptionsOverlay.classList.remove('active'); document.getElementById('import-program-file-input').click(); });
+    document.getElementById('import-program-file-input').addEventListener('change', (e) => handleFileImport(e, 'program'));
+
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
     document.getElementById('stop-program-btn').addEventListener('click', () => stopProgram(false));
 
-    // Program Editor Listeners
-    document.getElementById('add-program-btn').addEventListener('click', () => openProgramEditor(null));
     document.getElementById('close-program-editor-btn').addEventListener('click', () => programEditorOverlay.classList.remove('active'));
     document.getElementById('save-program-btn').addEventListener('click', saveProgram);
     document.getElementById('close-run-program-btn').addEventListener('click', () => runProgramOverlay.classList.remove('active'));
+    
+    document.getElementById('add-week-btn').addEventListener('click', () => {
+        const weeksList = document.getElementById('program-weeks-list');
+        const newIndex = weeksList.children.length;
+        const newWeekData = { weekLabel: `Week ${newIndex + 1}`, workouts: {} };
+        weeksList.appendChild(createWeekBlock(newWeekData, newIndex));
+    });
 
     // --- PAGE INITIALIZATION ---
     async function initPageForUser() {
