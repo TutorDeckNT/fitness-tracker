@@ -165,16 +165,16 @@
     <div class="modal-overlay" id="ai-transcribe-overlay">
         <div class="overlay-content glass-card" id="ai-transcribe-panel">
             <div class="overlay-header">
-                <h2>Transcribe with AI</h2>
+                <h2 id="ai-transcribe-title">Transcribe with AI</h2>
                 <button class="icon-btn" id="close-ai-transcribe-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
             </div>
             <div class="overlay-body">
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0;">Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.</p>
+                <p id="ai-transcribe-description" style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0;"></p>
                 <div class="editor-form-group">
                     <label for="gemini-api-key">Google Gemini API Key (<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--system-blue);">Get one here</a>)</label>
                     <input type="password" id="gemini-api-key" placeholder="Enter your API key">
                 </div>
-                <div class="editor-form-group">
+                <div class="editor-form-group" id="ai-plan-name-group">
                     <label for="ai-plan-name">New Plan Name</label>
                     <input type="text" id="ai-plan-name" placeholder="e.g., My Hypertrophy Push Day">
                 </div>
@@ -257,6 +257,7 @@
         </div>
     </div>
     
+    <input type="file" id="import-file-input" accept=".json" style="display: none;">
     <input type="file" id="import-program-file-input" accept=".json" style="display: none;">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -284,6 +285,7 @@
     let programs = {};
     let activeProgram = null;
     let editingContext = {}; // CRITICAL: {type: 'workout'/'program', name, programName, weekIndex, workoutName}
+    let aiContext = {}; // For AI transcription
 
     // --- DOM ELEMENT GETTERS ---
     const editorOverlay = document.getElementById('editor-overlay');
@@ -294,6 +296,7 @@
     const editorExercisesList = document.getElementById('editor-exercises-list');
     const addOptionsOverlay = document.getElementById('add-options-overlay');
     const addProgramOptionsOverlay = document.getElementById('add-program-options-overlay');
+    const aiTranscribeOverlay = document.getElementById('ai-transcribe-overlay');
 
     // --- UTILITY FUNCTIONS ---
     function showToast(message, type = 'info', duration = 3000) {
@@ -442,7 +445,7 @@
         statusBar.style.display = 'flex';
     }
 
-    // --- OPTIONS MENU LOGIC (RESTORED ICONS) ---
+    // --- OPTIONS MENU LOGIC ---
     function closeOptionsMenu() {
         const existingMenu = document.querySelector('.options-menu-popup');
         if (existingMenu) existingMenu.remove();
@@ -464,7 +467,7 @@
         
         let menuItems = `
             <button class="menu-item" data-action="share">
-                <svg class="share-icon-menu"><use xlink:href="#icon-share"></use></svg>
+                <svg class="share-icon-menu" stroke-width="2"><use xlink:href="#icon-share"></use></svg>
                 <span>Share</span>
             </button>
             <button class="menu-item" data-action="edit">
@@ -890,12 +893,97 @@
     }
 
     // --- AI & IMPORT/EXPORT ---
-    document.getElementById('transcribe-btn').addEventListener('click', async () => { /* ... original implementation ... */ });
-    
+    function getWorkoutAiPrompt() {
+        return `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe it into a structured JSON format. The output MUST be a single, valid JSON array of exercise objects. Your entire response must be only the JSON data. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON array. Each exercise object in the array must have the following keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE".
+                            
+Warm-up Sets Rule: For the "warmupSets" key, you must provide a single integer representing the *count* of warm-up sets listed for that exercise. For example, if the text says '2 warm-up sets' or lists two separate warm-up lines (e.g., 'Warm-up: 50lbs x 10, 70lbs x 5'), the value for "warmupSets" must be the number 2. If a range is provided (e.g., "1-2 warm-up sets"), you must always choose the lower number in the range (in this case, 1). If no warm-ups are mentioned, the value should be 0.
+
+RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetRPE" to an empty string "". If only ONE RPE value is mentioned (e.g., "RPE 8"), set BOTH "earlySetRPE" and "lastSetRPE" to that same value (e.g., "~8"). If two distinct RPEs are mentioned, assign them correctly. If a value is not present, use a sensible default or an empty string. Be intelligent about common abbreviations. Your entire response must be only the JSON data, starting with [ and ending with ].`;
+    }
+
     function getProgramAiPrompt(programName, weekLabel, workoutName) {
         return `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe the exercises specifically for the workout named '${workoutName}' as described for the period labeled '${weekLabel}' within the program titled '${programName}'. Your entire response MUST be a single, valid JSON array of exercise objects. Each object must have these keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE". Look for contextual clues in the document to find the correct section. If you cannot find a specific match, return an empty array []. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON array.`;
     }
 
+    document.getElementById('transcribe-btn').addEventListener('click', async () => {
+        const apiKey = document.getElementById('gemini-api-key').value;
+        const file = document.getElementById('ai-file-input').files[0];
+        
+        let systemPrompt;
+        if (aiContext.type === 'workout') {
+            const planName = document.getElementById('ai-plan-name').value.trim();
+            if (!apiKey || !planName || !file) {
+                showToast("Please fill out all AI fields.", "error"); return;
+            }
+            if (workouts[planName]) {
+                showToast(`Plan "${planName}" already exists.`, "error"); return;
+            }
+            systemPrompt = getWorkoutAiPrompt();
+        } else { // type === 'program'
+             if (!apiKey || !file) {
+                showToast("Please provide an API key and file.", "error"); return;
+            }
+            systemPrompt = getProgramAiPrompt(aiContext.programName, aiContext.weekLabel, aiContext.workoutName);
+        }
+
+        const btn = document.getElementById('transcribe-btn');
+        toggleButtonLoading(btn, true);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+            const dataUrl = reader.result;
+            const base64Data = dataUrl.substring(dataUrl.indexOf(',') + 1);
+            const mimeType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';'));
+            try {
+                const requestBody = {
+                    contents: [{ parts: [{ text: "Analyze the attached workout file and return only the JSON data." }, { inline_data: { mime_type: mimeType, data: base64Data } }] }],
+                    generationConfig: { temperature: 0 },
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error.message || "API request failed.");
+                }
+                
+                const data = await response.json();
+                const rawText = data.candidates[0].content.parts[0].text;
+                const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
+                const newExercises = JSON.parse(jsonString);
+
+                if (aiContext.type === 'workout') {
+                    const planName = document.getElementById('ai-plan-name').value.trim();
+                    workouts[planName] = newExercises;
+                    await saveUserData('workouts', workouts);
+                    showToast(`Successfully added "${planName}"!`, 'success');
+                } else { // type === 'program'
+                    programs[aiContext.programName].weeks[aiContext.weekIndex].workouts[aiContext.workoutName] = newExercises;
+                    await saveUserData('programs', programs);
+                    showToast(`Successfully transcribed "${aiContext.workoutName}"!`, 'success');
+                    openProgramEditor(aiContext.programName); // Refresh editor
+                }
+                
+                renderAll();
+                aiTranscribeOverlay.classList.remove('active');
+
+            } catch (error) {
+                showToast(`Error: ${error.message}`, 'error');
+            } finally {
+                toggleButtonLoading(btn, false);
+            }
+        };
+        reader.onerror = () => {
+            showToast("Error reading the file.", "error");
+            toggleButtonLoading(btn, false);
+        };
+    });
+    
     function exportSingleWorkout(name) { /* ... original implementation ... */ }
     function exportProgram(name) {
         if (!programs[name]) {
@@ -945,7 +1033,7 @@
         reader.readAsText(file);
     }
 
-    // --- REORDER LOGIC (RESTORED) ---
+    // --- REORDER LOGIC ---
     const editorPanel = document.getElementById('editor-panel');
     const reorderBtn = document.getElementById('reorder-exercises-btn');
     const doneReorderingBtn = document.getElementById('done-reordering-btn');
@@ -1069,8 +1157,15 @@
     document.getElementById('close-add-options-btn').addEventListener('click', () => addOptionsOverlay.classList.remove('active'));
     document.getElementById('add-manual-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); addWorkoutManually(); });
     document.getElementById('import-from-file-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); document.getElementById('import-file-input').click(); });
-    document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); document.getElementById('ai-transcribe-overlay').classList.add('active'); });
-    document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => document.getElementById('ai-transcribe-overlay').classList.remove('active'));
+    document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { 
+        aiContext = { type: 'workout' };
+        document.getElementById('ai-transcribe-title').textContent = 'Transcribe New Workout';
+        document.getElementById('ai-transcribe-description').textContent = 'The AI will create a new standalone workout plan for you.';
+        document.getElementById('ai-plan-name-group').style.display = 'block';
+        addOptionsOverlay.classList.remove('active'); 
+        aiTranscribeOverlay.classList.add('active'); 
+    });
+    document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => aiTranscribeOverlay.classList.remove('active'));
     document.getElementById('import-file-input').addEventListener('change', (e) => handleFileImport(e, 'workout'));
     
     document.getElementById('add-program-btn').addEventListener('click', () => addProgramOptionsOverlay.classList.add('active'));
@@ -1090,8 +1185,64 @@
         const weeksList = document.getElementById('program-weeks-list');
         const newIndex = weeksList.children.length;
         const newWeekData = { weekLabel: `Week ${newIndex + 1}`, workouts: {} };
+        
+        const programName = document.getElementById('program-name-input').value;
+        if (!programs[programName]) {
+            programs[programName] = { name: programName, weeks: [] };
+        }
+        programs[programName].weeks.push(newWeekData);
+        
         weeksList.appendChild(createWeekBlock(newWeekData, newIndex));
     });
+
+    document.getElementById('program-editor-body').addEventListener('click', e => {
+        const programName = document.getElementById('program-name-input').value;
+        const weekBlock = e.target.closest('.program-week-block');
+        if (!weekBlock) return;
+        const weekIndex = parseInt(weekBlock.dataset.weekIndex, 10);
+
+        if (e.target.closest('.edit-week-workout-btn')) {
+            const workoutName = e.target.closest('.week-workout-item').dataset.workoutName;
+            openEditor({ type: 'program', programName, weekIndex, workoutName });
+        } else if (e.target.closest('.add-workout-to-week-btn')) {
+            const workoutName = prompt("Enter name for this workout (e.g., Push, Pull):");
+            if (workoutName) {
+                if (!programs[programName].weeks[weekIndex].workouts) {
+                    programs[programName].weeks[weekIndex].workouts = {};
+                }
+                programs[programName].weeks[weekIndex].workouts[workoutName] = [];
+                weekBlock.querySelector('.program-week-workouts-list').appendChild(createWeekWorkoutItem(workoutName));
+            }
+        } else if (e.target.closest('.ai-transcribe-btn')) {
+            const workoutName = e.target.closest('.week-workout-item').dataset.workoutName;
+            aiContext = {
+                type: 'program',
+                programName: programName,
+                weekIndex: weekIndex,
+                weekLabel: programs[programName].weeks[weekIndex].weekLabel,
+                workoutName: workoutName
+            };
+            document.getElementById('ai-transcribe-title').textContent = `Transcribe for Program`;
+            document.getElementById('ai-transcribe-description').textContent = `This will find and transcribe '${workoutName}' for '${aiContext.weekLabel}' and add it to your program.`;
+            document.getElementById('ai-plan-name-group').style.display = 'none';
+            aiTranscribeOverlay.classList.add('active');
+        }
+    });
+
+    function createWeekWorkoutItem(workoutName) {
+        const div = document.createElement('div');
+        div.className = 'week-workout-item';
+        div.dataset.workoutName = workoutName;
+        div.innerHTML = `
+            <span class="workout-name">${workoutName}</span>
+            <div class="actions">
+                <button class="action-btn ai-transcribe-btn">AI</button>
+                <button class="action-btn edit-week-workout-btn">Edit</button>
+                <button class="action-btn delete-week-workout-btn destructive-btn">Del</button>
+            </div>
+        `;
+        return div;
+    }
 
     // --- PAGE INITIALIZATION ---
     async function initPageForUser() {
