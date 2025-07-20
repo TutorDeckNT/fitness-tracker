@@ -42,22 +42,6 @@
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; }
 .section-header h2 { margin-top: 0; }
 
-.management-link-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    text-decoration: none;
-    color: var(--text-primary);
-    transition: transform 0.2s, background-color 0.2s;
-    margin-top: 10px;
-}
-.management-link-card:hover { background-color: rgba(255,255,255,0.1); }
-.management-link-card:active { transform: scale(0.98); }
-.management-link-content h3 { margin: 0 0 8px 0; font-size: 1.2rem; }
-.management-link-content p { margin: 0; color: var(--text-secondary); }
-.management-link-arrow { font-size: 2rem; color: var(--text-tertiary); padding-left: 15px; }
-
 #calendar-popup {
     position: absolute;
     z-index: 100;
