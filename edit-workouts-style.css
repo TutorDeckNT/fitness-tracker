@@ -61,6 +61,42 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .action-btn:disabled { background-color: var(--text-tertiary); cursor: not-allowed; }
 .destructive-btn { background-color: var(--system-red); color: var(--text-on-action); }
 
+/* New Button Styles */
+.btn-style-90 {
+    border-radius: 25px;
+    transform: skewX(-3deg);
+    transition: all 0.2s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 0;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+.btn-style-90 .btn-text, .btn-style-90 > span {
+    display: inline-block;
+    transform: skewX(3deg);
+}
+.btn-style-90:hover {
+    transform: skewX(-3deg) scale(1.03);
+}
+.btn-style-90:active {
+    transform: skewX(-3deg) scale(0.98) !important;
+}
+.matt-black-bkg {
+    background-color: rgba(45, 45, 45, 0.9);
+    color: var(--text-primary);
+}
+.matt-black-bkg:hover {
+    background-color: rgba(60, 60, 60, 0.95);
+}
+.white-btn {
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: 700;
+}
+.white-btn:hover {
+    background-color: #e0e0e0;
+}
+
 .icon-btn { background: transparent; border: none; padding: 8px; cursor: pointer; transition: transform 0.1s ease-out, background-color 0.2s; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .icon-btn:active { transform: scale(0.9); }
 .icon-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
@@ -160,14 +196,13 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .action-btn.loading .loader { display: block; }
 .action-btn.loading .btn-text, .action-btn.loading span { visibility: hidden; }
 
+/* MODIFIED Options Menu */
 .options-menu-popup {
-    position: absolute;
-    z-index: 100;
+    position: fixed; /* Changed from absolute to fixed */
+    z-index: 2000; /* High z-index to be on top of everything */
     min-width: 180px;
     padding: 8px;
     animation: fade-in 0.2s ease-out;
-    bottom: calc(100% + 5px);
-    right: 0;
 }
 .options-menu-popup .menu-item {
     display: flex;
@@ -189,23 +224,8 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .options-menu-popup .menu-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
-.options-menu-popup .menu-item svg {
-    width: 20px;
-    height: 20px;
-}
 .options-menu-popup .menu-item.delete-item {
     color: var(--system-red);
-}
-.menu-item .share-icon-menu { 
-    stroke: var(--text-primary);
-    stroke-width: 2;
-}
-.menu-item .edit-icon-menu { 
-    color: var(--text-primary);
-}
-.menu-item.delete-item .delete-icon-menu { 
-    stroke: var(--system-red);
-    fill: none;
 }
 
 .add-plan-circle-btn {
@@ -288,282 +308,53 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     border-radius: 14px;
 }
 
-.skeleton-title {
-    height: 22px;
-    width: 200px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-}
-
-.sk-schedule-card {
-    height: 280px;
-    margin-bottom: 30px;
-    padding: 10px;
-}
-
-.sk-schedule-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 5px;
-}
-
-.sk-schedule-label {
-    height: 20px;
-    width: 100px;
-    border-radius: 6px;
-}
-
-.sk-schedule-select {
-    height: 38px;
-    width: 150px;
-    border-radius: 8px;
-}
-
-.sk-workouts-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.sk-workouts-buttons {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.sk-button-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.sk-button-main {
-    width: 120px;
-    height: 44px;
-    border-radius: 14px;
-}
-
-.sk-workout-item {
-    height: 55px;
-    margin-bottom: 10px;
-}
+.skeleton-title { height: 22px; width: 200px; margin-bottom: 10px; border-radius: 8px; }
+.sk-schedule-card { height: 280px; margin-bottom: 30px; padding: 10px; }
+.sk-schedule-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; }
+.sk-schedule-label { height: 20px; width: 100px; border-radius: 6px; }
+.sk-schedule-select { height: 38px; width: 150px; border-radius: 8px; }
+.sk-workouts-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.sk-workouts-buttons { display: flex; gap: 10px; align-items: center; }
+.sk-button-icon { width: 40px; height: 40px; border-radius: 50%; }
+.sk-workout-item { height: 55px; margin-bottom: 10px; }
 
 /* --- REORDER FEATURE STYLES --- */
-
-.editor-header-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-#reorder-exercises-btn svg {
-    fill: none;
-    stroke: var(--text-primary);
-}
-
-.editor-exercise-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    cursor: default;
-}
-.editor-exercise-header h4 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
+.editor-header-controls { display: flex; align-items: center; gap: 8px; }
+#reorder-exercises-btn svg { fill: none; stroke: var(--text-primary); }
+.editor-exercise-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; cursor: default; }
+.editor-exercise-header h4 { margin: 0; font-size: 1rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .exercise-name-title { display: none; }
-
-.editor-exercise-body {
-    padding: 0 15px 15px 15px;
-    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.4s ease-in-out;
-    max-height: 1000px;
-    opacity: 1;
-    overflow: hidden;
-}
-
-/* --- REORDER MODE --- */
-
-#done-reordering-btn {
-    display: none;
-}
-#editor-panel.reorder-mode #add-exercise-btn,
-#editor-panel.reorder-mode #save-workouts-btn {
-    display: none;
-}
-#editor-panel.reorder-mode #done-reordering-btn {
-    display: inline-flex;
-}
-
-#editor-panel.reorder-mode .editor-exercise {
-    cursor: grab;
-}
-#editor-panel.reorder-mode .editor-exercise:active {
-    cursor: grabbing;
-}
-
+.editor-exercise-body { padding: 0 15px 15px 15px; transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, padding 0.4s ease-in-out; max-height: 1000px; opacity: 1; overflow: hidden; }
+#done-reordering-btn { display: none; }
+#editor-panel.reorder-mode #add-exercise-btn, #editor-panel.reorder-mode #save-workouts-btn { display: none; }
+#editor-panel.reorder-mode #done-reordering-btn { display: inline-flex; }
+#editor-panel.reorder-mode .editor-exercise { cursor: grab; }
+#editor-panel.reorder-mode .editor-exercise:active { cursor: grabbing; }
 #editor-panel.reorder-mode .exercise-number { display: none; }
 #editor-panel.reorder-mode .exercise-name-title { display: inline; }
-
-#editor-panel.reorder-mode .delete-exercise-btn {
-    display: none;
-}
-
-#editor-panel.reorder-mode .editor-exercise-body {
-    max-height: 0;
-    opacity: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-/* --- DRAGGING STATES --- */
-
-.editor-exercise.is-idle {
-    transition: transform 0.25s ease;
-}
-
-.editor-exercise.is-draggable {
-    z-index: 10;
-    opacity: 0.95;
-    transform: scale(1.02);
-}
+#editor-panel.reorder-mode .delete-exercise-btn { display: none; }
+#editor-panel.reorder-mode .editor-exercise-body { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; }
+.editor-exercise.is-idle { transition: transform 0.25s ease; }
+.editor-exercise.is-draggable { z-index: 10; opacity: 0.95; transform: scale(1.02); }
 
 /* --- NEW & MODIFIED PROGRAM STYLES --- */
+#active-program-status-bar { padding: 10px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; animation: fade-in 0.5s; border: 1px solid var(--system-green); }
+#active-program-info { font-weight: 600; }
+#active-program-week { font-size: 0.9rem; color: var(--text-secondary); margin-left: 8px; }
+#stop-program-btn { margin-top: 0; padding: 8px 12px; font-size: 0.9rem; }
 
-/* Active Program Status Bar */
-#active-program-status-bar {
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    animation: fade-in 0.5s;
-    border: 1px solid var(--system-green);
-}
-#active-program-info {
-    font-weight: 600;
-}
-#active-program-week {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-left: 8px;
-}
-#stop-program-btn {
-    margin-top: 0;
-    padding: 8px 12px;
-    font-size: 0.9rem;
-}
-
-/* Program Editor Week Block */
-.program-week-block {
-    border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    margin-bottom: 15px;
-    background: rgba(0,0,0,0.1);
-    overflow: hidden; /* Important for collapsing content */
-}
-
-.program-week-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    padding: 15px;
-}
-
-.program-week-header-clickable {
-    cursor: pointer;
-    position: relative;
-    padding-right: 100px; /* Space for controls and chevron */
-}
-
-/* Chevron icon for accordion */
-.program-week-header-clickable::after {
-    content: '';
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    width: 10px;
-    height: 10px;
-    border-style: solid;
-    border-color: var(--text-secondary);
-    border-width: 0 2px 2px 0;
-    transform: translateY(-70%) rotate(45deg);
-    transition: transform 0.3s ease-in-out;
-}
-
-.program-week-block[data-state="open"] .program-week-header-clickable::after {
-    transform: translateY(-40%) rotate(-135deg);
-}
-
-.week-label-group {
-    flex-grow: 1;
-}
-
-.week-label-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-
-.week-header-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    position: absolute;
-    right: 40px; /* Position next to chevron */
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.week-header-controls .icon-btn {
-    width: 32px;
-    height: 32px;
-    padding: 6px;
-    background-color: rgba(255,255,255,0.1);
-}
-.week-header-controls .icon-btn svg {
-    width: 20px;
-    height: 20px;
-}
-.week-header-controls .change-duration-btn svg {
-    fill: var(--text-primary);
-}
-
-/* Collapsible Content Area */
-.week-content-collapsible {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out;
-}
-
-.program-week-block[data-state="open"] .week-content-collapsible {
-    /* max-height is set by JS, but transition is handled here */
-}
-
-.program-week-workouts-list {
-    padding: 0 15px;
-}
-
-/* Style for workout items inside a week block */
-.week-workout-item {
-    padding: 12px 15px; /* Slightly smaller padding */
-    margin-bottom: 10px;
-}
-
-.add-workout-to-week-btn {
-    width: calc(100% - 30px);
-    margin: 15px;
-    background-color: rgba(255,255,255,0.1);
-}
-
-/* Styles for the new "Add Workout to Week" modal */
-#existing-workouts-selection .overlay-body {
-    padding-bottom: 0;
-}
+.program-week-block { border: 1px solid var(--glass-border); border-radius: 14px; margin-bottom: 15px; background: rgba(0,0,0,0.1); overflow: hidden; }
+.program-week-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 15px; }
+.program-week-header-clickable { cursor: pointer; position: relative; padding-left: 35px; }
+.program-week-header-clickable::before { content: ''; position: absolute; left: 15px; top: 50%; width: 8px; height: 8px; border-style: solid; border-color: var(--text-secondary); border-width: 0 2px 2px 0; transform: translateY(-70%) rotate(45deg); transition: transform 0.3s ease-in-out; }
+.program-week-block[data-state="open"] .program-week-header-clickable::before { transform: translateY(-40%) rotate(-135deg); }
+.week-label-group { flex-grow: 1; }
+.week-label-title { font-size: 1.2rem; font-weight: 700; }
+.week-header-controls { display: flex; align-items: center; gap: 8px; }
+.week-header-controls .icon-btn { width: 32px; height: 32px; padding: 6px; background-color: rgba(255,255,255,0.1); }
+.week-header-controls .icon-btn svg { width: 20px; height: 20px; }
+.week-content-collapsible { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; }
+.program-week-workouts-list { padding: 0 15px; }
+.week-workout-item { padding: 12px 15px; margin-bottom: 10px; }
+.add-workout-to-week-btn { width: calc(100% - 30px); margin: 15px; }
+#existing-workouts-selection .overlay-body { padding-bottom: 0; }
