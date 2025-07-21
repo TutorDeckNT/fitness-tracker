@@ -1,7 +1,7 @@
 // --- THIS IS THE FINAL, CORRECTED SERVICE WORKER FILE ---
 
 // This line is automatically updated by your GitHub Action (YAML script)
-const CACHE_NAME = 'fitness-tracker-cache-vdb12d40';
+const CACHE_NAME = 'fitness-tracker-cache-v43b6e26';
 
 // This is the list of all files needed for the app to work offline.
 // THE ROOT PATH '/' IS NOW CORRECTED TO 'index.html'.
