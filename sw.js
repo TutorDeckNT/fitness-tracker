@@ -1,7 +1,7 @@
 // --- THIS IS THE FINAL, CORRECTED SERVICE WORKER FILE ---
 
 // This line is automatically updated by your GitHub Action (YAML script)
-const CACHE_NAME = 'fitness-tracker-cache-v13-adjust-vibrate';
+const CACHE_NAME = 'fitness-tracker-cache-v21470be';
 
 // This is the list of all files needed for the app to work offline.
 // THE FILE PATHS FOR CSS ARE NOW CORRECTED.
