@@ -1,3 +1,4 @@
+/* --- This is the complete, correct code for css/style.css --- */
 header { margin-bottom: 10px; }
 .action-btn { display: block; width: 100%; margin-top: 10px; }
 .destructive-btn { background: linear-gradient(135deg, #FF3B30, #c22d26); }
@@ -59,8 +60,8 @@ header { margin-bottom: 10px; }
 .timer-btn { font-size: 1rem; font-weight: 600; color: var(--text-primary); background-color: rgba(255,255,255,0.1); border: none; width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
 .timer-btn svg { width: 28px; height: 28px; }
 
-.section-header { display: flex; justify-content: space-between; align-items: center; }
-
+.analytics-link-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.analytics-icon { width: 24px; height: 24px; stroke: var(--text-secondary); }
 .analytics-stats-preview { display: flex; gap: 25px; border-top: 1px solid var(--glass-border); padding-top: 15px; min-height: 50px; transition: opacity 0.3s ease-in-out; }
 .analytics-stats-preview.loading-stats { opacity: 0; }
 .analytics-stats-preview .stat-item { display: flex; flex-direction: column; min-width: 80px; text-align: center; }
@@ -76,7 +77,6 @@ header { margin-bottom: 10px; }
 #workout-session-header h2 { color: var(--text-primary); }
 #workout-session-body { padding-top: 10px; padding-bottom: 10px; padding-left: 15px; padding-right: 15px; }
 #workout-session-footer { position: sticky; bottom: 0; z-index: 2; padding: 15px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); background: var(--glass-bg); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); border-top: 1px solid var(--glass-border); display: grid; gap: 10px; }
-
 .ongoing-workout-banner { display: none; justify-content: space-between; align-items: center; padding: 12px 20px; margin-bottom: 20px; font-weight: 600; animation: fade-in 0.3s; }
 .ongoing-workout-banner.active { display: flex; }
 
