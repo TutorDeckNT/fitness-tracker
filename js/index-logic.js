@@ -1,5 +1,5 @@
-import { firebaseConfig } from './firebase-init.js';
-import { showToast, toggleButtonLoading } from './utils.js';
+    import { firebaseConfig } from './firebase-init.js';
+    import { showToast, toggleButtonLoading } from './utils.js';
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
