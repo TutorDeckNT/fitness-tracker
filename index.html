@@ -70,16 +70,24 @@
                     <div class="section-header">
                         <h2>Progress Analytics</h2>
                     </div>
-                    <!-- AFTER -->
+                    <!-- REPLACE WITH THIS NEW CODE IN index.html -->
                     <a href="progress-analytics.html" class="link-card glass-card">
                         <div class="link-card-content">
-                            <div class="analytics-link-header"> <!-- This class is specific, so it stays -->
+                            <!-- The classes for the content inside remain the same for the JavaScript -->
+                            <div class="analytics-link-header">
                                 <svg class="analytics-icon"><use xlink:href="#icon-calendar"></use></svg>
                                 <h3>View Your Progress</h3>
                             </div>
                             <p>Track your PRs, workout volume, and history.</p>
                             <div class="analytics-stats-preview loading-stats">
-                                <!-- ... more content ... -->
+                                <div class="stat-item">
+                                    <span class="stat-value" id="stats-total-workouts">--</span>
+                                    <span class="stat-label">Workouts</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value" id="stats-last-workout">--</span>
+                                    <span class="stat-label">Last Session</span>
+                                </div>
                             </div>
                         </div>
                         <div class="link-card-arrow">
