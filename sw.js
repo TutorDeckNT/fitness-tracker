@@ -1,7 +1,7 @@
 // --- PASTE THIS ENTIRE BLOCK INTO YOUR sw.js FILE ---
 
 // This line will be automatically updated by your GitHub Action
-const CACHE_NAME = 'fitness-tracker-cache-v673d43e';
+const CACHE_NAME = 'fitness-tracker-cache-vb751f8a';
 
 // This list now includes ALL the new files we created.
 const APP_SHELL = [
