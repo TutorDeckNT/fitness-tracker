@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fitness-tracker-cache-v1e6ae94';
+const CACHE_NAME = 'fitness-tracker-cache-v7a0f549';
 const APP_SHELL = [
     '/',
     'index.html',
