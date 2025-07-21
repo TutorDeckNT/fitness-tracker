@@ -145,3 +145,9 @@ self.addEventListener('message', (event) => {
     }
 
     if (event.data.command === 'STOP_TIMER') {
+        clearInterval(timerInterval);
+        timerEndTime = null;
+    }
+    
+    // This closing part was missing entirely.
+});
