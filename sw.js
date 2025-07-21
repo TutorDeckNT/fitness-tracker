@@ -1,12 +1,11 @@
-// --- THIS IS THE FINAL, CORRECTED SERVICE WORKER FILE ---
+// --- PASTE THIS ENTIRE BLOCK INTO YOUR sw.js FILE ---
 
-// This line is automatically updated by your GitHub Action (YAML script)
-const CACHE_NAME = 'fitness-tracker-cache-v830da13';
+// This line will be automatically updated by your GitHub Action
+const CACHE_NAME = 'fitness-tracker-cache-v2c777a5';
 
-// This is the list of all files needed for the app to work offline.
-// THE ROOT PATH '/' IS NOW CORRECTED TO 'index.html'.
+// This list now includes ALL the new files we created.
 const APP_SHELL = [
-    'index.html', // <-- THIS WAS THE FIX
+    'index.html',
     'edit-workouts.html',
     'manage-data.html',
     'progress-analytics.html',
@@ -15,6 +14,14 @@ const APP_SHELL = [
     'css/edit-workouts-style.css',
     'css/manage-data-style.css',
     'css/progress-analytics-style.css',
+    'js/partials-loader.js',
+    'js/firebase-init.js',
+    'js/utils.js',
+    'js/index-logic.js',
+    'js/edit-workouts-logic.js',
+    'js/manage-data-logic.js',
+    'js/progress-analytics-logic.js',
+    '_partials/svg-symbols.html',
     'manifest.json',
     'images/eagle.png',
     'images/Rosecurve.png',
