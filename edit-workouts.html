@@ -202,6 +202,20 @@
     let schedule = {};
     let editingWorkoutName = null;
 
+    // --- SCROLL LOCK HELPER FUNCTIONS ---
+    function lockBodyScroll() {
+        document.body.classList.add('has-active-modal');
+    }
+
+    function unlockBodyScroll() {
+        setTimeout(() => {
+            if (document.querySelectorAll('.modal-overlay.active').length === 0) {
+                document.body.classList.remove('has-active-modal');
+            }
+        }, 100);
+    }
+    // --- END SCROLL LOCK ---
+
     // --- DOM ELEMENT GETTERS ---
     const editorOverlay = document.getElementById('editor-overlay');
     const mainContentWrapper = document.getElementById('main-content-wrapper');
@@ -436,6 +450,7 @@
         editorExercisesList.innerHTML = '';
         workoutData.forEach((ex, index) => editorExercisesList.appendChild(createExerciseEditorForm(ex, index)));
         editorOverlay.classList.add('active');
+        lockBodyScroll();
     }
 
     function closeEditor() {
@@ -443,6 +458,7 @@
         if (document.getElementById('editor-panel').classList.contains('reorder-mode')) {
             toggleReorderMode(false);
         }
+        unlockBodyScroll();
     }
 
     function createExerciseEditorForm(exercise, index) {
@@ -583,6 +599,7 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
                 
                 renderAll();
                 aiTranscribeOverlay.classList.remove('active');
+                unlockBodyScroll();
 
             } catch (error) {
                 showToast(`Error: ${error.message}`, 'error');
@@ -760,15 +777,32 @@ RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetR
     editorExercisesList.addEventListener('touchstart', dragStart, { passive: false });
 
     // --- EVENT LISTENERS ---
-    document.getElementById('show-add-options-btn').addEventListener('click', () => addOptionsOverlay.classList.add('active'));
-    document.getElementById('close-add-options-btn').addEventListener('click', () => addOptionsOverlay.classList.remove('active'));
-    document.getElementById('add-manual-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); addWorkoutManually(); });
-    document.getElementById('import-from-file-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); document.getElementById('import-file-input').click(); });
+    document.getElementById('show-add-options-btn').addEventListener('click', () => {
+        addOptionsOverlay.classList.add('active');
+        lockBodyScroll();
+    });
+    document.getElementById('close-add-options-btn').addEventListener('click', () => {
+        addOptionsOverlay.classList.remove('active');
+        unlockBodyScroll();
+    });
+    document.getElementById('add-manual-btn').addEventListener('click', () => { 
+        addOptionsOverlay.classList.remove('active'); 
+        addWorkoutManually(); 
+    });
+    document.getElementById('import-from-file-btn').addEventListener('click', () => { 
+        addOptionsOverlay.classList.remove('active'); 
+        unlockBodyScroll();
+        document.getElementById('import-file-input').click(); 
+    });
     document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { 
         addOptionsOverlay.classList.remove('active'); 
         aiTranscribeOverlay.classList.add('active'); 
+        lockBodyScroll(); // Lock remains active
     });
-    document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => aiTranscribeOverlay.classList.remove('active'));
+    document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => {
+        aiTranscribeOverlay.classList.remove('active');
+        unlockBodyScroll();
+    });
     document.getElementById('import-file-input').addEventListener('change', (e) => handleFileImport(e));
     
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
