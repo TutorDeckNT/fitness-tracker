@@ -251,6 +251,15 @@
     let remainingSeconds = 0; 
     let localTimerInterval = null;
 
+    function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), delay);
+        };
+    }
+
     function showToast(message, type = 'info', duration = 3000) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -509,10 +518,22 @@
         workoutSessionBody.appendChild(finishBtn);
 
         finishBtn.addEventListener('click', finishWorkout);
+
+        // --- AUTOSAVE LOGIC ---
+        const debouncedAutoSave = debounce(() => saveOngoingWorkoutState(false), 1000);
+
+        document.querySelectorAll('#workout-session-body input').forEach(input => {
+            input.addEventListener('input', debouncedAutoSave);
+        });
+
         document.querySelectorAll('.set-complete-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const button = e.currentTarget;
                 button.classList.toggle('completed');
+                
+                // Immediately save state when a set is completed/uncompleted
+                saveOngoingWorkoutState(false);
+
                 if (button.classList.contains('completed')) {
                     const restSeconds = parseInt(button.closest('.exercise').dataset.rest, 10);
                     showTimerBar(restSeconds, button);
@@ -521,6 +542,7 @@
                 }
             });
         });
+        // --- END AUTOSAVE LOGIC ---
 
         workoutSessionOverlay.classList.add('active');
         ongoingWorkoutBanner.classList.remove('active');
@@ -584,7 +606,7 @@
         }
     }
 
-    function saveOngoingWorkoutState() {
+    function saveOngoingWorkoutState(showNotification = false) {
         if (!currentWorkoutName) return;
 
         const workoutState = {
@@ -602,12 +624,14 @@
             }))
         };
         localStorage.setItem('ongoingWorkout', JSON.stringify(workoutState));
-        showToast('Workout progress saved!', 'info');
+        if (showNotification) {
+            showToast('Workout progress saved!', 'info');
+        }
     }
 
     function minimizeWorkout() {
         if (!currentWorkoutName) return;
-        saveOngoingWorkoutState();
+        saveOngoingWorkoutState(true); // Show notification on explicit minimize
         workoutSessionOverlay.classList.remove('active');
         ongoingWorkoutNameEl.textContent = currentWorkoutName;
         ongoingWorkoutBanner.classList.add('active');
@@ -774,7 +798,7 @@
 
     window.addEventListener('beforeunload', () => {
         if (currentWorkoutName && workoutSessionOverlay.classList.contains('active')) {
-            saveOngoingWorkoutState();
+            saveOngoingWorkoutState(false); // Silently save on close
         }
     });
 
