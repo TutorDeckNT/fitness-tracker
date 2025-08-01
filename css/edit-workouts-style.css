@@ -49,7 +49,7 @@
 #done-reordering-btn { display: none; }
 #editor-panel.reorder-mode #add-exercise-btn, #editor-panel.reorder-mode #save-workouts-btn { display: none; }
 #editor-panel.reorder-mode #done-reordering-btn { display: inline-flex; }
-#editor-panel.reorder-mode .editor-exercise { cursor: grab; }
+#editor-panel.reorder-mode .editor-exercise { cursor: grab; touch-action: none; }
 #editor-panel.reorder-mode .editor-exercise:active { cursor: grabbing; }
 #editor-panel.reorder-mode .exercise-number { display: none; }
 #editor-panel.reorder-mode .exercise-name-title { display: inline; }
