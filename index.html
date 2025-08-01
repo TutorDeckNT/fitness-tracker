@@ -228,6 +228,22 @@
     let schedule = {};
     let currentWorkoutName = null;
 
+    // --- SCROLL LOCK HELPER FUNCTIONS ---
+    function lockBodyScroll() {
+        document.body.classList.add('has-active-modal');
+    }
+
+    function unlockBodyScroll() {
+        // A small delay helps prevent the main screen from jumping if another modal is opened immediately.
+        // Also check if any other modal is active before unlocking.
+        setTimeout(() => {
+            if (document.querySelectorAll('.modal-overlay.active').length === 0) {
+                document.body.classList.remove('has-active-modal');
+            }
+        }, 100);
+    }
+    // --- END SCROLL LOCK ---
+
     const timerBar = document.getElementById('timer-bar');
     const timerBarTime = document.getElementById('timer-bar-time');
     const timerOverlay = document.getElementById('timer-overlay');
@@ -390,6 +406,7 @@
         if (timerInitiatorButton) {
             timerInitiatorButton.classList.remove('completed');
         }
+        unlockBodyScroll();
     }
 
     function adjustTimer(seconds) {
@@ -412,11 +429,13 @@
     function maximizeTimer() {
         minimizedTimerWidget.classList.remove('active');
         timerOverlay.classList.add('active');
+        lockBodyScroll();
     }
 
     function minimizeTimer() {
         timerOverlay.classList.remove('active');
         minimizedTimerWidget.classList.add('active');
+        unlockBodyScroll();
     }
 
     function findLastExercisePerformance(exerciseName, history) {
@@ -546,6 +565,7 @@
 
         workoutSessionOverlay.classList.add('active');
         ongoingWorkoutBanner.classList.remove('active');
+        lockBodyScroll();
     }
 
     function cancelWorkout() {
@@ -559,6 +579,7 @@
             document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
             timerBar.classList.remove('active');
             dismissTimer();
+            unlockBodyScroll();
             showToast('Workout cancelled.');
         }
     }
@@ -635,6 +656,7 @@
         workoutSessionOverlay.classList.remove('active');
         ongoingWorkoutNameEl.textContent = currentWorkoutName;
         ongoingWorkoutBanner.classList.add('active');
+        unlockBodyScroll();
     }
 
     function resumeWorkout() {
@@ -735,6 +757,7 @@
             ongoingWorkoutBanner.classList.add('active');
         } else if (Object.keys(workouts).length === 0 && Object.keys(schedule).length === 0) {
             document.getElementById('welcome-guide-overlay').classList.add('active');
+            lockBodyScroll();
         }
 
         await getFullHistory();
@@ -813,9 +836,11 @@
 
     document.getElementById('welcome-dismiss-btn').addEventListener('click', () => {
         document.getElementById('welcome-guide-overlay').classList.remove('active');
+        unlockBodyScroll();
     });
     document.getElementById('completion-done-btn').addEventListener('click', () => {
         document.getElementById('workout-complete-overlay').classList.remove('active');
+        unlockBodyScroll();
     });
 
     document.getElementById('start-rest-btn').addEventListener('click', startTimer);
