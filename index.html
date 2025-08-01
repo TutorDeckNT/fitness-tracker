@@ -58,7 +58,6 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h2>All Workouts</h2>
-                    <!-- MODIFICATION: Updated button style -->
                     <a href="edit-workouts.html" id="edit-workouts-link" class="action-btn btn-style-90 matt-black-bkg" style="width: auto; padding: 8px 16px;"><span class="btn-text">Manage Plan</span></a>
                 </div>
                 <button id="workout-select-btn" class="glass-card">
@@ -70,10 +69,8 @@
                     <div class="section-header">
                         <h2>Progress Analytics</h2>
                     </div>
-                    <!-- REPLACE WITH THIS NEW CODE IN index.html -->
                     <a href="progress-analytics.html" class="link-card glass-card">
                         <div class="link-card-content">
-                            <!-- The classes for the content inside remain the same for the JavaScript -->
                             <div class="analytics-link-header">
                                 <svg class="analytics-icon"><use xlink:href="#icon-calendar"></use></svg>
                                 <h3>View Your Progress</h3>
@@ -111,24 +108,6 @@
 
     <div class="dropdown-overlay" id="workout-picker-overlay">
         <div class="glass-card picker-list" id="workout-picker-list"></div>
-    </div>
-
-    <!-- Fullscreen Timer -->
-    <div class="modal-overlay" id="timer-overlay">
-        <div class="overlay-content glass-card">
-            <div class="overlay-header">
-                <h2>Rest Timer</h2>
-                <button class="icon-btn" id="timer-minimize-btn"><svg><use xlink:href="#icon-minimize"></use></svg></button>
-            </div>
-            <div class="overlay-body">
-                <h1 id="timer-display">0:00</h1>
-                <div class="timer-controls">
-                    <button class="timer-btn" id="timer-subtract-15s"><svg><use xlink:href="#icon-minus"></use></svg><span>15s</span></button>
-                    <button class="timer-btn" id="timer-add-15s"><svg><use xlink:href="#icon-plus"></use></svg><span>15s</span></button>
-                </div>
-                <button class="action-btn" id="timer-dismiss-btn" style="background-color: var(--system-red); color: var(--text-on-action);">Dismiss</button>
-            </div>
-        </div>
     </div>
 
     <!-- Fullscreen Workout Session Overlay -->
@@ -187,24 +166,6 @@
         </div>
     </div>
 
-    <!-- Initial Timer Start Bar -->
-    <div class="timer-bar" id="timer-bar">
-        <div class="timer-bar-content glass-card" style="background-color: var(--system-blue);">
-            <button id="start-rest-btn" class="icon-btn"><svg><use xlink:href="#icon-play"></use></svg></button>
-            <span id="timer-bar-time">0:00</span>
-            <button id="skip-rest-btn" class="icon-btn"><svg><use xlink:href="#icon-skip"></use></svg></button>
-        </div>
-    </div>
-
-    <!-- Minimized Timer Widget -->
-    <div class="timer-widget" id="minimized-timer-widget">
-        <div class="timer-widget-content glass-card">
-            <span id="minimized-timer-time">0:00</span>
-            <button id="timer-expand-btn" class="icon-btn"><svg><use xlink:href="#icon-expand"></use></svg></button>
-        </div>
-    </div>
-
-
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -234,8 +195,6 @@
     }
 
     function unlockBodyScroll() {
-        // A small delay helps prevent the main screen from jumping if another modal is opened immediately.
-        // Also check if any other modal is active before unlocking.
         setTimeout(() => {
             if (document.querySelectorAll('.modal-overlay.active').length === 0) {
                 document.body.classList.remove('has-active-modal');
@@ -243,13 +202,6 @@
         }, 100);
     }
     // --- END SCROLL LOCK ---
-
-    const timerBar = document.getElementById('timer-bar');
-    const timerBarTime = document.getElementById('timer-bar-time');
-    const timerOverlay = document.getElementById('timer-overlay');
-    const timerDisplay = document.getElementById('timer-display');
-    const minimizedTimerWidget = document.getElementById('minimized-timer-widget');
-    const minimizedTimerTime = document.getElementById('minimized-timer-time');
 
     const workoutSessionOverlay = document.getElementById('workout-session-overlay');
     const workoutSessionTitle = document.getElementById('workout-session-title');
@@ -260,12 +212,6 @@
     const ongoingWorkoutBanner = document.getElementById('ongoing-workout-banner');
     const ongoingWorkoutNameEl = document.getElementById('ongoing-workout-name');
     const resumeWorkoutBtn = document.getElementById('resume-workout-btn');
-
-    let restTimeToStart = 0;
-    let timerInitiatorButton = null;
-    let isTimerActive = false;
-    let remainingSeconds = 0; 
-    let localTimerInterval = null;
 
     function debounce(func, delay) {
         let timeout;
@@ -293,149 +239,34 @@
         btn.disabled = isLoading;
     }
 
-    function formatTime(seconds) {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m}:${s.toString().padStart(2, '0')}`;
-    }
-
     function parseRestTime(restString) {
         if (!restString || typeof restString !== 'string') return 90;
         const timeValue = parseInt(restString, 10);
         return isNaN(timeValue) ? 90 : (restString.includes('min') ? timeValue * 60 : timeValue);
     }
 
-    function showTimerBar(restSeconds, button) {
-        restTimeToStart = restSeconds;
-        timerInitiatorButton = button;
-        timerBarTime.textContent = formatTime(restSeconds);
-        timerBar.classList.add('active');
-    }
+    /**
+     * NEW: This function triggers an Apple Shortcut to start a timer.
+     * It checks if the user has used it before and prompts for a one-time download if not.
+     */
+    function startTimer() {
+        // The name of the shortcut to run.
+        const shortcutName = "StartWorkoutTimer";
+        // The iCloud link to download the shortcut. REPLACE WITH YOURS.
+        const shortcutUrl = "YOUR_ICLOUD_SHORTCUT_LINK_HERE";
 
-    function updateAllTimerDisplays(timeInSeconds) {
-        const formattedTime = formatTime(timeInSeconds);
-        timerDisplay.textContent = formattedTime;
-        minimizedTimerTime.textContent = formattedTime;
-    }
-
-    async function requestNotificationPermission() {
-        if (!('Notification' in window)) {
-            return 'denied';
-        }
-        if (Notification.permission === 'granted') {
-            return 'granted';
-        }
-        if (Notification.permission !== 'denied') {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                showToast('Notifications enabled!', 'success');
+        if (!localStorage.getItem('hasDownloadedShortcut')) {
+            const message = "To use the timer, you need to install a free Apple Shortcut. This is a one-time setup.\n\nWould you like to download it now?";
+            if (confirm(message)) {
+                // Mark that the user has been prompted, so they don't get asked again.
+                localStorage.setItem('hasDownloadedShortcut', 'true');
+                // Open the iCloud link in a new tab.
+                window.open(shortcutUrl, '_blank');
             }
-            return permission;
+        } else {
+            // If the user has the shortcut, run it directly.
+            window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}`;
         }
-        return 'denied';
-    }
-
-    function startLocalTimer() {
-        isTimerActive = true;
-        remainingSeconds = restTimeToStart;
-
-        updateAllTimerDisplays(remainingSeconds);
-        timerBar.classList.remove('active');
-        minimizedTimerWidget.classList.add('active');
-
-        localTimerInterval = setInterval(() => {
-            remainingSeconds--;
-            updateAllTimerDisplays(remainingSeconds);
-
-            if (remainingSeconds <= 0) {
-                clearInterval(localTimerInterval);
-                isTimerActive = false;
-                if (navigator.vibrate) {
-                    navigator.vibrate([200, 100, 200]);
-                }
-                showToast("Rest Over!", "success");
-                setTimeout(dismissTimer, 1500);
-            }
-        }, 1000);
-    }
-
-    async function startTimer() {
-        if (restTimeToStart <= 0) return;
-
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            const permission = await requestNotificationPermission();
-            if (permission === 'granted') {
-                try {
-                    const registration = await navigator.serviceWorker.ready;
-                    registration.active.postMessage({
-                        command: 'START_TIMER',
-                        duration: restTimeToStart
-                    });
-                    isTimerActive = true;
-                    remainingSeconds = restTimeToStart;
-                    timerBar.classList.remove('active');
-                    minimizedTimerWidget.classList.add('active');
-                    updateAllTimerDisplays(restTimeToStart);
-                    return; 
-                } catch (error) {
-                    console.error('Service Worker Error:', error);
-                }
-            }
-        }
-        
-        startLocalTimer();
-    }
-
-    function dismissTimer() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then(registration => {
-                if (registration.active) {
-                    registration.active.postMessage({ command: 'STOP_TIMER' });
-                }
-            }).catch(error => console.error('Service Worker Error on dismiss:', error));
-        }
-        
-        if (localTimerInterval) {
-            clearInterval(localTimerInterval);
-            localTimerInterval = null;
-        }
-
-        isTimerActive = false;
-        timerOverlay.classList.remove('active');
-        minimizedTimerWidget.classList.remove('active');
-        if (timerInitiatorButton) {
-            timerInitiatorButton.classList.remove('completed');
-        }
-        unlockBodyScroll();
-    }
-
-    function adjustTimer(seconds) {
-        if (!isTimerActive) return;
-
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.active.postMessage({
-                    command: 'ADJUST_TIMER',
-                    seconds: seconds
-                });
-            });
-        }
-
-        const newTime = remainingSeconds + seconds;
-        remainingSeconds = Math.max(0, newTime);
-        updateAllTimerDisplays(remainingSeconds);
-    }
-
-    function maximizeTimer() {
-        minimizedTimerWidget.classList.remove('active');
-        timerOverlay.classList.add('active');
-        lockBodyScroll();
-    }
-
-    function minimizeTimer() {
-        timerOverlay.classList.remove('active');
-        minimizedTimerWidget.classList.add('active');
-        unlockBodyScroll();
     }
 
     function findLastExercisePerformance(exerciseName, history) {
@@ -476,8 +307,7 @@
 
         const exercisesHTML = workout.map((exercise, exIndex) => {
             const lastPerformance = findLastExercisePerformance(exercise.name, userHistory);
-            const restInSeconds = parseRestTime(exercise.rest);
-            return `<div class="exercise glass-card" id="exercise-${exIndex}" data-rest="${restInSeconds}">
+            return `<div class="exercise glass-card" id="exercise-${exIndex}">
                 <div class="exercise-header">
                     <div class="exercise-name">${exercise.name}</div>
                     <div class="exercise-rest-tag">${exercise.rest}</div>
@@ -538,7 +368,6 @@
 
         finishBtn.addEventListener('click', finishWorkout);
 
-        // --- AUTOSAVE LOGIC ---
         const debouncedAutoSave = debounce(() => saveOngoingWorkoutState(false), 1000);
 
         document.querySelectorAll('#workout-session-body input').forEach(input => {
@@ -550,18 +379,14 @@
                 const button = e.currentTarget;
                 button.classList.toggle('completed');
                 
-                // Immediately save state when a set is completed/uncompleted
                 saveOngoingWorkoutState(false);
 
                 if (button.classList.contains('completed')) {
-                    const restSeconds = parseInt(button.closest('.exercise').dataset.rest, 10);
-                    showTimerBar(restSeconds, button);
-                } else {
-                    dismissTimer();
+                    // When a set is completed, call the new timer function.
+                    startTimer();
                 }
             });
         });
-        // --- END AUTOSAVE LOGIC ---
 
         workoutSessionOverlay.classList.add('active');
         ongoingWorkoutBanner.classList.remove('active');
@@ -577,8 +402,6 @@
             workoutSessionFooter.innerHTML = '';
             currentWorkoutName = null;
             document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
-            timerBar.classList.remove('active');
-            dismissTimer();
             unlockBodyScroll();
             showToast('Workout cancelled.');
         }
@@ -622,8 +445,6 @@
             ongoingWorkoutBanner.classList.remove('active');
             currentWorkoutName = null;
             document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
-            timerBar.classList.remove('active');
-            dismissTimer();
         }
     }
 
@@ -652,7 +473,7 @@
 
     function minimizeWorkout() {
         if (!currentWorkoutName) return;
-        saveOngoingWorkoutState(true); // Show notification on explicit minimize
+        saveOngoingWorkoutState(true);
         workoutSessionOverlay.classList.remove('active');
         ongoingWorkoutNameEl.textContent = currentWorkoutName;
         ongoingWorkoutBanner.classList.add('active');
@@ -821,7 +642,7 @@
 
     window.addEventListener('beforeunload', () => {
         if (currentWorkoutName && workoutSessionOverlay.classList.contains('active')) {
-            saveOngoingWorkoutState(false); // Silently save on close
+            saveOngoingWorkoutState(false);
         }
     });
 
@@ -843,20 +664,6 @@
         unlockBodyScroll();
     });
 
-    document.getElementById('start-rest-btn').addEventListener('click', startTimer);
-
-    document.getElementById('timer-dismiss-btn').addEventListener('click', dismissTimer);
-    document.getElementById('timer-add-15s').addEventListener('click', () => adjustTimer(15));
-    document.getElementById('timer-subtract-15s').addEventListener('click', () => adjustTimer(-15));
-    document.getElementById('timer-expand-btn').addEventListener('click', maximizeTimer);
-    document.getElementById('timer-minimize-btn').addEventListener('click', minimizeTimer);
-    document.getElementById('skip-rest-btn').addEventListener('click', (e) => {
-        e.stopPropagation(); 
-        timerBar.classList.remove('active');
-        dismissTimer();
-        showToast('Rest skipped.');
-    });
-
     minimizeWorkoutBtn.addEventListener('click', minimizeWorkout);
     resumeWorkoutBtn.addEventListener('click', resumeWorkout);
     cancelWorkoutBtn.addEventListener('click', cancelWorkout);
@@ -872,34 +679,6 @@
             .catch(err => {
               console.log('ServiceWorker registration failed: ', err);
             });
-        });
-
-        navigator.serviceWorker.addEventListener('message', event => {
-            if (event.data.type === 'TIMER_UPDATE') {
-                remainingSeconds = event.data.remainingSeconds; // Keep local time in sync
-                if (remainingSeconds > 0) {
-                    updateAllTimerDisplays(remainingSeconds);
-                } else {
-                    isTimerActive = false;
-                    updateAllTimerDisplays(0);
-                    
-                    if (document.visibilityState === 'visible' && navigator.vibrate) {
-                        navigator.vibrate([200, 100, 200]);
-                    }
-
-                    setTimeout(dismissTimer, 1500);
-                }
-            }
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && isTimerActive) {
-                if (!localTimerInterval) {
-                    navigator.serviceWorker.ready.then(registration => {
-                        registration.active.postMessage({ command: 'SYNC_TIMER' });
-                    });
-                }
-            }
         });
       }
     </script>
