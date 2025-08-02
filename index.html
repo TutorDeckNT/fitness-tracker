@@ -24,12 +24,6 @@
         <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" />
         </symbol>
-        <symbol id="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
-        <symbol id="icon-skip" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></symbol>
-        <symbol id="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
-        <symbol id="icon-minimize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></symbol>
-        <symbol id="icon-plus" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></symbol>
-        <symbol id="icon-minus" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13H5v-2h14v2z"/></symbol>
     </svg>
 
     <div class="container">
@@ -246,26 +240,25 @@
     }
 
     /**
-     * NEW: This function triggers an Apple Shortcut to start a timer.
-     * It checks if the user has used it before and prompts for a one-time download if not.
+     * NEW DYNAMIC TIMER FUNCTION
+     * Triggers an Apple Shortcut with a specific duration.
+     * @param {number} durationInSeconds - The number of seconds for the timer.
      */
-    function startTimer() {
-        // The name of the shortcut to run.
+    function startTimer(durationInSeconds) {
         const shortcutName = "StartWorkoutTimer";
-        // The iCloud link to download the shortcut. REPLACE WITH YOURS.
-        const shortcutUrl = "YOUR_ICLOUD_SHORTCUT_LINK_HERE";
+        // IMPORTANT: Replace this with the real iCloud link from your new dynamic shortcut.
+        const shortcutUrl = "https://www.icloud.com/shortcuts/b36fd09eaedd4924b1349fc19561b7af";
 
         if (!localStorage.getItem('hasDownloadedShortcut')) {
             const message = "To use the timer, you need to install a free Apple Shortcut. This is a one-time setup.\n\nWould you like to download it now?";
             if (confirm(message)) {
-                // Mark that the user has been prompted, so they don't get asked again.
                 localStorage.setItem('hasDownloadedShortcut', 'true');
-                // Open the iCloud link in a new tab.
                 window.open(shortcutUrl, '_blank');
             }
         } else {
-            // If the user has the shortcut, run it directly.
-            window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}`;
+            // Construct the URL with the duration as input for the shortcut.
+            const url = `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}&input=${durationInSeconds}`;
+            window.location.href = url;
         }
     }
 
@@ -307,7 +300,9 @@
 
         const exercisesHTML = workout.map((exercise, exIndex) => {
             const lastPerformance = findLastExercisePerformance(exercise.name, userHistory);
-            return `<div class="exercise glass-card" id="exercise-${exIndex}">
+            // The rest time is calculated here for each exercise.
+            const restInSeconds = parseRestTime(exercise.rest);
+            return `<div class="exercise glass-card" id="exercise-${exIndex}" data-rest="${restInSeconds}">
                 <div class="exercise-header">
                     <div class="exercise-name">${exercise.name}</div>
                     <div class="exercise-rest-tag">${exercise.rest}</div>
@@ -382,8 +377,10 @@
                 saveOngoingWorkoutState(false);
 
                 if (button.classList.contains('completed')) {
-                    // When a set is completed, call the new timer function.
-                    startTimer();
+                    // Get the rest time from the parent exercise's data attribute.
+                    const restSeconds = parseInt(button.closest('.exercise').dataset.rest, 10);
+                    // Call the new timer function with the specific duration.
+                    startTimer(restSeconds);
                 }
             });
         });
