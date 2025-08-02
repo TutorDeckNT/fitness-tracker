@@ -1,5 +1,5 @@
 // This line is automatically updated by your GitHub Action (YAML script)
-const CACHE_NAME = 'fitness-tracker-cache-v22feff2';
+const CACHE_NAME = 'fitness-tracker-cache-va6e1242';
 
 // This is the list of all files needed for the app to work offline.
 const APP_SHELL = [
