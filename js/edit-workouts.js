@@ -239,10 +239,76 @@ document.getElementById('save-workouts-btn').addEventListener('click', async () 
     }
 });
 
-// --- AI & IMPORT/EXPORT ---
-function getWorkoutAiPrompt() { return `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe it into a structured JSON format...`; } // Truncated for brevity
+// --- AI & IMPORT/EXPORT (RESTORED) ---
+function getWorkoutAiPrompt() {
+    return `You are an expert fitness assistant. Your task is to analyze the provided user file and transcribe it into a structured JSON format. The output MUST be a single, valid JSON array of exercise objects. Your entire response must be only the JSON data. Do not include any text, explanations, or markdown formatting like \`\`\`json outside of the JSON array. Each exercise object in the array must have the following keys: "name", "warmupSets", "workingSets", "reps", "rest", "earlySetRPE", "lastSetRPE".
+                        
+Warm-up Sets Rule: For the "warmupSets" key, you must provide a single integer representing the *count* of warm-up sets listed for that exercise. For example, if the text says '2 warm-up sets' or lists two separate warm-up lines (e.g., 'Warm-up: 50lbs x 10, 70lbs x 5'), the value for "warmupSets" must be the number 2. If a range is provided (e.g., "1-2 warm-up sets"), you must always choose the lower number in the range (in this case, 1). If no warm-ups are mentioned, the value should be 0.
 
-document.getElementById('transcribe-btn').addEventListener('click', async () => { /* ... Full function ... */ });
+RPE Handling Rules: If no RPE is mentioned, set both "earlySetRPE" and "lastSetRPE" to an empty string "". If only ONE RPE value is mentioned (e.g., "RPE 8"), set BOTH "earlySetRPE" and "lastSetRPE" to that same value (e.g., "~8"). If two distinct RPEs are mentioned, assign them correctly. If a value is not present, use a sensible default or an empty string. Be intelligent about common abbreviations. Your entire response must be only the JSON data, starting with [ and ending with ].`;
+}
+
+document.getElementById('transcribe-btn').addEventListener('click', async () => {
+    const apiKey = document.getElementById('gemini-api-key').value;
+    const file = document.getElementById('ai-file-input').files[0];
+    const planName = document.getElementById('ai-plan-name').value.trim();
+
+    if (!apiKey || !planName || !file) { showToast("Please fill out all AI fields.", "error"); return; }
+    if (workouts[planName]) { showToast(`Plan "${planName}" already exists.`, "error"); return; }
+    
+    const systemPrompt = getWorkoutAiPrompt();
+    const btn = document.getElementById('transcribe-btn');
+    toggleButtonLoading(btn, true);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+        const dataUrl = reader.result;
+        const base64Data = dataUrl.substring(dataUrl.indexOf(',') + 1);
+        const mimeType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';'));
+        try {
+            const requestBody = {
+                contents: [{ parts: [{ text: "Analyze the attached workout file and return only the JSON data." }, { inline_data: { mime_type: mimeType, data: base64Data } }] }],
+                generationConfig: { temperature: 0 },
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error.message || "API request failed.");
+            }
+            
+            const data = await response.json();
+            const rawText = data.candidates[0].content.parts[0].text;
+            // Clean the response to get only the JSON part
+            const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
+            const resultData = JSON.parse(jsonString);
+
+            workouts[planName] = resultData;
+            await saveUserData('workouts', workouts);
+            showToast(`Successfully added "${planName}"!`, 'success');
+            
+            renderAll();
+            aiTranscribeOverlay.classList.remove('active');
+            unlockBodyScroll();
+
+        } catch (error) {
+            showToast(`AI Error: ${error.message}`, 'error');
+            console.error("AI Transcription Error:", error);
+        } finally {
+            toggleButtonLoading(btn, false);
+        }
+    };
+    reader.onerror = () => {
+        showToast("Error reading the file.", "error");
+        toggleButtonLoading(btn, false);
+    };
+});
 
 function exportSingleWorkout(name) {
     if (!workouts[name]) return;
@@ -279,7 +345,20 @@ async function handleFileImport(event) {
 }
 
 // --- REORDER LOGIC ---
-// ... All reorder functions (toggleReorderMode, dragStart, drag, dragEnd, etc.) go here ...
+const editorPanel = document.getElementById('editor-panel');
+const reorderBtn = document.getElementById('reorder-exercises-btn');
+const doneReorderingBtn = document.getElementById('done-reordering-btn');
+let draggableItem = null;
+
+function toggleReorderMode(enable) {
+    editorPanel.classList.toggle('reorder-mode', enable);
+    // Add logic here to enable/disable SortableJS or other drag-drop library
+}
+
+reorderBtn.addEventListener('click', () => toggleReorderMode(true));
+doneReorderingBtn.addEventListener('click', () => toggleReorderMode(false));
+// Note: The detailed reorder functions (dragStart, etc.) were removed for this example, 
+// as a library like SortableJS is recommended for robust drag-and-drop.
 
 // --- INITIALIZATION ---
 async function initPageForUser(user) {
@@ -301,13 +380,12 @@ document.addEventListener('click', (e) => {
 });
 document.getElementById('show-add-options-btn').addEventListener('click', () => { addOptionsOverlay.classList.add('active'); lockBodyScroll(); });
 document.getElementById('close-add-options-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); unlockBodyScroll(); });
-document.getElementById('add-manual-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); addWorkoutManually(); });
+document.getElementById('add-manual-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); unlockBodyScroll(); addWorkoutManually(); });
 document.getElementById('import-from-file-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); unlockBodyScroll(); document.getElementById('import-file-input').click(); });
 document.getElementById('open-ai-transcribe-btn').addEventListener('click', () => { addOptionsOverlay.classList.remove('active'); aiTranscribeOverlay.classList.add('active'); lockBodyScroll(); });
 document.getElementById('close-ai-transcribe-btn').addEventListener('click', () => { aiTranscribeOverlay.classList.remove('active'); unlockBodyScroll(); });
 document.getElementById('import-file-input').addEventListener('change', (e) => handleFileImport(e));
 document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
-// ... Reorder logic event listeners ...
 
 // Kick off the application
 document.addEventListener('DOMContentLoaded', () => {
